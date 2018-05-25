@@ -1,4 +1,4 @@
-package io.github.aquerr.futrzak.games;
+package io.github.aquerr.futrzakbot.games;
 
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;

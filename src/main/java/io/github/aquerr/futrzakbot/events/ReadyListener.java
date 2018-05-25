@@ -1,4 +1,4 @@
-package io.github.aquerr.futrzak.events;
+package io.github.aquerr.futrzakbot.events;
 
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;

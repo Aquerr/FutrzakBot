@@ -1,4 +1,4 @@
-package io.github.aquerr.futrzak.games;
+package io.github.aquerr.futrzakbot.games;
 
 import java.util.ArrayList;
 import java.util.List;

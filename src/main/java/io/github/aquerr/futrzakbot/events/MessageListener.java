@@ -1,7 +1,7 @@
-package io.github.aquerr.futrzak.events;
+package io.github.aquerr.futrzakbot.events;
 
-import io.github.aquerr.futrzak.games.EightBall;
-import io.github.aquerr.futrzak.games.Roulette;
+import io.github.aquerr.futrzakbot.games.EightBall;
+import io.github.aquerr.futrzakbot.games.Roulette;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -88,7 +88,7 @@ public class MessageListener extends ListenerAdapter
                     message = channel.sendMessage("Siemanko i uszanowako z tej strony Frik... W sumie lepiej nie wywoływać duchów.").complete();
                     break;
                 case 4:
-                    message = channel.sendMessage("To ja, Futrzak!").complete();
+                    message = channel.sendMessage("To ja, FutrzakBot!").complete();
                     break;
                 case 5:
                     message = channel.sendMessage("CO MNIE TYKASZ GŁUPCZE?!?!").complete();

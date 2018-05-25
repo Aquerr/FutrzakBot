@@ -1,13 +1,13 @@
-package io.github.aquerr.futrzak;
+package io.github.aquerr.futrzakbot;
 
-import io.github.aquerr.futrzak.events.MessageListener;
+import io.github.aquerr.futrzakbot.events.MessageListener;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 
 import javax.security.auth.login.LoginException;
 
-public class Futrzak
+public class FutrzakBot
 {
     public static void main(String[] args)
     {
