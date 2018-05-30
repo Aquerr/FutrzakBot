@@ -7,7 +7,8 @@ public enum MessagesEnum
     EIGHTBALL("!futrzak 8ball"),
     LOVE("!futrzak love"),
     CREATE("!futrzak stworz"),
-    FIGHT("!futrzak walka");
+    FIGHT("!futrzak walka"),
+    JOIN("!futrzak join");
 
     private final String name;
 

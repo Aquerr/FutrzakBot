@@ -6,19 +6,16 @@ import java.util.Random;
 
 public class Roulette
 {
-    private static final int NUMBER_OF_CHAMBERS = 6;
-    private static List<String> chamberList;
+    private final int NUMBER_OF_CHAMBERS = 6;
+    private List<String> chamberList;
 
-    private static boolean isActive;
-
-    private Roulette()
+    public Roulette()
     {
-
+        startNewGame();
     }
 
-    public static void startNewGame()
+    private void startNewGame()
     {
-        isActive = true;
         chamberList = new ArrayList<>(6);
 
         for (int i = 0; i < 6; i++)
@@ -32,16 +29,10 @@ public class Roulette
         chamberList.add(index, "bullet");
     }
 
-    public static boolean isActive()
-    {
-        return isActive;
-    }
-
-    public static boolean tryShot()
+    public boolean usePistol()
     {
         if (chamberList.get(0).equals("bullet"))
         {
-            isActive = false;
             return true;
         }
         else

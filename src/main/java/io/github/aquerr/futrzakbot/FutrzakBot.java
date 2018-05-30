@@ -23,11 +23,7 @@ public class FutrzakBot
             jda.addEventListener(new MessageListener());
             jda.setAutoReconnect(true);
         }
-        catch (LoginException e)
-        {
-            e.printStackTrace();
-        }
-        catch (InterruptedException e)
+        catch (LoginException | InterruptedException e)
         {
             e.printStackTrace();
         }

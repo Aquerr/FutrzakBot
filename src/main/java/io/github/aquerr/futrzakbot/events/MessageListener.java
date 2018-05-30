@@ -2,6 +2,7 @@ package io.github.aquerr.futrzakbot.events;
 
 import io.github.aquerr.futrzakbot.games.EightBall;
 import io.github.aquerr.futrzakbot.games.Roulette;
+import io.github.aquerr.futrzakbot.games.RouletteGame;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -40,14 +41,14 @@ public class MessageListener extends ListenerAdapter
 
         if (event.getMessage().getContentDisplay().startsWith("!ruletka"))
         {
-            if (!Roulette.isActive())
+            if (!RouletteGame.isActive(event.getGuild().getId()))
             {
                 event.getChannel().sendMessage(event.getAuthor().getAsMention()).append(" rozpoczyna nową grę w ruletkę!").complete();
                 event.getChannel().sendMessage("Będzie gorąco!").complete();
-                Roulette.startNewGame();
+                RouletteGame.startNewGame(event.getGuild().getId());
             }
 
-            boolean killed = Roulette.tryShot();
+            boolean killed = RouletteGame.usePistol(event.getGuild().getId());
 
             if (killed)
             {

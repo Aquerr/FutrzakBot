@@ -3,6 +3,7 @@ bin
 build
 out
 lib
+classes
 *.class
 
 # Log file
