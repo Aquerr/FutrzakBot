@@ -1,12 +1,15 @@
 package io.github.aquerr.futrzakbot.events;
 
+import com.sun.net.ssl.internal.ssl.Provider;
+import io.github.aquerr.futrzakbot.enums.MessagesEnum;
 import io.github.aquerr.futrzakbot.games.EightBall;
-import io.github.aquerr.futrzakbot.games.Roulette;
 import io.github.aquerr.futrzakbot.games.RouletteGame;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Random;
 
@@ -27,19 +30,41 @@ public class MessageListener extends ListenerAdapter
                     event.getMessage().getContentDisplay());
         }
 
-        if (event.getMessage().getContentDisplay().startsWith("!8ball"))
+        if (event.getMessage().getContentDisplay().contains("kocham"))
+        {
+            event.getMessage().addReaction(":heart:").complete();
+        }
+
+        if (event.getMessage().getContentDisplay().startsWith(MessagesEnum.COMMANDS.toString()))
+        {
+            //event.getChannel().sendMessage()
+
+//            event.getChannel().sendMessage(new MessageEmbed(
+//                    "",
+//                    "List Komend",
+//                    "- jeden - dwa \n - trzy",
+//                    EmbedType.RICH,
+//                    OffsetDateTime.now(),
+//                    1,
+//                    new MessageEmbed.Thumbnail(",","",50, 50),
+//                    new MessageEmbed.Provider("", ""),
+//                    new MessageEmbed.AuthorInfo("Nerdi", "url", "icon", ""),
+//                    new MessageEmbed.VideoInfo("", 20, 20),
+//                    new MessageEmbed.Footer("", "", ""),
+//                    new MessageEmbed.ImageInfo("", "", 10, 10)));
+        }
+        else if (event.getMessage().getContentDisplay().startsWith(MessagesEnum.EIGHTBALL.toString()))
         {
             if (event.getMessage().getContentRaw().split(" ").length > 1)
             {
-                EightBall.eightBall(event.getMessage(), event.getChannel());
+                EightBall.eightBall(event.getMessage(), event.getChannel(), event.getGuild().getId());
             }
             else
             {
                 event.getChannel().sendMessage("Coś mi się wydaję że nie zadałeś żadnego pytania.").complete();
             }
         }
-
-        if (event.getMessage().getContentDisplay().startsWith("!ruletka"))
+        else if (event.getMessage().getContentDisplay().startsWith(MessagesEnum.ROULETTE.toString()))
         {
             if (!RouletteGame.isActive(event.getGuild().getId()))
             {
@@ -63,8 +88,7 @@ public class MessageListener extends ListenerAdapter
                 event.getChannel().sendMessage(event.getAuthor().getAsMention()).append(" udało się przeżyć ruletkę.").complete();
             }
         }
-
-        if (event.getMessage().getContentDisplay().startsWith("!futrzak"))
+        else if (event.getMessage().getContentDisplay().startsWith(MessagesEnum.QUOTE.toString()))
         {
             MessageChannel channel = event.getChannel();
             Message message;

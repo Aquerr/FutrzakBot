@@ -8,7 +8,8 @@ public enum MessagesEnum
     LOVE("!futrzak love"),
     CREATE("!futrzak stworz"),
     FIGHT("!futrzak walka"),
-    JOIN("!futrzak join");
+    JOIN("!futrzak join"),
+    QUOTE("!futrzak cytat");
 
     private final String name;
 

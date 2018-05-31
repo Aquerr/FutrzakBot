@@ -1,5 +1,6 @@
 package io.github.aquerr.futrzakbot.games;
 
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -11,7 +12,7 @@ public class EightBall
 {
 
 
-    public static void eightBall(Message question, MessageChannel channel)
+    public static void eightBall(Message question, MessageChannel channel, String guildId)
     {
         Message message;
 
@@ -29,10 +30,10 @@ public class EightBall
                 message = channel.sendMessage("Zdecydowanie TAK!").complete();
                 break;
             case 3:
-                List<User> users = channel.getJDA().getUsers();
+                List<Member> members = channel.getJDA().getGuildById(guildId).getMembers();
                 random = new Random();
-                int userIndex = random.nextInt(users.size() + 1);
-                message = channel.sendMessage("Zapytaj ").append(users.get(userIndex).getAsMention()).append("!").append(" Ta osoba zna odpowiedź.").complete();
+                int memberIndex = random.nextInt(members.size() + 1);
+                message = channel.sendMessage("Zapytaj ").append(members.get(memberIndex).getAsMention()).append("!").append(" Ta osoba zna odpowiedź.").complete();
                 break;
             case 4:
                 message = channel.sendMessage("Raczej nie..").complete();
