@@ -1,6 +1,7 @@
 package io.github.aquerr.futrzakbot;
 
 import io.github.aquerr.futrzakbot.events.MessageListener;
+import io.github.aquerr.futrzakbot.secret.SecretProperties;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -16,7 +17,7 @@ public class FutrzakBot
         try
         {
             JDA jda = new JDABuilder(AccountType.BOT)
-                    .setToken("NDQ3MTEwNzI0OTI2MzA4MzUz.DeC-mg.fnpB19tWIQlz1iD8eAg8fFZ0upk")
+                    .setToken(SecretProperties.BOT_TOKEN)
                     .setGame(Game.of(Game.GameType.DEFAULT,"FutrzakiShow", "https://github.com/Aquerr/FutrzakBot"))
                     .buildBlocking();
             System.out.println("Connected!");
