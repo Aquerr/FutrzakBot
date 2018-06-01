@@ -1,17 +1,19 @@
 package io.github.aquerr.futrzakbot.events;
 
-import com.sun.net.ssl.internal.ssl.Provider;
 import io.github.aquerr.futrzakbot.enums.MessagesEnum;
 import io.github.aquerr.futrzakbot.games.EightBall;
 import io.github.aquerr.futrzakbot.games.RouletteGame;
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.core.requests.Route;
 
-import java.time.OffsetDateTime;
+import java.awt.*;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class MessageListener extends ListenerAdapter
 {
@@ -37,25 +39,41 @@ public class MessageListener extends ListenerAdapter
 
         if (event.getMessage().getContentDisplay().startsWith(MessagesEnum.COMMANDS.toString()))
         {
-            //event.getChannel().sendMessage()
+            //event.getTextChannel().sendTyping().queue();
+            event.getTextChannel().sendMessage("Deweloper dopiero dodaje te komendę więc parę rzeczy może w niej jeszcze nie być :)").completeAfter(5, TimeUnit.SECONDS);
 
-//            event.getChannel().sendMessage(new MessageEmbed(
-//                    "",
-//                    "List Komend",
-//                    "- jeden - dwa \n - trzy",
-//                    EmbedType.RICH,
-//                    OffsetDateTime.now(),
-//                    1,
-//                    new MessageEmbed.Thumbnail(",","",50, 50),
-//                    new MessageEmbed.Provider("", ""),
-//                    new MessageEmbed.AuthorInfo("Nerdi", "url", "icon", ""),
-//                    new MessageEmbed.VideoInfo("", 20, 20),
-//                    new MessageEmbed.Footer("", "", ""),
-//                    new MessageEmbed.ImageInfo("", "", 10, 10)));
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setAuthor("Futrzak został stworzyony przez Nerdiego", "https://github.com/Aquerr/FutrzakBot");
+            embedBuilder.setColor(Color.GREEN);
+//            embedBuilder.setTitle("Lista komend");
+            embedBuilder.setDescription("Oto spis komend dostępny u futrzaka: ");
+
+//            embedBuilder.addField(new MessageEmbed.Field("", " :small_blue_diamond: !futrzak ruletka" + "\n" +
+//                    ":small_blue_diamond: !futrzak cytat" + "\n" +
+//                    ":small_blue_diamond: !futrzak 8ball" + "\n" +
+//                    ":small_blue_diamond: !futrzak join" + "\n", false));
+//            embedBuilder.addField(new MessageEmbed.Field("", " - !futrzak cytat", false));
+//            embedBuilder.addField(new MessageEmbed.Field("", " - !futrzak 8ball", false));
+//            embedBuilder.addField(new MessageEmbed.Field("", " - !futrzak join", false));
+
+            embedBuilder.addField(new MessageEmbed.Field(":boom: Ruletka: ", "!futrzak ruletka", false));
+            embedBuilder.addField(new MessageEmbed.Field("Cytat: ", "!futrzak cytat", false));
+            embedBuilder.addField(new MessageEmbed.Field(":question: 8Ball: ", "!futrzak 8ball", false));
+            embedBuilder.addField(new MessageEmbed.Field("Dołącz na kanał głosowy: ", "!futrzak join", false));
+            //embedBuilder.addBlankField(false);
+            embedBuilder.addField(new MessageEmbed.Field(":heart: Licznik miłości: ", "!futrzak love", false));
+            embedBuilder.addField(new MessageEmbed.Field("Stworz swojego futrzaka: ", "!futrzak stworz", false));
+            embedBuilder.addField(new MessageEmbed.Field("Walcz z innym futrzakiem: ", "!futrzak walka", false));
+            embedBuilder.addField(new MessageEmbed.Field("8ball: ", "8ball: !futrzak 8ball", false));
+
+            embedBuilder.setFooter("Stopka i kropka.", null);
+
+            Message message = event.getChannel().sendMessage(embedBuilder.build()).complete();
+            message.addReaction("❤").queue();
         }
         else if (event.getMessage().getContentDisplay().startsWith(MessagesEnum.EIGHTBALL.toString()))
         {
-            if (event.getMessage().getContentRaw().split(" ").length > 1)
+            if (event.getMessage().getContentRaw().split("!futrzak 8ball").length > 1)
             {
                 EightBall.eightBall(event.getMessage(), event.getChannel(), event.getGuild().getId());
             }
@@ -134,6 +152,15 @@ public class MessageListener extends ListenerAdapter
                     message = channel.sendMessage("Zjadłbym jakąś babeczkę!").complete();
                     break;
             }
+        }
+        else if(event.getMessage().getContentDisplay().startsWith("!futrzak debil"))
+        {
+            event.getChannel().sendMessage("To Ty ").append(event.getMember().getAsMention()).append(" :v").complete();
+        }
+        else if(event.getMessage().getContentDisplay().contains("kocham") || event.getMessage().getContentDisplay().contains("lofki")
+                || event.getMessage().getContentDisplay().contains("loffciam") || event.getMessage().getContentDisplay().contains("stellar"))
+        {
+            event.getMessage().addReaction("❤").queue();
         }
     }
 }
