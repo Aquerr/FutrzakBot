@@ -6,6 +6,7 @@ group 'io.aquerr'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
+compileJava.options.encoding = 'UTF-8'
 
 repositories {
     mavenCentral()
@@ -15,4 +16,15 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile 'net.dv8tion:JDA:3.6.0_367'
+    compile 'com.sedmelluq:lavaplayer:1.2.64'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'io.github.aquerr.futrzakbot.FutrzakBot'
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
