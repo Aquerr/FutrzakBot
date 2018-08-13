@@ -1,10 +1,11 @@
 package io.github.aquerr.futrzakbot.games;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RouletteGame
 {
-    private static Map<String, Roulette> rouletteMap = new HashMap();
+    private static Map<String, Roulette> rouletteMap = new HashMap<>();
 
     private RouletteGame()
     {

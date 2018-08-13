@@ -95,6 +95,7 @@ public class MessageListener extends ListenerAdapter
                 event.getChannel().sendMessage(event.getAuthor().getAsMention()).append(" pociąga za spust!").complete();
                 event.getChannel().sendMessage("STRZAŁ!").complete();
                 event.getChannel().sendMessage(event.getAuthor().getAsMention()).append(" jest już w innym świecie :') ").complete();
+                event.getGuild().getController().setMute(event.getMember(), true).reason("Mutuję Cię na 30sekund!").complete();
             }
             else
             {
