@@ -8,9 +8,14 @@ import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
 
 import javax.security.auth.login.LoginException;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class FutrzakBot
 {
+    public static Path botDir = Paths.get(new File("").getAbsolutePath());
+
     public static void main(String[] args)
     {
         try

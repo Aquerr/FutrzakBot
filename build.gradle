@@ -17,6 +17,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile 'net.dv8tion:JDA:3.6.0_367'
     compile 'com.sedmelluq:lavaplayer:1.2.64'
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
 }
 
 jar {

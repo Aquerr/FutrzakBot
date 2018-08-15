@@ -1,31 +1,19 @@
 package io.github.aquerr.futrzakbot.events;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.player.hook.AudioOutputHookFactory;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
-import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import io.github.aquerr.futrzakbot.enums.MessagesEnum;
 import io.github.aquerr.futrzakbot.games.EightBall;
+import io.github.aquerr.futrzakbot.games.FutrzakGame;
 import io.github.aquerr.futrzakbot.games.LoveMeter;
 import io.github.aquerr.futrzakbot.games.RouletteGame;
-import io.github.aquerr.futrzakbot.handlers.AudioPlayerSendHandler;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.entities.impl.EmoteImpl;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import net.dv8tion.jda.core.managers.AudioManager;
-import net.dv8tion.jda.core.requests.Route;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class MessageListener extends ListenerAdapter
 {
@@ -164,6 +152,15 @@ public class MessageListener extends ListenerAdapter
         else if (event.getMessage().getContentDisplay().startsWith(MessagesEnum.CREATE.toString()))
         {
             event.getChannel().sendMessage("Ta funkcja jeszcze nie została w pełni dodana :/").complete();
+
+            try
+            {
+                FutrzakGame.createFutrzak(event.getGuild().getId(), event.getAuthor().getId());
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
         else if (event.getMessage().getContentDisplay().startsWith(MessagesEnum.JOIN.toString()))
         {
