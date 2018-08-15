@@ -1,6 +1,7 @@
 package io.github.aquerr.futrzakbot;
 
 import io.github.aquerr.futrzakbot.events.MessageListener;
+import io.github.aquerr.futrzakbot.games.FutrzakGame;
 import io.github.aquerr.futrzakbot.secret.SecretProperties;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -27,6 +28,10 @@ public class FutrzakBot
             System.out.println("Connected!");
             jda.addEventListener(new MessageListener());
             jda.setAutoReconnect(true);
+
+
+            //Set up internal games...
+            FutrzakGame.setup();
         }
         catch (LoginException | InterruptedException e)
         {

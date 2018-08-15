@@ -151,7 +151,7 @@ public class MessageListener extends ListenerAdapter
         }
         else if (event.getMessage().getContentDisplay().startsWith(MessagesEnum.CREATE.toString()))
         {
-            event.getChannel().sendMessage("Ta funkcja jeszcze nie została w pełni dodana :/").complete();
+            event.getChannel().sendMessage("Ta funkcja jeszcze nie została w pełni dodana :/ (ale Twój futrzak został już utworzony)").complete();
 
             try
             {
@@ -161,6 +161,12 @@ public class MessageListener extends ListenerAdapter
             {
                 e.printStackTrace();
             }
+        }
+        else if (event.getMessage().getContentDisplay().startsWith(MessagesEnum.DISPLAY.toString()))
+        {
+            if(FutrzakGame.checkIfFutrzakExists(event.getGuild().getId(), event.getAuthor().getId()))
+                event.getChannel().sendMessage(FutrzakGame.displayFutrzak(event.getGuild().getId(), event.getAuthor())).queue();
+            else event.getChannel().sendMessage("Widzę że nie masz jeszcze swojego futrzaka. Możesz go stowrzyć za pomocą komendy \"!futrzak stworz\"").queue();
         }
         else if (event.getMessage().getContentDisplay().startsWith(MessagesEnum.JOIN.toString()))
         {

@@ -2,13 +2,17 @@ package io.github.aquerr.futrzakbot.games;
 
 import io.github.aquerr.futrzakbot.FutrzakBot;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import org.json.JSONObject;
 
 import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class FutrzakGame
 {
@@ -33,18 +37,18 @@ public class FutrzakGame
     {
         createDirForGuildIfNeeded(guildId);
 
-        Path futrzakPath = futrzaksDirPath.resolve(guildId).resolve(userId + ".json");
+        Path futrzakPath = Paths.get(futrzaksDirPath.resolve(guildId) + "/" + userId + ".json");
 
         if (!Files.exists(futrzakPath))
             Files.createFile(futrzakPath);
 
         //Predefined futrzak
         JSONObject futrzakJson = new JSONObject();
-        futrzakJson.append("Name", "Futrzak");
-        futrzakJson.append("Exp", 0);
-        futrzakJson.append("Feeling", "Zadowolony");
+        futrzakJson.put("Name", "Futrzak");
+        futrzakJson.put("Exp", 0);
+        futrzakJson.put("Mood", "Zadowolony ❤");
         //TODO: Set up a default imagepath.
-        futrzakJson.append("ImagePath", "");
+        futrzakJson.put("ImagePath", "");
 
         FileWriter fileWriter = null;
         try
@@ -78,12 +82,12 @@ public class FutrzakGame
 
     public static boolean checkIfFutrzakExists(String guildId, String userId)
     {
-        return Files.exists(futrzaksDirPath.resolve(guildId).resolve(userId + ".json"));
+        return Files.exists(Paths.get(futrzaksDirPath.resolve(guildId) + "/" + userId + ".json"));
     }
 
-    public static MessageEmbed displayFutrzak(String guildId, String userId)
+    public static MessageEmbed displayFutrzak(String guildId, User user)
     {
-        Path futrzakPath = futrzaksDirPath.resolve(guildId).resolve(userId + ".json");
+        Path futrzakPath = Paths.get(futrzaksDirPath.resolve(guildId) + "/" + user.getId() + ".json");
 
         try
         {
@@ -95,12 +99,15 @@ public class FutrzakGame
             JSONObject jsonObject = new JSONObject(new String(data, "UTF-8"));
 
             EmbedBuilder embedBuilder = new EmbedBuilder();
-            embedBuilder.setImage(jsonObject.get("ImagePath").toString());
-            embedBuilder.setTitle(jsonObject.get("name").toString());
-//            embedBuilder.addField("");
+//            embedBuilder.setImage(jsonObject.get("ImagePath").toString());
+            embedBuilder.setTitle(jsonObject.getString("Name"));
+            embedBuilder.addField("Właściciel: ", user.getName(), false);
+            embedBuilder.addField("Doświadczenie: ", jsonObject.get("Exp").toString(), false);
+            embedBuilder.addField("Samopoczucie: ", jsonObject.getString("Mood"), false);
+            embedBuilder.setColor(Color.GREEN);
 
-//            embedBuilder.setAuthor("Futrzak został stworzyony przez Nerdiego", "https://github.com/Aquerr/FutrzakBot");
-//            embedBuilder.setColor(Color.GREEN);
+            //embedBuilder.setAuthor("Futrzak został stworzyony przez Nerdiego", "https://github.com/Aquerr/FutrzakBot");
+//
 ////            embedBuilder.setTitle("Lista komend");
 //            embedBuilder.setDescription("Oto spis komend, dostępnych u futrzaka: ");
 //
