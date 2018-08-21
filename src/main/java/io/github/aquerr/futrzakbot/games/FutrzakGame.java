@@ -1,6 +1,7 @@
 package io.github.aquerr.futrzakbot.games;
 
 import io.github.aquerr.futrzakbot.FutrzakBot;
+import io.github.aquerr.futrzakbot.entities.Futrzak;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.MessageEmbed;
@@ -97,13 +98,16 @@ public class FutrzakGame
             fileReader.read(data);
 
             JSONObject jsonObject = new JSONObject(new String(data, "UTF-8"));
+            Futrzak futrzak = Futrzak.fromJSONObject(jsonObject);
 
             EmbedBuilder embedBuilder = new EmbedBuilder();
-//            embedBuilder.setImage(jsonObject.get("ImagePath").toString());
-            embedBuilder.setTitle(jsonObject.getString("Name"));
+            if(!futrzak.getImagepath().equals(""))
+                embedBuilder.setImage(jsonObject.get("ImagePath").toString());
+
+            embedBuilder.setTitle(futrzak.getName());
             embedBuilder.addField("Właściciel: ", user.getName(), false);
-            embedBuilder.addField("Doświadczenie: ", jsonObject.get("Exp").toString(), false);
-            embedBuilder.addField("Samopoczucie: ", jsonObject.getString("Mood"), false);
+            embedBuilder.addField("Doświadczenie: ", String.valueOf(futrzak.getExp()), false);
+            embedBuilder.addField("Samopoczucie: ", futrzak.getMood(), false);
             embedBuilder.setColor(Color.GREEN);
 
             //embedBuilder.setAuthor("Futrzak został stworzyony przez Nerdiego", "https://github.com/Aquerr/FutrzakBot");
@@ -133,13 +137,5 @@ public class FutrzakGame
     private static boolean dirExists()
     {
         return Files.exists(futrzaksDirPath);
-    }
-
-    private class Futrzak
-    {
-        private String name;
-        private String imagepath;
-        private int exp;
-        private String mood;
     }
 }
