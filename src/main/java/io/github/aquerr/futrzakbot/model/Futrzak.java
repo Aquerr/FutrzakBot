@@ -1,4 +1,4 @@
-package io.github.aquerr.futrzakbot.entities;
+package io.github.aquerr.futrzakbot.model;
 
 import org.json.JSONObject;
 

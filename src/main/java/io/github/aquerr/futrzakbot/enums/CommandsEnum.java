@@ -1,6 +1,6 @@
 package io.github.aquerr.futrzakbot.enums;
 
-public enum MessagesEnum
+public enum CommandsEnum
 {
     COMMANDS("!futrzak komendy"),
     ROULETTE("!futrzak ruletka"),
@@ -8,13 +8,14 @@ public enum MessagesEnum
     LOVE("!futrzak love"),
     CREATE("!futrzak stworz"),
     FIGHT("!futrzak walka"),
-    JOIN("!futrzak join"),
     QUOTE("!futrzak cytat"),
-    DISPLAY("!futrzak futrzak");
+    DISPLAY("!futrzak futrzak"),
+    PLAY("!futrzak play"),
+    NEXT("!futrzak next");
 
     private final String name;
 
-    MessagesEnum(String s)
+    CommandsEnum(String s)
     {
         name = s;
     }

@@ -1,25 +1,41 @@
 package io.github.aquerr.futrzakbot.events;
 
-import io.github.aquerr.futrzakbot.enums.MessagesEnum;
+import io.github.aquerr.futrzakbot.FutrzakBot;
+import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayer;
+import io.github.aquerr.futrzakbot.audio.handler.AudioPlayerSendHandler;
+import io.github.aquerr.futrzakbot.enums.CommandsEnum;
 import io.github.aquerr.futrzakbot.games.EightBall;
 import io.github.aquerr.futrzakbot.games.FutrzakGame;
 import io.github.aquerr.futrzakbot.games.LoveMeter;
 import io.github.aquerr.futrzakbot.games.RouletteGame;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.managers.AudioManager;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
-import java.util.List;
-import java.util.Random;
 
 public class MessageListener extends ListenerAdapter
 {
+    private final FutrzakBot futrzakBot;
+
+    public MessageListener(FutrzakBot futrzakBot)
+    {
+        this.futrzakBot = futrzakBot;
+    }
+
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
+        TextChannel textChannel = event.getTextChannel();
+
         if (event.isFromType(ChannelType.PRIVATE))
         {
             System.out.printf("[PM] %s: %s\n", event.getAuthor().getName(),
@@ -32,7 +48,7 @@ public class MessageListener extends ListenerAdapter
                     event.getMessage().getContentDisplay());
         }
 
-        if (event.getMessage().getContentDisplay().startsWith(MessagesEnum.COMMANDS.toString()))
+        if (event.getMessage().getContentDisplay().startsWith(CommandsEnum.COMMANDS.toString()))
         {
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setAuthor("Futrzak został stworzyony przez Nerdiego", "https://github.com/Aquerr/FutrzakBot");
@@ -42,16 +58,17 @@ public class MessageListener extends ListenerAdapter
 
             embedBuilder.addField(new MessageEmbed.Field(":boom: Ruletka: ", "!futrzak ruletka", false));
             embedBuilder.addField(new MessageEmbed.Field(":thought_balloon: Cytat: ", "!futrzak cytat", false));
-            embedBuilder.addField(new MessageEmbed.Field(":question: 8Ball: ", "!futrzak 8ball", false));
-            embedBuilder.addField(new MessageEmbed.Field(":microphone2: Dołącz na kanał głosowy: ", "!futrzak join", false));
+            embedBuilder.addField(new MessageEmbed.Field(":question: 8Ball: ", "!futrzak 8ball <pytanie>", false));
+            embedBuilder.addField(new MessageEmbed.Field(":microphone2: Odtwórz podany utwór: ", "!futrzak play <nazwa utworu>", false));
             //embedBuilder.addBlankField(false);
-            embedBuilder.addField(new MessageEmbed.Field(":heart: Licznik miłości: ", "!futrzak love", false));
+            embedBuilder.addField(new MessageEmbed.Field(":heart: Licznik miłości: ", "!futrzak love <użytkownik>", false));
             embedBuilder.addField(new MessageEmbed.Field(":tiger: Stworz swojego futrzaka: ", "!futrzak stworz", false));
             embedBuilder.addField(new MessageEmbed.Field(":crossed_swords: Walcz z innym futrzakiem: ", "!futrzak walka", false));
+            embedBuilder.addField(new MessageEmbed.Field(":tiger: Sprawdź stan swojego futrzaka: ", "!futrzak futrzak", false));
 
             event.getChannel().sendMessage(embedBuilder.build()).complete();
         }
-        else if (event.getMessage().getContentDisplay().startsWith(MessagesEnum.EIGHTBALL.toString()))
+        else if (event.getMessage().getContentDisplay().startsWith(CommandsEnum.EIGHTBALL.toString()))
         {
             if (event.getMessage().getContentRaw().split("!futrzak 8ball").length > 1)
             {
@@ -62,12 +79,12 @@ public class MessageListener extends ListenerAdapter
                 event.getChannel().sendMessage("Coś mi się wydaję że nie zadałeś żadnego pytania.").complete();
             }
         }
-        else if(event.getMessage().getContentDisplay().startsWith(MessagesEnum.LOVE.toString()))
+        else if(event.getMessage().getContentDisplay().startsWith(CommandsEnum.LOVE.toString()))
         {
             Message loveMessage = LoveMeter.checkLove(event.getMessage());
             event.getChannel().sendMessage(loveMessage).queue();
         }
-        else if (event.getMessage().getContentDisplay().startsWith(MessagesEnum.ROULETTE.toString()))
+        else if (event.getMessage().getContentDisplay().startsWith(CommandsEnum.ROULETTE.toString()))
         {
             if (!RouletteGame.isActive(event.getGuild().getId()))
             {
@@ -83,7 +100,7 @@ public class MessageListener extends ListenerAdapter
                 event.getChannel().sendMessage(event.getAuthor().getAsMention()).append(" pociąga za spust!").complete();
                 event.getChannel().sendMessage("STRZAŁ!").complete();
                 event.getChannel().sendMessage(event.getAuthor().getAsMention()).append(" jest już w innym świecie :') ").complete();
-                event.getGuild().getController().setMute(event.getMember(), true).reason("Mutuję Cię na 30sekund!").complete();
+                event.getGuild().mute(event.getMember(), true).reason("Mutuję Cię na 30sekund!").complete();
             }
             else
             {
@@ -92,52 +109,9 @@ public class MessageListener extends ListenerAdapter
                 event.getChannel().sendMessage(event.getAuthor().getAsMention()).append(" udało się przeżyć ruletkę.").complete();
             }
         }
-        else if (event.getMessage().getContentDisplay().startsWith(MessagesEnum.QUOTE.toString()))
+        else if (event.getMessage().getContentDisplay().startsWith(CommandsEnum.QUOTE.toString()))
         {
-            MessageChannel channel = event.getChannel();
-            Message message;
-
-            Random random = new Random();
-            int max = 10;
-            int min = 1;
-            int i = random.nextInt(max - min + 1) + min;
-
-            switch (i)
-            {
-                case 1:
-                    List<User> users = channel.getJDA().getUsers();
-                    random = new Random();
-                    int userIndex = random.nextInt(users.size() + 1);
-                    message = channel.sendMessage(users.get(userIndex).getAsMention()).append(" to człowiek legenda! Mówię wam!").complete();
-                    break;
-                case 2:
-                    message = channel.sendMessage("Za IMPERATORA!").complete();
-                    break;
-                case 3:
-                    message = channel.sendMessage("Siemanko i uszanowako z tej strony Frik... W sumie lepiej nie wywoływać duchów.").complete();
-                    break;
-                case 4:
-                    message = channel.sendMessage("To ja, Futrzak!").complete();
-                    break;
-                case 5:
-                    message = channel.sendMessage("CO MNIE TYKASZ GŁUPCZE?!?!").complete();
-                    break;
-                case 6:
-                    message = channel.sendMessage("Jak terrorysta rąbie drzewo? Z zamachem. ( ͡° ͜ʖ ͡°)").complete();
-                    break;
-                case 7:
-                    message = channel.sendMessage("Chwalmy śłońce! \\[--]/").complete();
-                    break;
-                case 8:
-                    message = channel.sendMessage("Szybko! Zabij okno!").complete();
-                    break;
-                case 9:
-                    message = channel.sendMessage("Co tam słychać ").append(event.getMember().getAsMention()).append("?").complete();
-                    break;
-                case 10:
-                    message = channel.sendMessage("Zjadłbym jakąś babeczkę!").complete();
-                    break;
-            }
+            this.futrzakBot.getGameManager().getQuoteGame().printQuote(textChannel);
         }
         else if(event.getMessage().getContentDisplay().startsWith("!futrzak debil"))
         {
@@ -149,7 +123,7 @@ public class MessageListener extends ListenerAdapter
             event.getMessage().addReaction("❤").queue();
             //event.getMessage().addReaction(event.getJDA().getEmotesByName(":heart:", false).get(0)).queue();
         }
-        else if (event.getMessage().getContentDisplay().startsWith(MessagesEnum.CREATE.toString()))
+        else if (event.getMessage().getContentDisplay().startsWith(CommandsEnum.CREATE.toString()))
         {
             event.getChannel().sendMessage("Ta funkcja jeszcze nie została w pełni dodana :/ (ale Twój futrzak został już utworzony)").complete();
 
@@ -162,56 +136,35 @@ public class MessageListener extends ListenerAdapter
                 e.printStackTrace();
             }
         }
-        else if (event.getMessage().getContentDisplay().startsWith(MessagesEnum.DISPLAY.toString()))
+        else if (event.getMessage().getContentDisplay().startsWith(CommandsEnum.DISPLAY.toString()))
         {
             if(FutrzakGame.checkIfFutrzakExists(event.getGuild().getId(), event.getAuthor().getId()))
                 event.getChannel().sendMessage(FutrzakGame.displayFutrzak(event.getGuild().getId(), event.getAuthor())).queue();
             else event.getChannel().sendMessage("Widzę że nie masz jeszcze swojego futrzaka. Możesz go stowrzyć za pomocą komendy \"!futrzak stworz\"").queue();
         }
-        else if (event.getMessage().getContentDisplay().startsWith(MessagesEnum.JOIN.toString()))
+        else if (event.getMessage().getContentDisplay().startsWith(CommandsEnum.PLAY.toString()))
         {
-            event.getChannel().sendMessage("Ta funkcja jeszcze nie została w pełni dodana :/").complete();
-//
-//            VoiceChannel voiceChannel = event.getMember().getVoiceState().getChannel();
-//            AudioManager audioManager = event.getGuild().getAudioManager();
-//
-//
-//            AudioPlayerManager audioPlayerManager = new DefaultAudioPlayerManager();
-//
-//            audioPlayerManager.registerSourceManager(new YoutubeAudioSourceManager());
-//
-//            audioPlayerManager.loadItemOrdered("1", "https://www.youtube.com/watch?v=CDbL51q0pNk", new AudioLoadResultHandler()
-//            {
-//                @Override
-//                public void trackLoaded(AudioTrack track)
-//                {
-//
-//                }
-//
-//                @Override
-//                public void playlistLoaded(AudioPlaylist playlist)
-//                {
-//
-//                }
-//
-//                @Override
-//                public void noMatches()
-//                {
-//
-//                }
-//
-//                @Override
-//                public void loadFailed(FriendlyException exception)
-//                {
-//
-//                }
-//            });
-//
-//            audioManager.setSendingHandler(new AudioPlayerSendHandler(audioPlayerManager.createPlayer()));
-//
-//            audioManager.openAudioConnection(voiceChannel);
+            GuildVoiceState guildVoiceState = event.getMember().getVoiceState();
+            VoiceChannel voiceChannel = guildVoiceState.getChannel();
+            if (voiceChannel == null)
+            {
+                textChannel.sendMessage("Aby użyć tej komendy musisz być na kanale głosowym!").complete();
+            }
+            else
+            {
+                this.futrzakBot.getJda().getSelfUser();
+                AudioManager audioManager = event.getGuild().getAudioManager();
+                audioManager.setSendingHandler(new AudioPlayerSendHandler(FutrzakAudioPlayer.getInstance().getAudioPlayer()));
+                audioManager.openAudioConnection(voiceChannel);
+                String songName = event.getMessage().getContentDisplay().substring(CommandsEnum.PLAY.toString().length());
+                FutrzakAudioPlayer.getInstance().queue(textChannel, songName);
+            }
         }
-        else if (event.getMessage().getContentDisplay().startsWith(MessagesEnum.FIGHT.toString()))
+        else if(event.getMessage().getContentDisplay().startsWith(CommandsEnum.NEXT.toString()))
+        {
+            FutrzakAudioPlayer.getInstance().playNextTrack(textChannel);
+        }
+        else if (event.getMessage().getContentDisplay().startsWith(CommandsEnum.FIGHT.toString()))
         {
             event.getChannel().sendMessage("Ta funkcja jeszcze nie została w pełni dodana :/").complete();
         }

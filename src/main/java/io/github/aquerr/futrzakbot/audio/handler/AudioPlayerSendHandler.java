@@ -1,12 +1,11 @@
-package io.github.aquerr.futrzakbot.handlers;
+package io.github.aquerr.futrzakbot.audio.handler;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
-import net.dv8tion.jda.core.audio.AudioSendHandler;
+import net.dv8tion.jda.api.audio.AudioSendHandler;
+import org.jetbrains.annotations.Nullable;
+
+import java.nio.ByteBuffer;
 
 public class AudioPlayerSendHandler implements AudioSendHandler
 {
@@ -29,10 +28,11 @@ public class AudioPlayerSendHandler implements AudioSendHandler
         return lastFrame != null;
     }
 
+    @Nullable
     @Override
-    public byte[] provide20MsAudio()
+    public ByteBuffer provide20MsAudio()
     {
-        return lastFrame.data;
+        return ByteBuffer.wrap(this.lastFrame.getData());
     }
 
     @Override
