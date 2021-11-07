@@ -5,26 +5,26 @@ import java.util.Map;
 
 public class RouletteGame
 {
-    private static Map<String, Roulette> rouletteMap = new HashMap<>();
+    private static Map<Long, Roulette> rouletteMap = new HashMap<>();
 
     private RouletteGame()
     {
 
     }
 
-    public static void startNewGame(String guildId)
+    public static void startNewGame(long guildId)
     {
         Roulette roulette = new Roulette();
 
         rouletteMap.put(guildId, roulette);
     }
 
-    public static boolean isActive(String guildId)
+    public static boolean isActive(long guildId)
     {
         return rouletteMap.containsKey(guildId);
     }
 
-    public static boolean usePistol(String guildId)
+    public static boolean usePistol(long guildId)
     {
         boolean didShoot = rouletteMap.get(guildId).usePistol();
 

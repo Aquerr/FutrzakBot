@@ -15,10 +15,6 @@ public class AudioPlayerSendHandler implements AudioSendHandler
     public AudioPlayerSendHandler(AudioPlayer audioPlayer)
     {
         this.audioPlayer = audioPlayer;
-
-//        audioPlayer.playTrack(new YoutubeAudioTrack(new AudioTrackInfo("Dont Let Me Be Misunderstood", "Krakow Street Band",
-//                289L, "", false, "https://www.youtube.com/watch?v=CDbL51q0pNk"), new YoutubeAudioSourceManager()));
-//        audioPlayer.setVolume(50);
     }
 
     @Override

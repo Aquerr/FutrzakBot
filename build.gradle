@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.0'
 }
 
 group 'io.github.aquerr'
@@ -38,10 +39,12 @@ jar {
     manifest {
         attributes 'Main-Class': 'io.github.aquerr.futrzakbot.FutrzakBot'
     }
+}
 
-    from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-    }
+shadowJar {
+//    archiveBaseName.set('shadow')
+    archiveClassifier.set('')
+//    archiveVersion.set('')
 }
 
 test {

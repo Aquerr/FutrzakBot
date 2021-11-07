@@ -18,9 +18,9 @@ import java.nio.file.Paths;
 
 public class FutrzakBot
 {
-    public static Path botDir = Paths.get(".").toAbsolutePath();
-
     private static final Logger LOGGER = LoggerFactory.getLogger(FutrzakBot.class);
+
+    private final Path botDirectory = Paths.get(".").toAbsolutePath();
 
     public static void main(String[] args)
     {
@@ -35,6 +35,10 @@ public class FutrzakBot
     private void start()
     {
         Configuration configuration = Configuration.loadConfiguration();
+        if (configuration.getBotToken().isEmpty())
+        {
+            throw new IllegalArgumentException("Nie podano tokenu bota. Wpisz brakujący token w pliku konfiguracyjnym.");
+        }
 
         try
         {
@@ -49,10 +53,6 @@ public class FutrzakBot
                 .build();
 
             LOGGER.info("FutrzakBot Connected!");
-
-
-            //Set up internal games...
-            FutrzakGame.setup();
         }
         catch (LoginException e)
         {
@@ -70,8 +70,8 @@ public class FutrzakBot
         return gameManager;
     }
 
-    public static Path getBotDir()
+    public Path getBotDirectory()
     {
-        return botDir;
+        return this.botDirectory;
     }
 }

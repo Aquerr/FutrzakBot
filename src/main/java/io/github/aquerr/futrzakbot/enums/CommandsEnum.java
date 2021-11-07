@@ -11,7 +11,8 @@ public enum CommandsEnum
     QUOTE("!futrzak cytat"),
     DISPLAY("!futrzak futrzak"),
     PLAY("!futrzak play"),
-    NEXT("!futrzak next");
+    NEXT("!futrzak next"),
+    STOP("!futrzak stop");
 
     private final String name;
 

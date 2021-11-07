@@ -11,7 +11,7 @@ public class EightBall
 {
 
 
-    public static void eightBall(Message question, MessageChannel channel, String guildId)
+    public static void eightBall(Message question, MessageChannel channel, long guildId)
     {
         Random random = new Random();
         int max = 11;

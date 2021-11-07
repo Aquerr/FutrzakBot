@@ -15,9 +15,16 @@ import java.nio.file.Paths;
 
 public class FutrzakGame
 {
-    private static final Path futrzaksDirPath = FutrzakBot.botDir.resolve("futrzaki");
+    private final FutrzakBot futrzakBot;
+    private final Path futrzaksDirPath;
 
-    public static void setup()
+    public FutrzakGame(FutrzakBot futrzakBot)
+    {
+        this.futrzakBot = futrzakBot;
+        this.futrzaksDirPath = futrzakBot.getBotDirectory().resolve("futrzaki");
+    }
+
+    public void setup()
     {
         if(!dirExists())
         {
@@ -32,11 +39,11 @@ public class FutrzakGame
         }
     }
 
-    public static void createFutrzak(String guildId, String userId) throws IOException
+    public void createFutrzak(long guildId, String userId) throws IOException
     {
         createDirForGuildIfNeeded(guildId);
 
-        Path futrzakPath = Paths.get(futrzaksDirPath.resolve(guildId) + "/" + userId + ".json");
+        Path futrzakPath = Paths.get(futrzaksDirPath.resolve(String.valueOf(guildId)) + "/" + userId + ".json");
 
         if (!Files.exists(futrzakPath))
             Files.createFile(futrzakPath);
@@ -64,13 +71,13 @@ public class FutrzakGame
             fileWriter.close();
     }
 
-    private static void createDirForGuildIfNeeded(String guildId)
+    private void createDirForGuildIfNeeded(long guildId)
     {
-        if (!Files.exists(futrzaksDirPath.resolve(guildId)))
+        if (!Files.exists(futrzaksDirPath.resolve(String.valueOf(guildId))))
         {
             try
             {
-                Files.createDirectory(futrzaksDirPath.resolve(guildId));
+                Files.createDirectory(futrzaksDirPath.resolve(String.valueOf(guildId)));
             }
             catch (IOException e)
             {
@@ -79,12 +86,12 @@ public class FutrzakGame
         }
     }
 
-    public static boolean checkIfFutrzakExists(String guildId, String userId)
+    public boolean checkIfFutrzakExists(long guildId, String userId)
     {
-        return Files.exists(Paths.get(futrzaksDirPath.resolve(guildId) + "/" + userId + ".json"));
+        return Files.exists(Paths.get(futrzaksDirPath.resolve(String.valueOf(guildId)) + "/" + userId + ".json"));
     }
 
-    public static MessageEmbed displayFutrzak(String guildId, User user)
+    public MessageEmbed displayFutrzak(String guildId, User user)
     {
         Path futrzakPath = Paths.get(futrzaksDirPath.resolve(guildId) + "/" + user.getId() + ".json");
 
@@ -132,7 +139,7 @@ public class FutrzakGame
         return null;
     }
 
-    private static boolean dirExists()
+    private boolean dirExists()
     {
         return Files.exists(futrzaksDirPath);
     }

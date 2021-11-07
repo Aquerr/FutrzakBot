@@ -40,3 +40,4 @@ hs_err_pid*
 # Secret files
 src/main/java/io/github/aquerr/futrzakbot/secret
 /futrzaki
+/config.conf

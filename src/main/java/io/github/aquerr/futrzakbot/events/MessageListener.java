@@ -1,16 +1,16 @@
 package io.github.aquerr.futrzakbot.events;
 
 import io.github.aquerr.futrzakbot.FutrzakBot;
-import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayer;
+import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.audio.handler.AudioPlayerSendHandler;
 import io.github.aquerr.futrzakbot.enums.CommandsEnum;
 import io.github.aquerr.futrzakbot.games.EightBall;
-import io.github.aquerr.futrzakbot.games.FutrzakGame;
 import io.github.aquerr.futrzakbot.games.LoveMeter;
 import io.github.aquerr.futrzakbot.games.RouletteGame;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.IOException;
 
 public class MessageListener extends ListenerAdapter
@@ -35,6 +35,8 @@ public class MessageListener extends ListenerAdapter
     public void onMessageReceived(MessageReceivedEvent event)
     {
         TextChannel textChannel = event.getTextChannel();
+        long guildId = event.getGuild().getIdLong();
+        Member member = event.getMember();
 
         if (event.isFromType(ChannelType.PRIVATE))
         {
@@ -44,7 +46,7 @@ public class MessageListener extends ListenerAdapter
         else
         {
             System.out.printf("[%s][%s] %s: %s\n", event.getGuild().getName(),
-                    event.getTextChannel().getName(), event.getMember().getEffectiveName(),
+                    event.getTextChannel().getName(), member.getEffectiveName(),
                     event.getMessage().getContentDisplay());
         }
 
@@ -72,7 +74,7 @@ public class MessageListener extends ListenerAdapter
         {
             if (event.getMessage().getContentRaw().split("!futrzak 8ball").length > 1)
             {
-                EightBall.eightBall(event.getMessage(), event.getChannel(), event.getGuild().getId());
+                EightBall.eightBall(event.getMessage(), event.getChannel(), guildId);
             }
             else
             {
@@ -86,21 +88,21 @@ public class MessageListener extends ListenerAdapter
         }
         else if (event.getMessage().getContentDisplay().startsWith(CommandsEnum.ROULETTE.toString()))
         {
-            if (!RouletteGame.isActive(event.getGuild().getId()))
+            if (!RouletteGame.isActive(guildId))
             {
                 event.getChannel().sendMessage(event.getAuthor().getAsMention()).append(" rozpoczyna nową grę w ruletkę!").complete();
                 event.getChannel().sendMessage("Będzie gorąco!").complete();
-                RouletteGame.startNewGame(event.getGuild().getId());
+                RouletteGame.startNewGame(guildId);
             }
 
-            boolean killed = RouletteGame.usePistol(event.getGuild().getId());
+            boolean killed = RouletteGame.usePistol(guildId);
 
             if (killed)
             {
                 event.getChannel().sendMessage(event.getAuthor().getAsMention()).append(" pociąga za spust!").complete();
                 event.getChannel().sendMessage("STRZAŁ!").complete();
                 event.getChannel().sendMessage(event.getAuthor().getAsMention()).append(" jest już w innym świecie :') ").complete();
-                event.getGuild().mute(event.getMember(), true).reason("Mutuję Cię na 30sekund!").complete();
+                event.getGuild().mute(member, true).reason("Mutuję Cię na 30sekund!").complete();
             }
             else
             {
@@ -115,7 +117,7 @@ public class MessageListener extends ListenerAdapter
         }
         else if(event.getMessage().getContentDisplay().startsWith("!futrzak debil"))
         {
-            event.getChannel().sendMessage("To Ty ").append(event.getMember().getAsMention()).append(" :v").complete();
+            event.getChannel().sendMessage("To Ty ").append(member.getAsMention()).append(" :v").complete();
         }
         else if(event.getMessage().getContentDisplay().contains("Kocham") || event.getMessage().getContentDisplay().contains("kocham") || event.getMessage().getContentDisplay().contains("lofki")
                 || event.getMessage().getContentDisplay().contains("loffciam") || event.getMessage().getContentDisplay().contains("stellar"))
@@ -129,7 +131,7 @@ public class MessageListener extends ListenerAdapter
 
             try
             {
-                FutrzakGame.createFutrzak(event.getGuild().getId(), event.getAuthor().getId());
+                this.futrzakBot.getGameManager().getFutrzakGame().createFutrzak(guildId, event.getAuthor().getId());
             }
             catch (IOException e)
             {
@@ -138,13 +140,13 @@ public class MessageListener extends ListenerAdapter
         }
         else if (event.getMessage().getContentDisplay().startsWith(CommandsEnum.DISPLAY.toString()))
         {
-            if(FutrzakGame.checkIfFutrzakExists(event.getGuild().getId(), event.getAuthor().getId()))
-                event.getChannel().sendMessage(FutrzakGame.displayFutrzak(event.getGuild().getId(), event.getAuthor())).queue();
+            if(this.futrzakBot.getGameManager().getFutrzakGame().checkIfFutrzakExists(guildId, event.getAuthor().getId()))
+                event.getChannel().sendMessage(this.futrzakBot.getGameManager().getFutrzakGame().displayFutrzak(event.getGuild().getId(), event.getAuthor())).queue();
             else event.getChannel().sendMessage("Widzę że nie masz jeszcze swojego futrzaka. Możesz go stowrzyć za pomocą komendy \"!futrzak stworz\"").queue();
         }
         else if (event.getMessage().getContentDisplay().startsWith(CommandsEnum.PLAY.toString()))
         {
-            GuildVoiceState guildVoiceState = event.getMember().getVoiceState();
+            GuildVoiceState guildVoiceState = member.getVoiceState();
             VoiceChannel voiceChannel = guildVoiceState.getChannel();
             if (voiceChannel == null)
             {
@@ -154,15 +156,19 @@ public class MessageListener extends ListenerAdapter
             {
                 this.futrzakBot.getJda().getSelfUser();
                 AudioManager audioManager = event.getGuild().getAudioManager();
-                audioManager.setSendingHandler(new AudioPlayerSendHandler(FutrzakAudioPlayer.getInstance().getAudioPlayer()));
+                audioManager.setSendingHandler(new AudioPlayerSendHandler(FutrzakAudioPlayerManager.getInstance().getOrCreateAudioPlayer(guildId).getInternalAudioPlayer()));
                 audioManager.openAudioConnection(voiceChannel);
                 String songName = event.getMessage().getContentDisplay().substring(CommandsEnum.PLAY.toString().length());
-                FutrzakAudioPlayer.getInstance().queue(textChannel, songName);
+                FutrzakAudioPlayerManager.getInstance().queue(guildId, textChannel, songName);
             }
         }
         else if(event.getMessage().getContentDisplay().startsWith(CommandsEnum.NEXT.toString()))
         {
-            FutrzakAudioPlayer.getInstance().playNextTrack(textChannel);
+            FutrzakAudioPlayerManager.getInstance().playNextTrack(guildId, textChannel);
+        }
+        else if(event.getMessage().getContentDisplay().startsWith(CommandsEnum.STOP.toString()))
+        {
+            FutrzakAudioPlayerManager.getInstance().stop(guildId, textChannel);
         }
         else if (event.getMessage().getContentDisplay().startsWith(CommandsEnum.FIGHT.toString()))
         {

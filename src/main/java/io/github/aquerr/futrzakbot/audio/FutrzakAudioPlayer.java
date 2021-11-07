@@ -1,134 +1,127 @@
 package io.github.aquerr.futrzakbot.audio;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
-import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import io.github.aquerr.futrzakbot.audio.handler.AudioPlayerSendHandler;
-import io.github.aquerr.futrzakbot.message.FutrzakMessageEmbedFactory;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class FutrzakAudioPlayer
+import java.util.ArrayDeque;
+import java.util.Queue;
+
+public class FutrzakAudioPlayer extends AudioEventAdapter
 {
-    private static FutrzakAudioPlayer INSTANCE;
+    private static final Logger LOGGER = LoggerFactory.getLogger(FutrzakAudioPlayer.class);
 
-    public static FutrzakAudioPlayer getInstance()
-    {
-        return FutrzakAudioPlayerInstanceHolder.INSTANCE;
-    }
-
-    private static class FutrzakAudioPlayerInstanceHolder
-    {
-        private static final FutrzakAudioPlayer INSTANCE = new FutrzakAudioPlayer();
-    }
-
-    private final AudioPlayerManager audioPlayerManager;
+    private final long guildId;
     private final AudioPlayer audioPlayer;
-    private final AudioPlayerSendHandler audioPlayerSendHandler;
-    private final TrackScheduler trackScheduler;
+    private final Queue<AudioTrack> tracksQueue = new ArrayDeque<>();
 
-    public FutrzakAudioPlayer()
+    public FutrzakAudioPlayer(long guildId, AudioPlayer audioPlayer)
     {
-        this.audioPlayerManager = new DefaultAudioPlayerManager();
-        AudioSourceManagers.registerRemoteSources(audioPlayerManager);
-        this.audioPlayer = this.audioPlayerManager.createPlayer();
-        this.trackScheduler = new TrackScheduler(this.audioPlayer);
-        this.audioPlayerSendHandler = new AudioPlayerSendHandler(this.audioPlayer);
+        this.guildId = guildId;
+        this.audioPlayer = audioPlayer;
+        this.audioPlayer.addListener(this);
     }
 
-    public void queue(TextChannel textChannel, String trackName)
+    public void queue(AudioTrack track)
     {
-        this.audioPlayerManager.loadItem("ytsearch: " + trackName, new AudioLoadResultHandler()
+        this.tracksQueue.offer(track);
+
+        if (this.audioPlayer.getPlayingTrack() == null)
         {
-            @Override
-            public void trackLoaded(AudioTrack track)
-            {
-                trackScheduler.queue(track);
-                textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongAddedToQueueMessage(track.getInfo().author, track.getInfo().title)).complete();
-            }
-
-            @Override
-            public void playlistLoaded(AudioPlaylist playlist)
-            {
-                AudioTrack track = playlist.getTracks().get(0);
-                trackScheduler.queue(track);
-                textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongAddedToQueueMessage(track.getInfo().author, track.getInfo().title)).complete();
-            }
-
-            @Override
-            public void noMatches()
-            {
-                System.out.println("Song not found!");
-            }
-
-            @Override
-            public void loadFailed(FriendlyException exception)
-            {
-                exception.printStackTrace();
-            }
-        });
+            playNextTrack();
+        }
     }
 
-    public void playTrack(String trackName)
+    public void playNextTrack()
     {
-        this.audioPlayerManager.loadItem("ytsearch: " + trackName, new AudioLoadResultHandler()
+        AudioTrack audioTrack = this.tracksQueue.poll();
+        this.audioPlayer.playTrack(audioTrack);
+        this.audioPlayer.setVolume(100);
+        LOGGER.info("Starting playing: " + audioTrack.getInfo().title);
+    }
+
+    @Override
+    public void onPlayerPause(AudioPlayer player)
+    {
+        LOGGER.info("Player paused!");
+    }
+
+    @Override
+    public void onPlayerResume(AudioPlayer player)
+    {
+        LOGGER.info("Player resumed!");
+
+    }
+
+    @Override
+    public void onTrackStart(AudioPlayer player, AudioTrack track)
+    {
+        LOGGER.info("Track started!");
+
+    }
+
+    @Override
+    public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason)
+    {
+        LOGGER.info("Track ended!");
+        if (endReason.mayStartNext)
         {
-            @Override
-            public void trackLoaded(AudioTrack track)
-            {
-                trackScheduler.playTrack(track);
-            }
-
-            @Override
-            public void playlistLoaded(AudioPlaylist playlist)
-            {
-                for (final AudioTrack audioTrack : playlist.getTracks())
-                {
-                    trackScheduler.queue(audioTrack);
-                }
-            }
-
-            @Override
-            public void noMatches()
-            {
-                System.out.println("Song not found!");
-            }
-
-            @Override
-            public void loadFailed(FriendlyException exception)
-            {
-                exception.printStackTrace();
-            }
-        });
+            playNextTrack();
+        }
     }
 
-    public void playNextTrack(TextChannel textChannel)
+    @Override
+    public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception)
     {
-        this.trackScheduler.playNextTrack();
-        AudioTrack track = this.audioPlayer.getPlayingTrack();
-        textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createNowPlayingMessage(track.getInfo().author, track.getInfo().title)).complete();
+        LOGGER.error("Track exception: " + exception.getMessage());
+
     }
 
-    public void stop()
+    @Override
+    public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs)
+    {
+        LOGGER.info("Track stuck!");
+
+    }
+
+    @Override
+    public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs, StackTraceElement[] stackTrace)
+    {
+        LOGGER.info("Track stuck!");
+    }
+
+    public long getGuildId()
+    {
+        return guildId;
+    }
+
+    public AudioTrack getPlayingTrack()
+    {
+        return this.audioPlayer.getPlayingTrack();
+    }
+
+    public void stopPlayer(MessageChannel textChannel)
     {
         this.audioPlayer.stopTrack();
     }
 
-    public void resume()
+    public void resumePlayer(TextChannel textChannel)
     {
-        this.audioPlayer.setPaused(!this.audioPlayer.isPaused());
+        this.audioPlayer.setPaused(false);
     }
 
-    public void setVolume(int volume)
+    public void setVolume(int volume, TextChannel textChannel)
     {
         this.audioPlayer.setVolume(volume);
     }
 
-    public AudioPlayer getAudioPlayer()
+    public AudioPlayer getInternalAudioPlayer()
     {
         return audioPlayer;
     }
