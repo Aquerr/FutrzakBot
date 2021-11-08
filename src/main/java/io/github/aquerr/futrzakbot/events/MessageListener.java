@@ -8,7 +8,6 @@ import io.github.aquerr.futrzakbot.games.EightBall;
 import io.github.aquerr.futrzakbot.games.LoveMeter;
 import io.github.aquerr.futrzakbot.games.RouletteGame;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -18,17 +17,23 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.io.IOException;
 
 public class MessageListener extends ListenerAdapter
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageListener.class);
+
     private final FutrzakBot futrzakBot;
+    private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
 
     public MessageListener(FutrzakBot futrzakBot)
     {
         this.futrzakBot = futrzakBot;
+        this.futrzakAudioPlayerManager = futrzakBot.getFutrzakAudioPlayerManager();
     }
 
     @Override
@@ -38,17 +43,11 @@ public class MessageListener extends ListenerAdapter
         long guildId = event.getGuild().getIdLong();
         Member member = event.getMember();
 
-        if (event.isFromType(ChannelType.PRIVATE))
-        {
-            System.out.printf("[PM] %s: %s\n", event.getAuthor().getName(),
-                    event.getMessage().getContentDisplay());
-        }
-        else
-        {
-            System.out.printf("[%s][%s] %s: %s\n", event.getGuild().getName(),
-                    event.getTextChannel().getName(), member.getEffectiveName(),
-                    event.getMessage().getContentDisplay());
-        }
+        // Bot cannot be used from webhooks and private channels
+        if (member == null)
+            return;
+
+        debugLogMessage(event);
 
         if (event.getMessage().getContentDisplay().startsWith(CommandsEnum.COMMANDS.toString()))
         {
@@ -141,7 +140,7 @@ public class MessageListener extends ListenerAdapter
         else if (event.getMessage().getContentDisplay().startsWith(CommandsEnum.DISPLAY.toString()))
         {
             if(this.futrzakBot.getGameManager().getFutrzakGame().checkIfFutrzakExists(guildId, event.getAuthor().getId()))
-                event.getChannel().sendMessage(this.futrzakBot.getGameManager().getFutrzakGame().displayFutrzak(event.getGuild().getId(), event.getAuthor())).queue();
+                event.getChannel().sendMessageEmbeds(this.futrzakBot.getGameManager().getFutrzakGame().displayFutrzak(event.getGuild().getId(), event.getAuthor())).queue();
             else event.getChannel().sendMessage("Widzę że nie masz jeszcze swojego futrzaka. Możesz go stowrzyć za pomocą komendy \"!futrzak stworz\"").queue();
         }
         else if (event.getMessage().getContentDisplay().startsWith(CommandsEnum.PLAY.toString()))
@@ -156,23 +155,34 @@ public class MessageListener extends ListenerAdapter
             {
                 this.futrzakBot.getJda().getSelfUser();
                 AudioManager audioManager = event.getGuild().getAudioManager();
-                audioManager.setSendingHandler(new AudioPlayerSendHandler(FutrzakAudioPlayerManager.getInstance().getOrCreateAudioPlayer(guildId).getInternalAudioPlayer()));
+                audioManager.setSendingHandler(new AudioPlayerSendHandler(this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(guildId).getInternalAudioPlayer()));
                 audioManager.openAudioConnection(voiceChannel);
                 String songName = event.getMessage().getContentDisplay().substring(CommandsEnum.PLAY.toString().length());
-                FutrzakAudioPlayerManager.getInstance().queue(guildId, textChannel, songName);
+                this.futrzakAudioPlayerManager.queue(guildId, textChannel, songName);
             }
         }
         else if(event.getMessage().getContentDisplay().startsWith(CommandsEnum.NEXT.toString()))
         {
-            FutrzakAudioPlayerManager.getInstance().playNextTrack(guildId, textChannel);
+            this.futrzakAudioPlayerManager.playNextTrack(guildId, textChannel);
         }
         else if(event.getMessage().getContentDisplay().startsWith(CommandsEnum.STOP.toString()))
         {
-            FutrzakAudioPlayerManager.getInstance().stop(guildId, textChannel);
+            this.futrzakAudioPlayerManager.stop(guildId, textChannel);
+        }
+        else if (event.getMessage().getContentDisplay().startsWith(CommandsEnum.VOLUME.toString()))
+        {
+            this.futrzakAudioPlayerManager.setVolume(guildId, textChannel, Integer.parseInt(event.getMessage().getContentDisplay().substring(CommandsEnum.VOLUME.toString().length()).trim()));
         }
         else if (event.getMessage().getContentDisplay().startsWith(CommandsEnum.FIGHT.toString()))
         {
             event.getChannel().sendMessage("Ta funkcja jeszcze nie została w pełni dodana :/").complete();
         }
+    }
+
+    private void debugLogMessage(MessageReceivedEvent event)
+    {
+        LOGGER.info("{}{} {}: {}\n", event.getGuild().getName(),
+                event.getTextChannel().getName(), event.getMember().getEffectiveName(),
+                event.getMessage().getContentDisplay());
     }
 }

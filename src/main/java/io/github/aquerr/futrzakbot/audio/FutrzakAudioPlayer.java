@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
@@ -20,6 +21,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     private final long guildId;
     private final AudioPlayer audioPlayer;
     private final Queue<AudioTrack> tracksQueue = new ArrayDeque<>();
+    private Instant lastTrackEndTime = Instant.now();
 
     public FutrzakAudioPlayer(long guildId, AudioPlayer audioPlayer)
     {
@@ -41,9 +43,12 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     public void playNextTrack()
     {
         AudioTrack audioTrack = this.tracksQueue.poll();
-        this.audioPlayer.playTrack(audioTrack);
-        this.audioPlayer.setVolume(100);
-        LOGGER.info("Starting playing: " + audioTrack.getInfo().title);
+        if(audioTrack != null)
+        {
+            this.audioPlayer.playTrack(audioTrack);
+            this.audioPlayer.setVolume(100);
+            LOGGER.info("Starting playing: {}", audioTrack.getInfo().title);
+        }
     }
 
     @Override
@@ -74,26 +79,32 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         {
             playNextTrack();
         }
+
+        if (this.audioPlayer.getPlayingTrack() != null)
+        {
+            this.lastTrackEndTime = Instant.now();
+        }
     }
 
     @Override
     public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception)
     {
         LOGGER.error("Track exception: " + exception.getMessage());
-
+        this.lastTrackEndTime = Instant.now();
     }
 
     @Override
     public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs)
     {
         LOGGER.info("Track stuck!");
-
+        this.lastTrackEndTime = Instant.now();
     }
 
     @Override
     public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs, StackTraceElement[] stackTrace)
     {
         LOGGER.info("Track stuck!");
+        this.lastTrackEndTime = Instant.now();
     }
 
     public long getGuildId()
@@ -124,5 +135,10 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     public AudioPlayer getInternalAudioPlayer()
     {
         return audioPlayer;
+    }
+
+    public Instant getLastTrackEndTime()
+    {
+        return lastTrackEndTime;
     }
 }

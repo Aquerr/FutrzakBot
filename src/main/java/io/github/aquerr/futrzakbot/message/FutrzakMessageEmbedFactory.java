@@ -34,4 +34,20 @@ public class FutrzakMessageEmbedFactory
         embedBuilder.addField(new MessageEmbed.Field("Title:", title, false));
         return embedBuilder.build();
     }
+
+    public static MessageEmbed createSongNotFoundMessage()
+    {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setColor(Color.RED);
+        embedBuilder.setTitle("Song not found. :(");
+        return embedBuilder.build();
+    }
+
+    public static MessageEmbed createSongLoadFailedMessage(String localizedMessage)
+    {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setColor(Color.RED);
+        embedBuilder.setTitle(localizedMessage);
+        return embedBuilder.build();
+    }
 }

@@ -12,7 +12,8 @@ public enum CommandsEnum
     DISPLAY("!futrzak futrzak"),
     PLAY("!futrzak play"),
     NEXT("!futrzak next"),
-    STOP("!futrzak stop");
+    STOP("!futrzak stop"),
+    VOLUME("!futrzak volume");
 
     private final String name;
 

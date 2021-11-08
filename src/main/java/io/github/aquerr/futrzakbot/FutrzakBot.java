@@ -1,9 +1,9 @@
 package io.github.aquerr.futrzakbot;
 
+import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.config.Configuration;
 import io.github.aquerr.futrzakbot.events.MessageListener;
 import io.github.aquerr.futrzakbot.events.ReadyListener;
-import io.github.aquerr.futrzakbot.games.FutrzakGame;
 import io.github.aquerr.futrzakbot.games.GameManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -30,6 +30,7 @@ public class FutrzakBot
 
     private JDA jda;
 
+    private FutrzakAudioPlayerManager futrzakAudioPlayerManager;
     private GameManager gameManager;
 
     private void start()
@@ -42,6 +43,7 @@ public class FutrzakBot
 
         try
         {
+            this.futrzakAudioPlayerManager = new FutrzakAudioPlayerManager(this);
             this.gameManager = new GameManager(this);
 
             this.jda = JDABuilder.createDefault(configuration.getBotToken())
@@ -68,6 +70,11 @@ public class FutrzakBot
     public GameManager getGameManager()
     {
         return gameManager;
+    }
+
+    public FutrzakAudioPlayerManager getFutrzakAudioPlayerManager()
+    {
+        return futrzakAudioPlayerManager;
     }
 
     public Path getBotDirectory()
