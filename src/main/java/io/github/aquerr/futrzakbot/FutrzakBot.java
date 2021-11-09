@@ -54,7 +54,7 @@ public class FutrzakBot
                     .addEventListeners(new ReadyListener())
                     .setAutoReconnect(true)
                     .enableCache(CacheFlag.VOICE_STATE)
-                    .setActivity(Activity.of(Activity.ActivityType.DEFAULT, "FutrzakiShow !futrzak https://github.com/Aquerr/FutrzakBot"))
+                    .setActivity(Activity.of(Activity.ActivityType.DEFAULT, "FutrzakiShow !f help https://github.com/Aquerr/FutrzakBot"))
                 .build();
 
             LOGGER.info("FutrzakBot Connected!");
