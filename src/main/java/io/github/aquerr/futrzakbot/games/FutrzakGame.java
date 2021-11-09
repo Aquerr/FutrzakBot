@@ -3,8 +3,8 @@ package io.github.aquerr.futrzakbot.games;
 import io.github.aquerr.futrzakbot.FutrzakBot;
 import io.github.aquerr.futrzakbot.model.Futrzak;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.User;
 import org.json.JSONObject;
 
 import java.awt.*;
@@ -91,9 +91,9 @@ public class FutrzakGame
         return Files.exists(Paths.get(futrzaksDirPath.resolve(String.valueOf(guildId)) + "/" + userId + ".json"));
     }
 
-    public MessageEmbed displayFutrzak(String guildId, User user)
+    public MessageEmbed displayFutrzak(long guildId, Member member)
     {
-        Path futrzakPath = Paths.get(futrzaksDirPath.resolve(guildId) + "/" + user.getId() + ".json");
+        Path futrzakPath = Paths.get(futrzaksDirPath.resolve(String.valueOf(guildId)) + "/" + member.getId() + ".json");
 
         try
         {
@@ -110,7 +110,7 @@ public class FutrzakGame
                 embedBuilder.setImage(jsonObject.get("ImagePath").toString());
 
             embedBuilder.setTitle(futrzak.getName());
-            embedBuilder.addField("Właściciel: ", user.getName(), false);
+            embedBuilder.addField("Właściciel: ", member.getEffectiveName(), false);
             embedBuilder.addField("Doświadczenie: ", String.valueOf(futrzak.getExp()), false);
             embedBuilder.addField("Samopoczucie: ", futrzak.getMood(), false);
             embedBuilder.setColor(Color.GREEN);

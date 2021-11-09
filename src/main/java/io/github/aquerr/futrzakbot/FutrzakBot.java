@@ -1,6 +1,7 @@
 package io.github.aquerr.futrzakbot;
 
 import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
+import io.github.aquerr.futrzakbot.command.CommandManager;
 import io.github.aquerr.futrzakbot.config.Configuration;
 import io.github.aquerr.futrzakbot.events.MessageListener;
 import io.github.aquerr.futrzakbot.events.ReadyListener;
@@ -32,6 +33,7 @@ public class FutrzakBot
 
     private FutrzakAudioPlayerManager futrzakAudioPlayerManager;
     private GameManager gameManager;
+    private CommandManager commandManager;
 
     private void start()
     {
@@ -45,6 +47,7 @@ public class FutrzakBot
         {
             this.futrzakAudioPlayerManager = new FutrzakAudioPlayerManager(this);
             this.gameManager = new GameManager(this);
+            this.commandManager = new CommandManager(this);
 
             this.jda = JDABuilder.createDefault(configuration.getBotToken())
                     .addEventListeners(new MessageListener(this))
@@ -80,5 +83,10 @@ public class FutrzakBot
     public Path getBotDirectory()
     {
         return this.botDirectory;
+    }
+
+    public CommandManager getCommandManager()
+    {
+        return this.commandManager;
     }
 }

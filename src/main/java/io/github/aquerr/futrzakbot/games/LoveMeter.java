@@ -45,7 +45,7 @@ public class LoveMeter
                     return new MessageBuilder("Między " + user.getAsMention() + " a " + message.getMentionedMembers().get(0).getAsMention() + " jest 100% miłości!!! :heart: To prawdziwa miłość na zabój!!").build();
             }
 
-            return new MessageBuilder("Coś mi nie pyłko w obliczeniach :persevere:").build();
+            return new MessageBuilder("Coś mi nie pykło w obliczeniach :persevere:").build();
         }
         else
         {
