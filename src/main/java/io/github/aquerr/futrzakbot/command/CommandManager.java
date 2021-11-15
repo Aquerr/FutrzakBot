@@ -49,8 +49,8 @@ public class CommandManager
                 .arguments(ArgumentType.REMINDED_STRINGS)
                 .build());
 
-        addCommand(Collections.singletonList("roulette"), CommandSpecImpl.builder()
-                .name("roulette")
+        addCommand(Collections.singletonList("ruletka"), CommandSpecImpl.builder()
+                .name("ruletka")
                 .description("Rosyjska ruletka")
                 .command(new RouletteCommand())
                 .build());
@@ -59,7 +59,6 @@ public class CommandManager
                 .name("debil")
                 .description("Debil?")
                 .command(new DebilCommand())
-                .arguments(ArgumentType.STRING)
                 .build());
 
         addCommand(Collections.singletonList("love"), CommandSpecImpl.builder()
