@@ -12,7 +12,9 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
@@ -82,5 +84,10 @@ public final class FutrzakAudioPlayerManager
                 this.guildAudioPlayers.remove(futrzakAudioPlayer.getGuildId());
             }
         }
+    }
+
+    public List<AudioTrack> getQueue(long guildId)
+    {
+        return this.guildAudioPlayers.get(guildId).getQueue();
     }
 }

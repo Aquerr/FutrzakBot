@@ -5,6 +5,7 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import io.github.aquerr.futrzakbot.message.FutrzakMessageEmbedFactory;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.ArrayDeque;
+import java.util.List;
 import java.util.Queue;
 
 public class FutrzakAudioPlayer extends AudioEventAdapter
@@ -120,16 +122,19 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     public void stopPlayer(MessageChannel textChannel)
     {
         this.audioPlayer.stopTrack();
+        textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlayerStoppedMessage()).queue();
     }
 
     public void resumePlayer(TextChannel textChannel)
     {
         this.audioPlayer.setPaused(false);
+        textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlayerResumedMessage()).queue();
     }
 
     public void setVolume(int volume, TextChannel textChannel)
     {
         this.audioPlayer.setVolume(volume);
+        textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlayerVolumeChangedMessage(volume)).queue();
     }
 
     public AudioPlayer getInternalAudioPlayer()
@@ -140,5 +145,10 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     public Instant getLastTrackEndTime()
     {
         return lastTrackEndTime;
+    }
+
+    public List<AudioTrack> getQueue()
+    {
+        return List.copyOf(this.tracksQueue);
     }
 }

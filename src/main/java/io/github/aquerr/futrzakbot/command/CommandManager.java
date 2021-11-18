@@ -100,6 +100,12 @@ public class CommandManager
                 .command(new SkipCommand(this.futrzakBot.getFutrzakAudioPlayerManager()))
                 .build());
 
+        addCommand(Collections.singletonList("queue"), CommandSpecImpl.builder()
+                .name("queue")
+                .description("Sprawdź kolejkę utworów w odtwarzaczu")
+                .command(new QueueCommand(this.futrzakBot.getFutrzakAudioPlayerManager()))
+                .build());
+
         addCommand(Collections.singletonList("fight"), CommandSpecImpl.builder()
                 .name("fight")
                 .description("Walcz z innym futrzakiem")

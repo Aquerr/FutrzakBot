@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 public class MessageListener extends ListenerAdapter
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageListener.class);
+    private static final String FUTRZAK_BOT_COMMAND_PREFIX = "!f";
 
     private final FutrzakBot futrzakBot;
 
@@ -30,7 +31,7 @@ public class MessageListener extends ListenerAdapter
         if (member == null)
             return;
 
-        if (event.getMessage().getContentDisplay().startsWith("!f"))
+        if (isMessageWithFutrzakPrefix(event.getMessage().getContentDisplay()))
         {
             this.futrzakBot.getCommandManager().processCommand(member, textChannel, event.getMessage());
             debugLogMessage(event);
@@ -48,5 +49,11 @@ public class MessageListener extends ListenerAdapter
         LOGGER.info("{}{} {}: {}\n", event.getGuild().getName(),
                 event.getTextChannel().getName(), event.getMember().getEffectiveName(),
                 event.getMessage().getContentDisplay());
+    }
+
+    private boolean isMessageWithFutrzakPrefix(String message)
+    {
+        String[] words = message.split(" ");
+        return words.length > 1 && words[0].equals(FUTRZAK_BOT_COMMAND_PREFIX);
     }
 }

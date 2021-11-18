@@ -5,10 +5,14 @@ import io.github.aquerr.futrzakbot.command.CommandManager;
 import io.github.aquerr.futrzakbot.config.Configuration;
 import io.github.aquerr.futrzakbot.events.MessageListener;
 import io.github.aquerr.futrzakbot.events.ReadyListener;
+import io.github.aquerr.futrzakbot.events.SlashCommandListener;
 import io.github.aquerr.futrzakbot.games.GameManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,14 +56,17 @@ public class FutrzakBot
             this.jda = JDABuilder.createDefault(configuration.getBotToken())
                     .addEventListeners(new MessageListener(this))
                     .addEventListeners(new ReadyListener())
+                    .addEventListeners(new SlashCommandListener(this.futrzakAudioPlayerManager))
                     .setAutoReconnect(true)
                     .enableCache(CacheFlag.VOICE_STATE)
                     .setActivity(Activity.of(Activity.ActivityType.DEFAULT, "FutrzakiShow !f help https://github.com/Aquerr/FutrzakBot"))
-                .build();
+                .build().awaitReady();
+
+            this.jda.getGuilds().forEach(this::registerPlayerGuildSlashCommands);
 
             LOGGER.info("FutrzakBot Connected!");
         }
-        catch (LoginException e)
+        catch (LoginException | InterruptedException e)
         {
             e.printStackTrace();
         }
@@ -88,5 +95,15 @@ public class FutrzakBot
     public CommandManager getCommandManager()
     {
         return this.commandManager;
+    }
+
+    private void registerPlayerGuildSlashCommands(Guild guild)
+    {
+        guild.updateCommands()
+                .addCommands(new CommandData("player", "Open player menu")
+                        .addOption(OptionType.STRING, "song", "Enter song name to play", false)
+                        .setDefaultEnabled(true))
+                .queue();
+
     }
 }
