@@ -106,6 +106,12 @@ public class CommandManager
                 .command(new QueueCommand(this.futrzakBot.getFutrzakAudioPlayerManager()))
                 .build());
 
+        addCommand(Collections.singletonList("info"), CommandSpecImpl.builder()
+                .name("info")
+                .description("Sprawdź obecnie grający utwór")
+                .command(new InfoCommand(this.futrzakBot.getFutrzakAudioPlayerManager()))
+                .build());
+
         addCommand(Collections.singletonList("fight"), CommandSpecImpl.builder()
                 .name("fight")
                 .description("Walcz z innym futrzakiem")
@@ -180,9 +186,6 @@ public class CommandManager
                 case STRING:
                 {
                     String parsedArgument = StringArgumentParser.parse(remindingArgs);
-                    if(parsedArgument == null)
-                        return null;
-
                     parsedArguments.add(parsedArgument);
                     break;
                 }
@@ -197,9 +200,6 @@ public class CommandManager
                 case NUMBER:
                 {
                     String parsedArgument = NumberArgumentParser.parse(remindingArgs);
-                    if(parsedArgument == null)
-                        return null;
-
                     parsedArguments.add(parsedArgument);
                     break;
                 }
