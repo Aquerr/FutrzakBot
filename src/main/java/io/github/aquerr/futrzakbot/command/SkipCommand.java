@@ -20,7 +20,7 @@ public class SkipCommand implements Command
     @Override
     public boolean execute(Member member, TextChannel textChannel, List<String> args)
     {
-        this.futrzakAudioPlayerManager.playNextTrack(textChannel.getGuild().getIdLong(), textChannel);
+        this.futrzakAudioPlayerManager.skipAndPlayNextTrack(textChannel.getGuild().getIdLong(), textChannel);
         return true;
     }
 

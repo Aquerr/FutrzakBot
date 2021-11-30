@@ -25,7 +25,7 @@ public class InfoCommand implements Command
         AudioTrack audioTrack = this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(textChannel.getGuild().getIdLong()).getPlayingTrack();
         if (audioTrack != null)
         {
-            textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createNowPlayingMessage(audioTrack.getInfo().author, audioTrack.getInfo().title)).queue();
+            textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createNowPlayingMessage(audioTrack)).queue();
         }
         else
         {

@@ -19,17 +19,17 @@ public class FutrzakMessageEmbedFactory
         embedBuilder.setColor(DEFAULT_COLOR);
         embedBuilder.setTitle("Utwór dodany do kolejki");
         embedBuilder.addField(new MessageEmbed.Field("Wykonawca:", artist, false));
-        embedBuilder.addField(new MessageEmbed.Field("Tytuł", title, false));
+        embedBuilder.addField(new MessageEmbed.Field("Tytuł:", title, false));
         return embedBuilder.build();
     }
 
-    public static MessageEmbed createNowPlayingMessage(String artist, String title)
+    public static MessageEmbed createNowPlayingMessage(AudioTrack audioTrack)
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
         embedBuilder.setTitle("Obecnie gra");
-        embedBuilder.addField(new MessageEmbed.Field("Wykonawca:", artist, false));
-        embedBuilder.addField(new MessageEmbed.Field("Tytuł:", title, false));
+        embedBuilder.addField(new MessageEmbed.Field("Wykonawca:", audioTrack.getInfo().author, false));
+        embedBuilder.addField(new MessageEmbed.Field("Tytuł:", audioTrack.getInfo().title, false));
         return embedBuilder.build();
     }
 
@@ -52,6 +52,7 @@ public class FutrzakMessageEmbedFactory
     public static MessageEmbed createQueueMessage(List<AudioTrack> queue)
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("Kolejka utworów");
         embedBuilder.setColor(DEFAULT_COLOR);
 
         for (int i = 0; i < queue.size(); i++)
@@ -84,6 +85,16 @@ public class FutrzakMessageEmbedFactory
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
         embedBuilder.setTitle("Głośność została zmieniona na " + volume + "!");
+        return embedBuilder.build();
+    }
+
+    public static MessageEmbed createSkipTrackMessage(AudioTrack audioTrack)
+    {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setColor(DEFAULT_COLOR);
+        embedBuilder.setTitle("Pomijam utwór");
+        embedBuilder.addField(new MessageEmbed.Field("Wykonawca:", audioTrack.getInfo().author, false));
+        embedBuilder.addField(new MessageEmbed.Field("Tytuł:", audioTrack.getInfo().title, false));
         return embedBuilder.build();
     }
 }

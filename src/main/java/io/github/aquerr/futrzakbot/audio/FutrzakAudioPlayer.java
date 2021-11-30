@@ -47,10 +47,9 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         AudioTrack audioTrack = this.tracksQueue.poll();
         if(audioTrack != null)
         {
-            this.audioPlayer.playTrack(audioTrack);
-            this.audioPlayer.setVolume(100);
             LOGGER.info("Starting playing: {}", audioTrack.getInfo().title);
         }
+        this.audioPlayer.playTrack(audioTrack);
     }
 
     @Override

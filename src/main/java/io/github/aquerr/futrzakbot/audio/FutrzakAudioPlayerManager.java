@@ -14,7 +14,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
@@ -41,12 +40,21 @@ public final class FutrzakAudioPlayerManager
         this.audioPlayerManager.loadItem("ytsearch: " + trackName, new FutrzakAudioLoadHandler(guildId, getOrCreateAudioPlayer(guildId), textChannel));
     }
 
-    public void playNextTrack(long guildId, TextChannel textChannel)
+    public void skipAndPlayNextTrack(long guildId, TextChannel textChannel)
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
+        AudioTrack audioTrack = futrzakAudioPlayer.getPlayingTrack();
+        if (audioTrack != null)
+        {
+            textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createSkipTrackMessage(audioTrack)).queue();
+        }
+
         futrzakAudioPlayer.playNextTrack();
-        AudioTrack track = futrzakAudioPlayer.getPlayingTrack();
-        textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createNowPlayingMessage(track.getInfo().author, track.getInfo().title)).complete();
+        audioTrack = futrzakAudioPlayer.getPlayingTrack();
+        if (audioTrack != null)
+        {
+            textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createNowPlayingMessage(audioTrack)).queue();
+        }
     }
 
     public void stop(long guildId, TextChannel textChannel)
