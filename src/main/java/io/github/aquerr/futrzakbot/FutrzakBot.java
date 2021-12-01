@@ -7,13 +7,17 @@ import io.github.aquerr.futrzakbot.events.MessageListener;
 import io.github.aquerr.futrzakbot.events.ReadyListener;
 import io.github.aquerr.futrzakbot.events.SlashCommandListener;
 import io.github.aquerr.futrzakbot.games.GameManager;
+import io.github.aquerr.futrzakbot.role.DiscordRoleGiver;
+import io.github.aquerr.futrzakbot.role.RoleMessageReactListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +42,8 @@ public class FutrzakBot
     private FutrzakAudioPlayerManager futrzakAudioPlayerManager;
     private GameManager gameManager;
     private CommandManager commandManager;
+    private Configuration configuration;
+    private DiscordRoleGiver discordRoleGiver;
 
     private void start()
     {
@@ -49,18 +55,23 @@ public class FutrzakBot
 
         try
         {
+            this.configuration = configuration;
             this.futrzakAudioPlayerManager = new FutrzakAudioPlayerManager(this);
             this.gameManager = new GameManager(this);
             this.commandManager = new CommandManager(this);
+            this.discordRoleGiver = new DiscordRoleGiver(this);
 
             this.jda = JDABuilder.createDefault(configuration.getBotToken())
                     .addEventListeners(new MessageListener(this))
                     .addEventListeners(new ReadyListener())
                     .addEventListeners(new SlashCommandListener(this.futrzakAudioPlayerManager))
+                    .addEventListeners(new RoleMessageReactListener(this, this.discordRoleGiver))
                     .setAutoReconnect(true)
                     .enableCache(CacheFlag.VOICE_STATE)
                     .setActivity(Activity.of(Activity.ActivityType.DEFAULT, "FutrzakiShow !f help https://github.com/Aquerr/FutrzakBot"))
                 .build().awaitReady();
+
+            this.discordRoleGiver.init();
 
             this.jda.getGuilds().forEach(this::registerPlayerGuildSlashCommands);
 
@@ -97,6 +108,11 @@ public class FutrzakBot
         return this.commandManager;
     }
 
+    public Configuration getConfiguration()
+    {
+        return configuration;
+    }
+
     private void registerPlayerGuildSlashCommands(Guild guild)
     {
         guild.updateCommands()
@@ -104,6 +120,5 @@ public class FutrzakBot
                         .addOption(OptionType.STRING, "song", "Enter song name to play", false)
                         .setDefaultEnabled(true))
                 .queue();
-
     }
 }

@@ -11,10 +11,16 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Configuration
 {
     private final String botToken;
+    private final long guildId;
+    private final long channelId;
+    private final long messageId;
+    private final Map<String, Long> emoteRoleIdsMap;
 
     public static Configuration loadConfiguration()
     {
@@ -25,11 +31,35 @@ public class Configuration
     public Configuration(Config config)
     {
         this.botToken = config.getString("bot-token");
+        this.emoteRoleIdsMap = (Map)config.getConfig("role-giver").getAnyRef("roles");
+        this.guildId = config.getConfig("role-giver").getLong("guild-id");
+        this.channelId = config.getConfig("role-giver").getLong("channel-id");
+        this.messageId = config.getConfig("role-giver").getLong("message-id");
     }
 
     public String getBotToken()
     {
         return botToken;
+    }
+
+    public Map<String, Long> getEmoteRoleIdsMap()
+    {
+        return emoteRoleIdsMap;
+    }
+
+    public long getChannelId()
+    {
+        return channelId;
+    }
+
+    public long getGuildId()
+    {
+        return guildId;
+    }
+
+    public long getMessageId()
+    {
+        return messageId;
     }
 
     private static Config loadConfigFile()
@@ -41,7 +71,7 @@ public class Configuration
             {
                 Files.createFile(configFilePath);
                 Config defaultClasspathConfig = loadDefaultClasspathConfig();
-                String configFileString = defaultClasspathConfig.root().render(ConfigRenderOptions.defaults().setJson(false));
+                String configFileString = defaultClasspathConfig.root().render(ConfigRenderOptions.defaults().setJson(false).setOriginComments(false).setFormatted(true));
                 Files.write(configFilePath, configFileString.getBytes(StandardCharsets.UTF_8));
             }
             catch (IOException e)
