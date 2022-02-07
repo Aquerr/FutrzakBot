@@ -35,7 +35,10 @@ public class PlayCommand implements Command
         else
         {
             AudioManager audioManager = guild.getAudioManager();
-            audioManager.setSendingHandler(new AudioPlayerSendHandler(this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(guild.getIdLong()).getInternalAudioPlayer()));
+            if (audioManager.getSendingHandler() == null)
+            {
+                audioManager.setSendingHandler(new AudioPlayerSendHandler(this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(guild.getIdLong()).getInternalAudioPlayer()));
+            }
             audioManager.openAudioConnection(voiceChannel);
             String songName = args.get(0);
             this.futrzakAudioPlayerManager.queue(guild.getIdLong(), textChannel, songName);

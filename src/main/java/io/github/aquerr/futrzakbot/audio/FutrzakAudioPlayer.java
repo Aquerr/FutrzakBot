@@ -1,12 +1,13 @@
 package io.github.aquerr.futrzakbot.audio;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import io.github.aquerr.futrzakbot.audio.handler.FutrzakAudioLoadHandler;
 import io.github.aquerr.futrzakbot.message.FutrzakMessageEmbedFactory;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +22,10 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     private static final Logger LOGGER = LoggerFactory.getLogger(FutrzakAudioPlayer.class);
 
     private final long guildId;
+    private final FutrzakAudioLoadHandler audioLoadHandler;
     private final AudioPlayer audioPlayer;
     private final Queue<AudioTrack> tracksQueue = new ArrayDeque<>();
+    private TextChannel lastBotUsageChannel;
     private Instant lastTrackEndTime = Instant.now();
 
     public FutrzakAudioPlayer(long guildId, AudioPlayer audioPlayer)
@@ -30,6 +33,17 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         this.guildId = guildId;
         this.audioPlayer = audioPlayer;
         this.audioPlayer.addListener(this);
+        this.audioLoadHandler = new FutrzakAudioLoadHandler(this);
+    }
+
+    public void setLastBotUsageChannel(TextChannel lastBotUsageChannel)
+    {
+        this.lastBotUsageChannel = lastBotUsageChannel;
+    }
+
+    public TextChannel getLastBotUsageChannel()
+    {
+        return lastBotUsageChannel;
     }
 
     public void queue(AudioTrack track)
@@ -38,16 +52,17 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
 
         if (this.audioPlayer.getPlayingTrack() == null)
         {
-            playNextTrack();
+            skip();
         }
     }
 
-    public void playNextTrack()
+    public void skip()
     {
         AudioTrack audioTrack = this.tracksQueue.poll();
         if(audioTrack != null)
         {
             LOGGER.info("Starting playing: {}", audioTrack.getInfo().title);
+            this.lastBotUsageChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createNowPlayingMessage(audioTrack)).queue();
         }
         this.audioPlayer.playTrack(audioTrack);
     }
@@ -78,7 +93,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         LOGGER.info("Track ended!");
         if (endReason.mayStartNext)
         {
-            playNextTrack();
+            skip();
         }
 
         if (this.audioPlayer.getPlayingTrack() != null)
@@ -118,22 +133,22 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         return this.audioPlayer.getPlayingTrack();
     }
 
-    public void stopPlayer(MessageChannel textChannel)
+    public void stop()
     {
         this.audioPlayer.stopTrack();
-        textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlayerStoppedMessage()).queue();
+        this.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlayerStoppedMessage()).queue();
     }
 
-    public void resumePlayer(TextChannel textChannel)
+    public void resume()
     {
         this.audioPlayer.setPaused(false);
-        textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlayerResumedMessage()).queue();
+        this.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlayerResumedMessage()).queue();
     }
 
-    public void setVolume(int volume, TextChannel textChannel)
+    public void setVolume(int volume)
     {
         this.audioPlayer.setVolume(volume);
-        textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlayerVolumeChangedMessage(volume)).queue();
+        this.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlayerVolumeChangedMessage(volume)).queue();
     }
 
     public AudioPlayer getInternalAudioPlayer()
@@ -149,5 +164,10 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     public List<AudioTrack> getQueue()
     {
         return List.copyOf(this.tracksQueue);
+    }
+
+    public AudioLoadResultHandler getAudioLoadHandler()
+    {
+        return this.audioLoadHandler;
     }
 }

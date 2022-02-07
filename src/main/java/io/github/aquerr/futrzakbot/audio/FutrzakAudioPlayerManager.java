@@ -5,7 +5,6 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import io.github.aquerr.futrzakbot.FutrzakBot;
-import io.github.aquerr.futrzakbot.audio.handler.FutrzakAudioLoadHandler;
 import io.github.aquerr.futrzakbot.message.FutrzakMessageEmbedFactory;
 import net.dv8tion.jda.api.entities.TextChannel;
 
@@ -37,19 +36,23 @@ public final class FutrzakAudioPlayerManager
 
     public void queue(long guildId, TextChannel textChannel, String trackName)
     {
-        this.audioPlayerManager.loadItem("ytsearch: " + trackName, new FutrzakAudioLoadHandler(guildId, getOrCreateAudioPlayer(guildId), textChannel));
+        FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
+        futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
+
+        this.audioPlayerManager.loadItem(getYoutTubeAudioIdentifierForTrack(trackName), futrzakAudioPlayer.getAudioLoadHandler());
     }
 
     public void skipAndPlayNextTrack(long guildId, TextChannel textChannel)
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
+        futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
         AudioTrack audioTrack = futrzakAudioPlayer.getPlayingTrack();
         if (audioTrack != null)
         {
             textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createSkipTrackMessage(audioTrack)).queue();
         }
 
-        futrzakAudioPlayer.playNextTrack();
+        futrzakAudioPlayer.skip();
         audioTrack = futrzakAudioPlayer.getPlayingTrack();
         if (audioTrack != null)
         {
@@ -59,17 +62,23 @@ public final class FutrzakAudioPlayerManager
 
     public void stop(long guildId, TextChannel textChannel)
     {
-        getOrCreateAudioPlayer(guildId).stopPlayer(textChannel);
+        FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
+        futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
+        futrzakAudioPlayer.stop();
     }
 
     public void resume(long guildId, TextChannel textChannel)
     {
-        getOrCreateAudioPlayer(guildId).resumePlayer(textChannel);
+        FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
+        futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
+        futrzakAudioPlayer.resume();
     }
 
     public void setVolume(long guildId, TextChannel textChannel, int volume)
     {
-        getOrCreateAudioPlayer(guildId).setVolume(volume, textChannel);
+        FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
+        futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
+        futrzakAudioPlayer.setVolume(volume);
     }
 
     public FutrzakAudioPlayer getOrCreateAudioPlayer(long guildId)
@@ -97,5 +106,10 @@ public final class FutrzakAudioPlayerManager
     public List<AudioTrack> getQueue(long guildId)
     {
         return this.guildAudioPlayers.get(guildId).getQueue();
+    }
+
+    private String getYoutTubeAudioIdentifierForTrack(String trackName)
+    {
+        return "ytsearch: " + trackName;
     }
 }

@@ -59,13 +59,14 @@ public class CommandManager
                 .name("debil")
                 .description("Debil?")
                 .command(new DebilCommand())
+                .arguments(ArgumentType.REMINDED_STRINGS)
                 .build());
 
         addCommand(Collections.singletonList("love"), CommandSpecImpl.builder()
                 .name("love")
                 .description("Licznik miłości")
                 .command(new LoveCommand())
-                .arguments(ArgumentType.STRING)
+                .arguments(ArgumentType.REMINDED_STRINGS)
                 .build());
 
         addCommand(Collections.singletonList("futrzak"), CommandSpecImpl.builder()
@@ -85,6 +86,12 @@ public class CommandManager
                 .name("stop")
                 .description("Zatrzymaj odtwarzacz muzyki")
                 .command(new StopCommand(this.futrzakBot.getFutrzakAudioPlayerManager()))
+                .build());
+
+        addCommand(Collections.singletonList("resume"), CommandSpecImpl.builder()
+                .name("resume")
+                .description("Wznów odtwarzacz")
+                .command(new ResumeCommand(this.futrzakBot.getFutrzakAudioPlayerManager()))
                 .build());
 
         addCommand(Collections.singletonList("volume"), CommandSpecImpl.builder()

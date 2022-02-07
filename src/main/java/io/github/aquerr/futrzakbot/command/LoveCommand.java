@@ -15,7 +15,7 @@ public class LoveCommand implements Command
     @Override
     public boolean execute(Member member, TextChannel channel, List<String> args)
     {
-        Message loveMessage = LoveMeter.checkLove(new MessageBuilder().append(args.get(0)).build());
+        Message loveMessage = LoveMeter.checkLove(new MessageBuilder(String.join(" ", args)).build());
         channel.sendMessage(loveMessage).queue();
         return true;
     }
