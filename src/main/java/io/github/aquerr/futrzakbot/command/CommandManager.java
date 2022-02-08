@@ -226,7 +226,7 @@ public class CommandManager
         //Create a new class "parser" for commandManager that will take care of arguments.
         //Arguments can be different for each command. E.g. not every command needs to take arguments inside " "
 
-        String text = message.getContentDisplay().substring(3); // Remove "!f "
+        String text = message.getContentRaw().substring(3); // Remove "!f "
         String commandAlias = text.split(" ")[0]; // Take command alias
         String arguments = text.substring(commandAlias.length()).trim(); // Rest are arguments
 

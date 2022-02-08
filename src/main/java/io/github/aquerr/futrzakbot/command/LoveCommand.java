@@ -2,7 +2,6 @@ package io.github.aquerr.futrzakbot.command;
 
 import io.github.aquerr.futrzakbot.command.annotations.BotCommand;
 import io.github.aquerr.futrzakbot.games.LoveMeter;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -15,7 +14,7 @@ public class LoveCommand implements Command
     @Override
     public boolean execute(Member member, TextChannel channel, List<String> args)
     {
-        Message loveMessage = LoveMeter.checkLove(new MessageBuilder(String.join(" ", args)).build());
+        Message loveMessage = LoveMeter.checkLove(member, args.get(0));
         channel.sendMessage(loveMessage).queue();
         return true;
     }

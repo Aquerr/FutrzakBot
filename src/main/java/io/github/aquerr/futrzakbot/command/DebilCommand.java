@@ -13,7 +13,7 @@ public class DebilCommand implements Command
     @Override
     public boolean execute(Member member, TextChannel channel, List<String> args)
     {
-        channel.sendMessage("To Ty ").append(member.getAsMention()).append(" :v").complete();
+        channel.sendMessage("To Ty ").append(member.getAsMention()).append(" :clown:").complete();
         return true;
     }
 
