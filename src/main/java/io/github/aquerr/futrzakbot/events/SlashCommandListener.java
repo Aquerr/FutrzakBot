@@ -54,7 +54,7 @@ public class SlashCommandListener extends ListenerAdapter
     public void onButtonClick(ButtonClickEvent event) {
         if (event.getComponentId().equals("queue")) {
             List<AudioTrack> queue = this.futrzakAudioPlayerManager.getQueue(event.getGuild().getIdLong());
-            event.getTextChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createQueueMessage(queue)).queue();
+            event.replyEmbeds(FutrzakMessageEmbedFactory.createQueueMessage(queue)).queue();
         } else if (event.getComponentId().equals("next")) {
             this.futrzakAudioPlayerManager.skipAndPlayNextTrack(event.getGuild().getIdLong(), event.getTextChannel());
             event.reply("next track").queue();

@@ -265,15 +265,15 @@ public class CommandManager
         }
 
         //Log
-        logCommandUsage(commandAlias, member, channel, message);
+        logCommandUsage(member, channel, message);
 
         //Execute
         executeCommand(commandAlias, member, channel, argsList);
     }
 
-    private void logCommandUsage(String commandAlias, Member member, TextChannel channel, Message message)
+    private void logCommandUsage(Member member, TextChannel channel, Message message)
     {
-        LOGGER.info("{}{} {}: {}\n", channel.getGuild().getName(),
+        LOGGER.info("{}{} {}: {}", channel.getGuild().getName(),
                 channel.getName(), member.getEffectiveName(),
                 message.getContentDisplay());
     }

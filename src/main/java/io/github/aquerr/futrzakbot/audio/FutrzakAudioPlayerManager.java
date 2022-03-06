@@ -6,6 +6,8 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import io.github.aquerr.futrzakbot.FutrzakBot;
 import io.github.aquerr.futrzakbot.message.FutrzakMessageEmbedFactory;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.time.Instant;
@@ -106,6 +108,13 @@ public final class FutrzakAudioPlayerManager
     public List<AudioTrack> getQueue(long guildId)
     {
         return this.guildAudioPlayers.get(guildId).getQueue();
+    }
+
+    public void registerAudioPlayersForGuilds(List<Guild> guilds)
+    {
+        guilds.stream()
+                .map(ISnowflake::getIdLong)
+                .forEach(this::getOrCreateAudioPlayer);
     }
 
     private String getYoutTubeAudioIdentifierForTrack(String trackName)

@@ -1,7 +1,6 @@
 package io.github.aquerr.futrzakbot.events;
 
 import io.github.aquerr.futrzakbot.FutrzakBot;
-import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -34,7 +33,6 @@ public class MessageListener extends ListenerAdapter
         if (isMessageWithFutrzakPrefix(event.getMessage().getContentDisplay()))
         {
             this.futrzakBot.getCommandManager().processCommand(member, textChannel, event.getMessage());
-            debugLogMessage(event);
         }
 
         if(event.getMessage().getContentDisplay().contains("Kocham") || event.getMessage().getContentDisplay().contains("kocham") || event.getMessage().getContentDisplay().contains("lofki")
@@ -42,13 +40,6 @@ public class MessageListener extends ListenerAdapter
         {
             event.getMessage().addReaction("❤").queue();
         }
-    }
-
-    private void debugLogMessage(MessageReceivedEvent event)
-    {
-        LOGGER.info("{}{} {}: {}\n", event.getGuild().getName(),
-                event.getTextChannel().getName(), event.getMember().getEffectiveName(),
-                event.getMessage().getContentDisplay());
     }
 
     private boolean isMessageWithFutrzakPrefix(String message)

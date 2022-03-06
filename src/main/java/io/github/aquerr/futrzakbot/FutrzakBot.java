@@ -11,13 +11,11 @@ import io.github.aquerr.futrzakbot.role.DiscordRoleGiver;
 import io.github.aquerr.futrzakbot.role.RoleMessageReactListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import net.dv8tion.jda.internal.utils.PermissionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,8 +70,9 @@ public class FutrzakBot
                 .build().awaitReady();
 
             this.discordRoleGiver.init();
+            this.futrzakAudioPlayerManager.registerAudioPlayersForGuilds(this.jda.getGuilds());
 
-            this.jda.getGuilds().forEach(this::registerPlayerGuildSlashCommands);
+            this.jda.getGuilds().forEach(this::tryToRegisterPlayerGuildSlashCommands);
 
             LOGGER.info("FutrzakBot Connected!");
         }
@@ -113,12 +112,19 @@ public class FutrzakBot
         return configuration;
     }
 
-    private void registerPlayerGuildSlashCommands(Guild guild)
+    private void tryToRegisterPlayerGuildSlashCommands(Guild guild)
     {
-        guild.updateCommands()
-                .addCommands(new CommandData("player", "Open player menu")
-                        .addOption(OptionType.STRING, "song", "Enter song name to play", false)
-                        .setDefaultEnabled(true))
-                .queue();
+        try
+        {
+            guild.updateCommands()
+                    .addCommands(new CommandData("player", "Open player menu")
+                            .addOption(OptionType.STRING, "song", "Enter song name to play", false)
+                            .setDefaultEnabled(true))
+                    .complete();
+        }
+        catch (Exception exception)
+        {
+            LOGGER.warn("Slash commands could not be registered for guild '{}'. Reason: {}", guild.getName(), exception.getMessage());
+        }
     }
 }
