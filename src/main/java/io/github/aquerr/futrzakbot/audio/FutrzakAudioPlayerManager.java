@@ -22,6 +22,8 @@ import java.util.concurrent.TimeUnit;
 
 public final class FutrzakAudioPlayerManager
 {
+    private static final String PROTOCOL_REGEX = "^(http://)|(https://).*$";
+
     private final FutrzakBot futrzakBot;
     private final AudioPlayerManager audioPlayerManager;
     private final Map<Long, FutrzakAudioPlayer> guildAudioPlayers = new ConcurrentHashMap<>();
@@ -119,6 +121,10 @@ public final class FutrzakAudioPlayerManager
 
     private String getYoutTubeAudioIdentifierForTrack(String trackName)
     {
+        if (trackName.matches(PROTOCOL_REGEX))
+        {
+            return trackName;
+        }
         return "ytsearch: " + trackName;
     }
 }
