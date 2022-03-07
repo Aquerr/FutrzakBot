@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 
@@ -84,7 +85,6 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     public void onTrackStart(AudioPlayer player, AudioTrack track)
     {
         LOGGER.info("Track started!");
-
     }
 
     @Override
@@ -105,21 +105,24 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     @Override
     public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception)
     {
-        LOGGER.error("Track exception: " + exception.getMessage());
+        LOGGER.error("Track exception: ", exception);
+        this.lastBotUsageChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongErrorMessage(track, exception)).queue();
         this.lastTrackEndTime = Instant.now();
     }
 
     @Override
     public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs)
     {
-        LOGGER.info("Track stuck!");
+        LOGGER.warn("Track stuck: {}", track.getInfo().title);
+        this.lastBotUsageChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongErrorMessage(track)).queue();
         this.lastTrackEndTime = Instant.now();
     }
 
     @Override
     public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs, StackTraceElement[] stackTrace)
     {
-        LOGGER.info("Track stuck!");
+        LOGGER.warn("Track stuck: {}", Arrays.asList(stackTrace));
+        this.lastBotUsageChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongErrorMessage(track)).queue();
         this.lastTrackEndTime = Instant.now();
     }
 

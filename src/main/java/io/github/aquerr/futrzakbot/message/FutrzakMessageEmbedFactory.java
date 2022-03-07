@@ -1,5 +1,6 @@
 package io.github.aquerr.futrzakbot.message;
 
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -95,6 +96,24 @@ public class FutrzakMessageEmbedFactory
         embedBuilder.setTitle("Pomijam utwór");
         embedBuilder.addField(new MessageEmbed.Field("Wykonawca:", audioTrack.getInfo().author, false));
         embedBuilder.addField(new MessageEmbed.Field("Tytuł:", audioTrack.getInfo().title, false));
+        return embedBuilder.build();
+    }
+
+    public static MessageEmbed createSongErrorMessage(AudioTrack track)
+    {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setColor(ERROR_COLOR);
+        embedBuilder.setTitle("Wystąpił błąd!");
+        embedBuilder.addField(track.getInfo().author + " " + track.getInfo().title, null, false);
+        return embedBuilder.build();
+    }
+
+    public static MessageEmbed createSongErrorMessage(AudioTrack track, FriendlyException exception)
+    {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setColor(ERROR_COLOR);
+        embedBuilder.setTitle("Wystąpił błąd!");
+        embedBuilder.setDescription(exception.getLocalizedMessage());
         return embedBuilder.build();
     }
 }

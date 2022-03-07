@@ -5,12 +5,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MessageListener extends ListenerAdapter
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MessageListener.class);
     private static final String FUTRZAK_BOT_COMMAND_PREFIX = "!f";
 
     private final FutrzakBot futrzakBot;
