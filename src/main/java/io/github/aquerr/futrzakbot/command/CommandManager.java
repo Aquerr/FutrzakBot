@@ -246,7 +246,7 @@ public class CommandManager
         {
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setColor(Color.RED);
-            embedBuilder.addField(":warning: Poprawne użycie komendy:", optionalCommandSpec.get().getCommand().getUsage(),false);
+            embedBuilder.addField(":warning: Poprawne użycie komendy: ", optionalCommandSpec.get().getCommand().getUsage(),false);
             channel.sendMessageEmbeds(embedBuilder.build()).queue();
             LOGGER.info("Error during parsing arguments for command: " + optionalCommandSpec.get().getName());
             LOGGER.info("Used arguments: " + arguments);
@@ -259,7 +259,7 @@ public class CommandManager
         {
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setColor(Color.RED);
-            embedBuilder.addField(":warning: Poprawne użycie komendy:", optionalCommandSpec.get().getCommand().getUsage(),false);
+            embedBuilder.addField(":warning: Poprawne użycie komendy: ", optionalCommandSpec.get().getCommand().getUsage(),false);
             channel.sendMessageEmbeds(embedBuilder.build()).queue();
             return;
         }
@@ -273,7 +273,7 @@ public class CommandManager
 
     private void logCommandUsage(Member member, TextChannel channel, Message message)
     {
-        LOGGER.info("{}{} {}: {}", channel.getGuild().getName(),
+        LOGGER.info("Guild: {}, Channel: {}, Member: {}, Message: {}", channel.getGuild().getName(),
                 channel.getName(), member.getEffectiveName(),
                 message.getContentDisplay());
     }

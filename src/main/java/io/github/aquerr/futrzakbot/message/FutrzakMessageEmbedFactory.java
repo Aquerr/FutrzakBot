@@ -104,7 +104,7 @@ public class FutrzakMessageEmbedFactory
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(ERROR_COLOR);
         embedBuilder.setTitle("Wystąpił błąd!");
-        embedBuilder.addField(track.getInfo().author + " " + track.getInfo().title, null, false);
+        embedBuilder.addField("Utwór: ", track.getInfo().author + " " + track.getInfo().title, false);
         return embedBuilder.build();
     }
 
