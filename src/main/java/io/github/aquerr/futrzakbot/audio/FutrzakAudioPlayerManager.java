@@ -101,8 +101,6 @@ public final class FutrzakAudioPlayerManager
             {
                 // Kick bot
                 this.futrzakBot.getJda().getGuildById(futrzakAudioPlayerEntry.getKey()).getAudioManager().closeAudioConnection();
-                // Delete player
-                this.guildAudioPlayers.remove(futrzakAudioPlayer.getGuildId());
             }
         }
     }
