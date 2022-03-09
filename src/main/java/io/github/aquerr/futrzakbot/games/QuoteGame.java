@@ -1,70 +1,73 @@
 package io.github.aquerr.futrzakbot.games;
 
-import io.github.aquerr.futrzakbot.FutrzakBot;
 import net.dv8tion.jda.api.MessageBuilder;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class QuoteGame
 {
+    private static final String QUOTES_FILE_NAME = "quotes.txt";
     private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
+    private static final QuoteGame INSTANCE = new QuoteGame();
 
-    private final FutrzakBot futrzakBot;
+    private QuoteGame() {}
 
-    public QuoteGame(FutrzakBot futrzakBot)
+    public static QuoteGame getInstance()
     {
-        this.futrzakBot = futrzakBot;
+        return INSTANCE;
     }
 
     public void printQuote(TextChannel textChannel)
     {
+        textChannel.sendMessage(getRandomQuote()).queue();
+    }
 
-        int max = 10;
-        int min = 1;
-        int i = RANDOM.nextInt(max - min + 1) + min;
+    private List<String> getAllQuotesFromFile() throws IOException
+    {
+        createQuotesFileIfNotExist();
+        return Files.readAllLines(Paths.get(QUOTES_FILE_NAME),StandardCharsets.UTF_8);
+    }
 
-        Message message = null;
-
-        switch (i)
+    private void createQuotesFileIfNotExist() throws IOException
+    {
+        File quotes = new File(QUOTES_FILE_NAME);
+        if (!quotes.exists())
         {
-            case 1:
-                List<Member> members = textChannel.getGuild().getMembers();
-                int userIndex = RANDOM.nextInt(members.size() + 1);
-                message = new MessageBuilder().append(members.get(userIndex).getAsMention()).append(" to człowiek legenda! Mówię wam!").build();
-                break;
-            case 2:
-                message = new MessageBuilder().append("Za IMPERATORA!").build();
-                break;
-            case 3:
-                message = new MessageBuilder().append("Siemanko i uszanowako z tej strony Frik... W sumie lepiej nie wywoływać duchów.").build();
-                break;
-            case 4:
-                message = new MessageBuilder().append("To ja, Futrzak!").build();
-                break;
-            case 5:
-                message = new MessageBuilder().append("CO MNIE TYKASZ GŁUPCZE?!?!").build();
-                break;
-            case 6:
-                message = new MessageBuilder().append("Jak terrorysta rąbie drzewo? Z zamachem. ( ͡° ͜ʖ ͡°)").build();
-                break;
-            case 7:
-                message = new MessageBuilder().append("Chwalmy śłońce! \\[--]/").build();
-                break;
-            case 8:
-                message = new MessageBuilder().append("Szybko! Zabij okno!").build();
-                break;
-            case 9:
-                message = new MessageBuilder().append("Co tam słychać ").append("?").build();
-                break;
-            case 10:
-                message = new MessageBuilder().append("Zjadłbym jakąś babeczkę!").build();
-                break;
+            quotes.createNewFile();
+        }
+    }
+
+    private String getRandomQuote()
+    {
+        List<String> quotes = Collections.emptyList();
+
+        try
+        {
+            quotes = getAllQuotesFromFile();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        if (quotes.isEmpty())
+        {
+            return "Brak cytatów!";
         }
 
-        textChannel.sendMessage(message).queue();
+        int randQuote = RANDOM.nextInt(quotes.size());
+        return quotes.get(randQuote);
     }
 }
