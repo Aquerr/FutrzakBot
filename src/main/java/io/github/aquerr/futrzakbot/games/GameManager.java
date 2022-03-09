@@ -11,7 +11,7 @@ public class GameManager
     public GameManager(FutrzakBot futrzakBot)
     {
         this.futrzakBot = futrzakBot;
-        this.quoteGame = new QuoteGame(futrzakBot);
+        this.quoteGame = QuoteGame.getInstance();
         this.futrzakGame = new FutrzakGame(futrzakBot);
         this.futrzakGame.setup();
     }

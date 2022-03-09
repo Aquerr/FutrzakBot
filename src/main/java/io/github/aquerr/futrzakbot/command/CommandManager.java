@@ -6,6 +6,7 @@ import io.github.aquerr.futrzakbot.command.arguments.ArgumentType;
 import io.github.aquerr.futrzakbot.command.parsers.NumberArgumentParser;
 import io.github.aquerr.futrzakbot.command.parsers.QuotationsArgumentParser;
 import io.github.aquerr.futrzakbot.command.parsers.StringArgumentParser;
+import io.github.aquerr.futrzakbot.games.QuoteGame;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -124,6 +125,12 @@ public class CommandManager
                 .description("Walcz z innym futrzakiem")
                 .command(new FightCommand())
                 .arguments(ArgumentType.REMINDED_STRINGS)
+                .build());
+
+        addCommand(Collections.singletonList("quote"), CommandSpecImpl.builder()
+                .name("quote")
+                .description("Wylosuj cytat")
+                .command(new QuoteCommand(QuoteGame.getInstance()))
                 .build());
     }
 
