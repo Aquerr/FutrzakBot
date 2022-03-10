@@ -2,7 +2,9 @@ package io.github.aquerr.futrzakbot.command;
 
 import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.audio.handler.AudioPlayerSendHandler;
-import io.github.aquerr.futrzakbot.command.annotations.BotCommand;
+import io.github.aquerr.futrzakbot.command.parameters.Parameter;
+import io.github.aquerr.futrzakbot.command.parameters.RemainingStringsParameter;
+import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
@@ -10,11 +12,13 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
 
+import java.util.Collections;
 import java.util.List;
 
-@BotCommand(argsCount = 1)
 public class PlayCommand implements Command
 {
+    private static final String SONG_PARAM_KEY = "song";
+
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
 
     public PlayCommand(FutrzakAudioPlayerManager futrzakAudioPlayerManager)
@@ -23,8 +27,12 @@ public class PlayCommand implements Command
     }
 
     @Override
-    public boolean execute(Member member, TextChannel textChannel, List<String> args)
+    public boolean execute(CommandContext context)
     {
+        TextChannel textChannel = context.getTextChannel();
+        Member member = context.getMember();
+
+
         Guild guild = textChannel.getGuild();
         GuildVoiceState guildVoiceState = member.getVoiceState();
         VoiceChannel voiceChannel = guildVoiceState.getChannel();
@@ -40,21 +48,39 @@ public class PlayCommand implements Command
                 audioManager.setSendingHandler(new AudioPlayerSendHandler(this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(guild.getIdLong()).getInternalAudioPlayer()));
             }
             audioManager.openAudioConnection(voiceChannel);
-            String songName = args.get(0);
+            String songName = context.require(SONG_PARAM_KEY);
             this.futrzakAudioPlayerManager.queue(guild.getIdLong(), textChannel, songName);
         }
         return true;
     }
 
     @Override
-    public String getUsage()
+    public List<String> getAliases()
     {
-        return "!f play <utwór>";
+        return Collections.singletonList("play");
     }
 
     @Override
-    public String getHelpName()
+    public String getUsage()
+    {
+        return CommandManager.COMMAND_PREFIX + " play <utwór>";
+    }
+
+    @Override
+    public String getName()
     {
         return ":microphone2: Dodaj utwór do kolejki odtwarzacza: ";
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return "Dodaj podany utwór do kolejki odtwarzacza";
+    }
+
+    @Override
+    public List<Parameter<?>> getParameters()
+    {
+        return Collections.singletonList(RemainingStringsParameter.builder().key(SONG_PARAM_KEY).build());
     }
 }

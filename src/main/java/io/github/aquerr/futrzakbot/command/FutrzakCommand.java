@@ -1,15 +1,14 @@
 package io.github.aquerr.futrzakbot.command;
 
-import io.github.aquerr.futrzakbot.command.annotations.BotCommand;
+import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.games.FutrzakGame;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.User;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
-@BotCommand
 public class FutrzakCommand implements Command
 {
     private final FutrzakGame futrzakGame;
@@ -20,8 +19,10 @@ public class FutrzakCommand implements Command
     }
 
     @Override
-    public boolean execute(Member member, TextChannel channel, List<String> args)
+    public boolean execute(CommandContext context)
     {
+        TextChannel channel = context.getTextChannel();
+        Member member = context.getMember();
         long guildId = channel.getGuild().getIdLong();
         String userId = member.getId();
         if(this.futrzakGame.checkIfFutrzakExists(guildId, userId))
@@ -45,14 +46,20 @@ public class FutrzakCommand implements Command
     }
 
     @Override
-    public String getUsage()
+    public List<String> getAliases()
     {
-        return "!f futrzak";
+        return Collections.singletonList("futrzak");
     }
 
     @Override
-    public String getHelpName()
+    public String getName()
     {
         return ":tiger: Sprawdź status swojego futrzaka: ";
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return "Sprawdź status swojego futrzaka";
     }
 }

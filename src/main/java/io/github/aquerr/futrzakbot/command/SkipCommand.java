@@ -1,13 +1,12 @@
 package io.github.aquerr.futrzakbot.command;
 
 import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
-import io.github.aquerr.futrzakbot.command.annotations.BotCommand;
-import net.dv8tion.jda.api.entities.Member;
+import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import java.util.Collections;
 import java.util.List;
 
-@BotCommand
 public class SkipCommand implements Command
 {
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
@@ -18,21 +17,28 @@ public class SkipCommand implements Command
     }
 
     @Override
-    public boolean execute(Member member, TextChannel textChannel, List<String> args)
+    public boolean execute(CommandContext context)
     {
+        TextChannel textChannel = context.getTextChannel();
         this.futrzakAudioPlayerManager.skipAndPlayNextTrack(textChannel.getGuild().getIdLong(), textChannel);
         return true;
     }
 
     @Override
-    public String getUsage()
+    public List<String> getAliases()
     {
-        return "!f skip";
+        return Collections.singletonList("skip");
     }
 
     @Override
-    public String getHelpName()
+    public String getName()
     {
         return ":track_next: Pomiń utwór: ";
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return "Pomiń utwór";
     }
 }

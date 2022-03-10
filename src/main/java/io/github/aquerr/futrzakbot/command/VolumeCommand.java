@@ -1,15 +1,17 @@
 package io.github.aquerr.futrzakbot.command;
 
 import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
-import io.github.aquerr.futrzakbot.command.annotations.BotCommand;
-import net.dv8tion.jda.api.entities.Member;
+import io.github.aquerr.futrzakbot.command.parameters.Parameter;
+import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import java.util.Collections;
 import java.util.List;
 
-@BotCommand(argsCount = 1)
 public class VolumeCommand implements Command
 {
+    private static final String VOLUME_PARAM_KEY = "volume";
+
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
 
     public VolumeCommand(FutrzakAudioPlayerManager futrzakAudioPlayerManager)
@@ -18,22 +20,41 @@ public class VolumeCommand implements Command
     }
 
     @Override
-    public boolean execute(Member member, TextChannel textChannel, List<String> args)
+    public boolean execute(CommandContext context)
     {
+        TextChannel textChannel = context.getTextChannel();
         final long guildId = textChannel.getGuild().getIdLong();
-        this.futrzakAudioPlayerManager.setVolume(guildId, textChannel, Integer.parseInt(args.get(0)));
+        this.futrzakAudioPlayerManager.setVolume(guildId, textChannel, context.require(VOLUME_PARAM_KEY));
         return true;
+    }
+
+    @Override
+    public List<String> getAliases()
+    {
+        return Collections.singletonList("volume");
     }
 
     @Override
     public String getUsage()
     {
-        return "!f volume <level>";
+        return CommandManager.COMMAND_PREFIX + " volume <level>";
     }
 
     @Override
-    public String getHelpName()
+    public String getName()
     {
         return ":loud_sound: Zmień głośność odtwarzacza: ";
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return "Zmień głośność odtwarzacza";
+    }
+
+    @Override
+    public List<Parameter<?>> getParameters()
+    {
+        return Collections.singletonList(Parameter.builder().key(VOLUME_PARAM_KEY).type(Integer.class).build());
     }
 }

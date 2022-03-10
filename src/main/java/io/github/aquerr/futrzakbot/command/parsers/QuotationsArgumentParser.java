@@ -1,21 +1,18 @@
 package io.github.aquerr.futrzakbot.command.parsers;
 
-public class QuotationsArgumentParser
+public class QuotationsArgumentParser implements ArgumentParser<String>
 {
-    public static String parse(StringBuilder input)
+    public String parse(String input)
     {
         if(input.charAt(0) != '\"')
             return null;
 
-        input.deleteCharAt(0);
+        input = input.substring(1);
 
         int closingQuoteIndex = input.indexOf("\"");
         if(closingQuoteIndex == -1)
             return null;
 
-        String parsedArgument = input.substring(0, closingQuoteIndex);
-        input.delete(0, closingQuoteIndex + 1);
-
-        return parsedArgument;
+        return input.substring(0, closingQuoteIndex);
     }
 }

@@ -66,7 +66,7 @@ public class FutrzakBot
                     .addEventListeners(new RoleMessageReactListener(this, this.discordRoleGiver))
                     .setAutoReconnect(true)
                     .enableCache(CacheFlag.VOICE_STATE)
-                    .setActivity(Activity.of(Activity.ActivityType.DEFAULT, "FutrzakiShow !f help https://github.com/Aquerr/FutrzakBot"))
+                    .setActivity(Activity.of(Activity.ActivityType.DEFAULT, "FutrzakiShow " + CommandManager.COMMAND_PREFIX + " help https://github.com/Aquerr/FutrzakBot"))
                 .build().awaitReady();
 
             this.discordRoleGiver.init();

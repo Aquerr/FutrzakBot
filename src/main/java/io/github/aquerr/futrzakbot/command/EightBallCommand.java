@@ -1,20 +1,25 @@
 package io.github.aquerr.futrzakbot.command;
 
-import io.github.aquerr.futrzakbot.command.annotations.BotCommand;
+import io.github.aquerr.futrzakbot.command.parameters.Parameter;
+import io.github.aquerr.futrzakbot.command.parameters.RemainingStringsParameter;
+import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-@BotCommand(argsCount = 1)
 public class EightBallCommand implements Command
 {
+    private static final String QUESTION_PARAM_KEY = "question";
+
     private static final Random RANDOM = new Random();
 
     @Override
-    public boolean execute(Member member, TextChannel channel, List<String> args)
+    public boolean execute(CommandContext context)
     {
+        TextChannel channel = context.getTextChannel();
         int max = 11;
         int min = 1;
         int i = RANDOM.nextInt(max - min + 1) + min;
@@ -61,14 +66,32 @@ public class EightBallCommand implements Command
     }
 
     @Override
-    public String getUsage()
+    public List<String> getAliases()
     {
-        return "!f 8ball <question>";
+        return Collections.singletonList("8ball");
     }
 
     @Override
-    public String getHelpName()
+    public String getUsage()
+    {
+        return CommandManager.COMMAND_PREFIX + " 8ball <question>";
+    }
+
+    @Override
+    public String getName()
     {
         return ":question: \"Wyrocznia\" odpowie na Twoje pytanie: ";
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return "Wyrocznia odpowie na Twoje pytanie";
+    }
+
+    @Override
+    public List<Parameter<?>> getParameters()
+    {
+        return Collections.singletonList(RemainingStringsParameter.builder().key(QUESTION_PARAM_KEY).build());
     }
 }

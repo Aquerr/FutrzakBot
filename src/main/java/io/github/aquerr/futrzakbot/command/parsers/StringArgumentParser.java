@@ -1,20 +1,12 @@
 package io.github.aquerr.futrzakbot.command.parsers;
 
-public class StringArgumentParser
+public class StringArgumentParser implements ArgumentParser<String>
 {
-    public static String parse(StringBuilder input)
+    public String parse(String input)
     {
-        int firstSpace = input.indexOf(" ");
-        String parsedArgument = null;
-        if(firstSpace == -1)
-        {
-            parsedArgument = input.substring(0);
-        }
-        else
-        {
-            parsedArgument = input.substring(0, firstSpace);
-        }
-        input.delete(0, parsedArgument.length());
-        return parsedArgument;
+        String trimmedString = input.trim();
+        if (input.contains(" "))
+            throw new IllegalArgumentException("Input should be one word but space has been detected. Input '" + input + "'");
+        return trimmedString;
     }
 }

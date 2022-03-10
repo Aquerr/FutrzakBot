@@ -1,15 +1,13 @@
 package io.github.aquerr.futrzakbot.command;
 
-import io.github.aquerr.futrzakbot.command.annotations.BotCommand;
+import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.awt.*;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-@BotCommand
 public class HelpCommand implements Command
 {
     private final CommandManager commandManager;
@@ -20,34 +18,40 @@ public class HelpCommand implements Command
     }
 
     @Override
-    public boolean execute(Member member, TextChannel channel, List<String> args)
+    public boolean execute(CommandContext commandContext)
     {
-        Map<List<String>, CommandSpec> commands = this.commandManager.getCommands();
+        Map<List<String>, Command> commands = this.commandManager.getCommands();
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setAuthor("Futrzak - Zabawny bot", "https://github.com/Aquerr/FutrzakBot");
         embedBuilder.setColor(Color.GREEN);
         embedBuilder.setDescription("Oto spis komend, dostępnych u futrzaka: ");
 
-        for (final CommandSpec commandSpec : commands.values())
+        for (final Command command : commands.values())
         {
-            embedBuilder.addField(commandSpec.getCommand().getHelpName(), commandSpec.getCommand().getUsage(), false);
+            embedBuilder.addField(command.getName(), command.getUsage(), false);
         }
 
-        channel.sendMessageEmbeds(embedBuilder.build()).queue();
+        commandContext.getTextChannel().sendMessageEmbeds(embedBuilder.build()).queue();
 
         return true;
     }
 
     @Override
-    public String getUsage()
+    public List<String> getAliases()
     {
-        return "!f help";
+        return Collections.singletonList("help");
     }
 
     @Override
-    public String getHelpName()
+    public String getName()
     {
         return "Komendy";
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return "Pokazuje wszystkie dostępne komendy";
     }
 }

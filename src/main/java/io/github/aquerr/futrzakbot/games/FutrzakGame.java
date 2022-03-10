@@ -115,20 +115,6 @@ public class FutrzakGame
             embedBuilder.addField("Samopoczucie: ", futrzak.getMood(), false);
             embedBuilder.setColor(Color.GREEN);
 
-            //embedBuilder.setAuthor("Futrzak został stworzyony przez Nerdiego", "https://github.com/Aquerr/FutrzakBot");
-//
-////            embedBuilder.setTitle("Lista komend");
-//            embedBuilder.setDescription("Oto spis komend, dostępnych u futrzaka: ");
-//
-//            embedBuilder.addField(new MessageEmbed.Field(":boom: Ruletka: ", "!futrzak ruletka", false));
-//            embedBuilder.addField(new MessageEmbed.Field(":thought_balloon: Cytat: ", "!futrzak cytat", false));
-//            embedBuilder.addField(new MessageEmbed.Field(":question: 8Ball: ", "!futrzak 8ball", false));
-//            embedBuilder.addField(new MessageEmbed.Field(":microphone2: Dołącz na kanał głosowy: ", "!futrzak join", false));
-//            //embedBuilder.addBlankField(false);
-//            embedBuilder.addField(new MessageEmbed.Field(":heart: Licznik miłości: ", "!futrzak love", false));
-//            embedBuilder.addField(new MessageEmbed.Field(":tiger: Stworz swojego futrzaka: ", "!futrzak stworz", false));
-//            embedBuilder.addField(new MessageEmbed.Field(":crossed_swords: Walcz z innym futrzakiem: ", "!futrzak walka", false));
-
             return embedBuilder.build();
         }
         catch (IOException e)
