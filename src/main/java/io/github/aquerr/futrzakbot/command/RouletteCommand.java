@@ -1,18 +1,20 @@
 package io.github.aquerr.futrzakbot.command;
 
-import io.github.aquerr.futrzakbot.command.annotations.BotCommand;
+import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.games.RouletteGame;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import java.util.Collections;
 import java.util.List;
 
-@BotCommand
 public class RouletteCommand implements Command
 {
     @Override
-    public boolean execute(Member member, TextChannel channel, List<String> args)
+    public boolean execute(CommandContext context)
     {
+        TextChannel channel = context.getTextChannel();
+        Member member = context.getMember();
         long guildId = channel.getGuild().getIdLong();
         if (!RouletteGame.isActive(guildId))
         {
@@ -40,14 +42,20 @@ public class RouletteCommand implements Command
     }
 
     @Override
-    public String getUsage()
+    public List<String> getAliases()
     {
-        return "!f ruletka";
+        return Collections.singletonList("ruletka");
     }
 
     @Override
-    public String getHelpName()
+    public String getName()
     {
         return ":boom: Rosyjska ruletka: ";
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return "Rosyjska ruletka";
     }
 }

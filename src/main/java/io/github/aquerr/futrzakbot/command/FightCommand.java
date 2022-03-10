@@ -1,30 +1,50 @@
 package io.github.aquerr.futrzakbot.command;
 
-import io.github.aquerr.futrzakbot.command.annotations.BotCommand;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
+import io.github.aquerr.futrzakbot.command.parameters.Parameter;
+import io.github.aquerr.futrzakbot.command.parameters.RemainingStringsParameter;
+import io.github.aquerr.futrzakbot.command.context.CommandContext;
 
+import java.util.Collections;
 import java.util.List;
 
-@BotCommand
 public class FightCommand implements Command
 {
+    private static final String ENEMY_PARAM_KEY = "enemy";
+
     @Override
-    public boolean execute(Member member, TextChannel textChannel, List<String> args)
+    public boolean execute(CommandContext context)
     {
-        textChannel.sendMessage("Ta funkcja nie została jeszcze w pełni dodana :/").complete();
+        context.getTextChannel().sendMessage("Ta funkcja nie została jeszcze w pełni dodana :/").complete();
         return true;
+    }
+
+    @Override
+    public List<String> getAliases()
+    {
+        return Collections.singletonList("fight");
     }
 
     @Override
     public String getUsage()
     {
-        return "!f fight <użytkownik>";
+        return CommandManager.COMMAND_PREFIX + " fight <użytkownik>";
     }
 
     @Override
-    public String getHelpName()
+    public String getName()
     {
         return ":crossed_swords: Walcz z futrzakiem innej osoby: ";
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return "Walcz z innym futrzakiem";
+    }
+
+    @Override
+    public List<Parameter<?>> getParameters()
+    {
+        return Collections.singletonList(RemainingStringsParameter.builder().key(ENEMY_PARAM_KEY).build());
     }
 }

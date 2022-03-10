@@ -1,31 +1,52 @@
 package io.github.aquerr.futrzakbot.command;
 
-import io.github.aquerr.futrzakbot.command.annotations.BotCommand;
+import io.github.aquerr.futrzakbot.command.parameters.Parameter;
+import io.github.aquerr.futrzakbot.command.parameters.RemainingStringsParameter;
+import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import java.util.Collections;
 import java.util.List;
 
-@BotCommand(argsCount = 1)
 public class DebilCommand implements Command
 {
+    @Override
+    public boolean execute(CommandContext context)
+    {
+        TextChannel channel = context.getTextChannel();
+        Member member = context.getMember();
+        channel.sendMessage("To Ty " + member.getAsMention() + " :clown:").complete();
+        return true;
+    }
 
     @Override
-    public boolean execute(Member member, TextChannel channel, List<String> args)
+    public List<String> getAliases()
     {
-        channel.sendMessage("To Ty ").append(member.getAsMention()).append(" :clown:").complete();
-        return true;
+        return Collections.singletonList("debil");
     }
 
     @Override
     public String getUsage()
     {
-        return "!f debil <user>";
+        return CommandManager.COMMAND_PREFIX + " debil <user>";
     }
 
     @Override
-    public String getHelpName()
+    public String getName()
     {
         return ":japanese_goblin: debil?";
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return "Debil?";
+    }
+
+    @Override
+    public List<Parameter<?>> getParameters()
+    {
+        return Collections.singletonList(RemainingStringsParameter.builder().build());
     }
 }

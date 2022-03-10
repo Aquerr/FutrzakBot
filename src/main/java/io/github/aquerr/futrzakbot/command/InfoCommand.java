@@ -2,14 +2,13 @@ package io.github.aquerr.futrzakbot.command;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
-import io.github.aquerr.futrzakbot.command.annotations.BotCommand;
+import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.message.FutrzakMessageEmbedFactory;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import java.util.Collections;
 import java.util.List;
 
-@BotCommand
 public class InfoCommand implements Command
 {
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
@@ -20,8 +19,9 @@ public class InfoCommand implements Command
     }
 
     @Override
-    public boolean execute(Member member, TextChannel textChannel, List<String> args)
+    public boolean execute(CommandContext context)
     {
+        TextChannel textChannel = context.getTextChannel();
         AudioTrack audioTrack = this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(textChannel.getGuild().getIdLong()).getPlayingTrack();
         if (audioTrack != null)
         {
@@ -35,14 +35,20 @@ public class InfoCommand implements Command
     }
 
     @Override
-    public String getUsage()
+    public List<String> getAliases()
     {
-        return "!f info";
+        return Collections.singletonList("info");
     }
 
     @Override
-    public String getHelpName()
+    public String getName()
     {
         return ":info: Sprawdź obecnie grający utwór";
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return "Sprawdź obecnie grający utwór";
     }
 }

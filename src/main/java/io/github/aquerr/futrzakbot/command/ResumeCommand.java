@@ -1,13 +1,12 @@
 package io.github.aquerr.futrzakbot.command;
 
 import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
-import io.github.aquerr.futrzakbot.command.annotations.BotCommand;
-import net.dv8tion.jda.api.entities.Member;
+import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import java.util.Collections;
 import java.util.List;
 
-@BotCommand
 public class ResumeCommand implements Command
 {
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
@@ -18,21 +17,28 @@ public class ResumeCommand implements Command
     }
 
     @Override
-    public boolean execute(Member member, TextChannel textChannel, List<String> args)
+    public boolean execute(CommandContext context)
     {
+        TextChannel textChannel = context.getTextChannel();
         this.futrzakAudioPlayerManager.resume(textChannel.getGuild().getIdLong(), textChannel);
         return true;
     }
 
     @Override
-    public String getUsage()
+    public List<String> getAliases()
     {
-        return "!f resume";
+        return Collections.singletonList("resume");
     }
 
     @Override
-    public String getHelpName()
+    public String getName()
     {
         return ":play_pause: Wznów odtwarzacz";
+    }
+
+    @Override
+    public String getDescription()
+    {
+        return "Wznów odtwarzacz";
     }
 }

@@ -1,6 +1,7 @@
 package io.github.aquerr.futrzakbot.events;
 
 import io.github.aquerr.futrzakbot.FutrzakBot;
+import io.github.aquerr.futrzakbot.command.CommandManager;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -8,8 +9,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class MessageListener extends ListenerAdapter
 {
-    private static final String FUTRZAK_BOT_COMMAND_PREFIX = "!f";
-
     private final FutrzakBot futrzakBot;
 
     public MessageListener(FutrzakBot futrzakBot)
@@ -42,6 +41,6 @@ public class MessageListener extends ListenerAdapter
     private boolean isMessageWithFutrzakPrefix(String message)
     {
         String[] words = message.split(" ");
-        return words.length > 1 && words[0].equals(FUTRZAK_BOT_COMMAND_PREFIX);
+        return words.length > 1 && words[0].equals(CommandManager.COMMAND_PREFIX);
     }
 }
