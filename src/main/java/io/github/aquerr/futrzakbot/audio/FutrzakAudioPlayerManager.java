@@ -57,11 +57,6 @@ public final class FutrzakAudioPlayerManager
         }
 
         futrzakAudioPlayer.skip();
-        audioTrack = futrzakAudioPlayer.getPlayingTrack();
-        if (audioTrack != null)
-        {
-            textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createNowPlayingMessage(audioTrack)).queue();
-        }
     }
 
     public void stop(long guildId, TextChannel textChannel)
