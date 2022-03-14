@@ -45,6 +45,7 @@ public class CommandManager
         addCommand(new ResumeCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
         addCommand(new VolumeCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
         addCommand(new SkipCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
+        addCommand(new ClearCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
         addCommand(new QueueCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
         addCommand(new InfoCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
         addCommand(new FightCommand());

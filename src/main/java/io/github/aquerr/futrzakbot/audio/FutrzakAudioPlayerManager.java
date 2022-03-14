@@ -59,6 +59,14 @@ public final class FutrzakAudioPlayerManager
         futrzakAudioPlayer.skip();
     }
 
+    public void clearQueue(long guildId, TextChannel textChannel)
+    {
+        FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
+        futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
+        textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createClearMessage()).queue();
+        futrzakAudioPlayer.clear();
+    }
+
     public void stop(long guildId, TextChannel textChannel)
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
