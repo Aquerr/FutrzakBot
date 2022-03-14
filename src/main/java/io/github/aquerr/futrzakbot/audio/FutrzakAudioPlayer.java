@@ -68,6 +68,12 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         this.audioPlayer.playTrack(audioTrack);
     }
 
+    public void clear()
+    {
+        this.tracksQueue.clear();
+        LOGGER.info("cleared the queue");
+    }
+
     @Override
     public void onPlayerPause(AudioPlayer player)
     {

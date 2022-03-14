@@ -127,6 +127,14 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
+    public static MessageEmbed createClearMessage()
+    {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setColor(DEFAULT_COLOR);
+        embedBuilder.setTitle("Wyczyszczono kolejkę!");
+        return embedBuilder.build();
+    }
+
     public static MessageEmbed createSongErrorMessage(AudioTrack track)
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
