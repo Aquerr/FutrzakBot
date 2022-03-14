@@ -1,7 +1,9 @@
 package io.github.aquerr.futrzakbot.message;
 
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -21,6 +23,24 @@ public class FutrzakMessageEmbedFactory
         embedBuilder.setTitle("Utwór dodany do kolejki");
         embedBuilder.addField(new MessageEmbed.Field("Wykonawca:", artist, false));
         embedBuilder.addField(new MessageEmbed.Field("Tytuł:", title, false));
+        return embedBuilder.build();
+    }
+
+    public static MessageEmbed createPlaylistAddedToQueueMessage(AudioPlaylist playlist)
+    {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setColor(DEFAULT_COLOR);
+        embedBuilder.setTitle("Playlista " + playlist.getName() + " dodana do kolejki");
+        int count = Math.min(playlist.getTracks().size(), 10);
+        for (int i = 0; i < count; i++)
+        {
+            AudioTrackInfo audioTrackInfo = playlist.getTracks().get(i).getInfo();
+            embedBuilder.appendDescription((i + 1) + ". " + audioTrackInfo.author + " - " + audioTrackInfo.title + " " + ((int)audioTrackInfo.length / 1000 / 60) + ":" + audioTrackInfo.length / 1000 % 60 + "\n");
+        }
+        if (playlist.getTracks().size() > 10)
+        {
+            embedBuilder.appendDescription("+ " + (playlist.getTracks().size() - count) + " innych");
+        }
         return embedBuilder.build();
     }
 
@@ -56,10 +76,18 @@ public class FutrzakMessageEmbedFactory
         embedBuilder.setTitle("Kolejka utworów");
         embedBuilder.setColor(DEFAULT_COLOR);
 
-        for (int i = 0; i < queue.size(); i++)
+        int maxTrackCount = 20;
+        int count = Math.min(queue.size(), maxTrackCount);
+
+        for (int i = 0; i < count; i++)
         {
-            AudioTrack audioTrack = queue.get(i);
-            embedBuilder.appendDescription((i + 1) + ". " + audioTrack.getInfo().author + " - " + audioTrack.getInfo().title + " " + ((int)audioTrack.getInfo().length / 1000 / 60) + ":" + audioTrack.getInfo().length / 1000 % 60 + "\n");
+            AudioTrackInfo audioTrackInfo = queue.get(i).getInfo();
+            embedBuilder.appendDescription((i + 1) + ". " + audioTrackInfo.author + " - " + audioTrackInfo.title + " " + ((int)audioTrackInfo.length / 1000 / 60) + ":" + audioTrackInfo.length / 1000 % 60 + "\n");
+        }
+
+        if (queue.size() > maxTrackCount)
+        {
+            embedBuilder.appendDescription("+ " + (queue.size() - count) + " innych");
         }
 
         return embedBuilder.build();

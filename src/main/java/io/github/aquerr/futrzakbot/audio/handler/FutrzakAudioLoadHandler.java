@@ -26,9 +26,20 @@ public class FutrzakAudioLoadHandler implements AudioLoadResultHandler
     @Override
     public void playlistLoaded(AudioPlaylist playlist)
     {
-        AudioTrack track = playlist.getTracks().get(0);
-        this.futrzakAudioPlayer.queue(track);
-        this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongAddedToQueueMessage(track.getInfo().author, track.getInfo().title)).queue();
+        if (playlist.isSearchResult())
+        {
+            AudioTrack track = playlist.getTracks().get(0);
+            this.futrzakAudioPlayer.queue(track);
+            this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongAddedToQueueMessage(track.getInfo().author, track.getInfo().title)).queue();
+        }
+        else
+        {
+            for (AudioTrack track : playlist.getTracks())
+            {
+                this.futrzakAudioPlayer.queue(track);
+            }
+            this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlaylistAddedToQueueMessage(playlist)).queue();
+        }
     }
 
     @Override
