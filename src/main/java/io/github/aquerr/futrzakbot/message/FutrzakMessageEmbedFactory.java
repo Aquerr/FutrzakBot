@@ -4,6 +4,8 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
+import io.github.aquerr.futrzakbot.PaginatedMessageEmbed;
+import io.github.aquerr.futrzakbot.command.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -13,6 +15,8 @@ import java.util.List;
 
 public class FutrzakMessageEmbedFactory
 {
+    public static final String HELP_MESSAGE_TITLE = "Futrzak - Lista Komend";
+
     private static final Color DEFAULT_COLOR = Color.GREEN;
     private static final Color ERROR_COLOR = Color.RED;
 
@@ -151,5 +155,18 @@ public class FutrzakMessageEmbedFactory
         embedBuilder.setTitle("Wystąpił błąd!");
         embedBuilder.setDescription(exception.getLocalizedMessage());
         return embedBuilder.build();
+    }
+
+    public static MessageEmbed createHelpMessage(Collection<Command> commands, int page)
+    {
+        PaginatedMessageEmbed paginatedMessageEmbed = PaginatedMessageEmbed.ofFields(commands)
+                .title(HELP_MESSAGE_TITLE, "https://github.com/Aquerr/FutrzakBot")
+                .color(Color.GREEN)
+                .fieldNamePopulator(Command::getName)
+                .fieldValuePopulator(Command::getUsage)
+                .linesPerPage(10)
+                .build();
+
+        return paginatedMessageEmbed.getPage(page);
     }
 }
