@@ -22,7 +22,7 @@ public class CommandManager
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandManager.class);
 
-    private final Map<List<String>, Command> commands = new HashMap<>();
+    private final Map<List<String>, Command> commands = new LinkedHashMap<>();
     private final FutrzakBot futrzakBot;
     private final CommandParametersParsingManager commandArgumentParser = new CommandParametersParsingManager();
 
