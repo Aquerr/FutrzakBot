@@ -57,19 +57,18 @@ public class FutrzakBot
             this.futrzakAudioPlayerManager = new FutrzakAudioPlayerManager(this);
             this.gameManager = new GameManager(this);
             this.commandManager = new CommandManager(this);
-            this.discordRoleGiver = new DiscordRoleGiver(this);
 
             this.jda = JDABuilder.createDefault(configuration.getBotToken())
                     .addEventListeners(new MessageListener(this))
                     .addEventListeners(new ReadyListener())
                     .addEventListeners(new SlashCommandListener(this.futrzakAudioPlayerManager))
-                    .addEventListeners(new RoleMessageReactListener(this, this.discordRoleGiver))
                     .setAutoReconnect(true)
                     .enableCache(CacheFlag.VOICE_STATE)
                     .setActivity(Activity.of(Activity.ActivityType.DEFAULT, "FutrzakiShow " + CommandManager.COMMAND_PREFIX + " help https://github.com/Aquerr/FutrzakBot"))
                 .build().awaitReady();
 
-            this.discordRoleGiver.init();
+            initRoleGiver();
+
             this.futrzakAudioPlayerManager.registerAudioPlayersForGuilds(this.jda.getGuilds());
 
             this.jda.getGuilds().forEach(this::tryToRegisterPlayerGuildSlashCommands);
@@ -79,6 +78,16 @@ public class FutrzakBot
         catch (LoginException | InterruptedException e)
         {
             e.printStackTrace();
+        }
+    }
+
+    private void initRoleGiver()
+    {
+        if (this.configuration.isRoleGiverEnabled())
+        {
+            this.discordRoleGiver = new DiscordRoleGiver(this);
+            this.jda.addEventListener(new RoleMessageReactListener(this, this.discordRoleGiver));
+            this.discordRoleGiver.init();
         }
     }
 
