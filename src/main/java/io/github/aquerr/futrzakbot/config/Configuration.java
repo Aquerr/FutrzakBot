@@ -17,6 +17,7 @@ import java.util.Map;
 public class Configuration
 {
     private final String botToken;
+    private final boolean roleGiverEnabled;
     private final long guildId;
     private final long channelId;
     private final long messageId;
@@ -32,6 +33,7 @@ public class Configuration
     {
         this.botToken = config.getString("bot-token");
         this.emoteRoleIdsMap = (Map)config.getConfig("role-giver").getAnyRef("roles");
+        this.roleGiverEnabled = config.getConfig("role-giver").getBoolean("enabled");
         this.guildId = config.getConfig("role-giver").getLong("guild-id");
         this.channelId = config.getConfig("role-giver").getLong("channel-id");
         this.messageId = config.getConfig("role-giver").getLong("message-id");
@@ -60,6 +62,11 @@ public class Configuration
     public long getMessageId()
     {
         return messageId;
+    }
+
+    public boolean isRoleGiverEnabled()
+    {
+        return roleGiverEnabled;
     }
 
     private static Config loadConfigFile()
