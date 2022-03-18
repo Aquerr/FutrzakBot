@@ -139,6 +139,24 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
+    public static MessageEmbed createRemoveMessage(int element, AudioTrack audioTrack)
+    {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setColor(DEFAULT_COLOR);
+        embedBuilder.setTitle("Pominołem utwór nr. " + element);
+        embedBuilder.addField(new MessageEmbed.Field("Wykonawca:", audioTrack.getInfo().author, false));
+        embedBuilder.addField(new MessageEmbed.Field("Tytuł:", audioTrack.getInfo().title, false));
+        return embedBuilder.build();
+    }
+
+    public static MessageEmbed createOutOfRangeMessage()
+    {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setColor(ERROR_COLOR);
+        embedBuilder.setTitle(":warning: Niepoprawna pozycja utworu");
+        return embedBuilder.build();
+    }
+
     public static MessageEmbed createSongErrorMessage(AudioTrack track)
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
