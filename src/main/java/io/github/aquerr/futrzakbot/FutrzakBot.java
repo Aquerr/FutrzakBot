@@ -15,6 +15,9 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +62,9 @@ public class FutrzakBot
             this.commandManager = new CommandManager(this);
 
             this.jda = JDABuilder.createDefault(configuration.getBotToken())
+                    .enableIntents(GatewayIntent.GUILD_MEMBERS)
+                    .setMemberCachePolicy(MemberCachePolicy.ALL)
+                    .setChunkingFilter(ChunkingFilter.ALL)
                     .addEventListeners(new MessageListener(this))
                     .addEventListeners(new ReadyListener())
                     .addEventListeners(new SlashCommandListener(this.futrzakAudioPlayerManager))
@@ -125,6 +131,7 @@ public class FutrzakBot
     {
         try
         {
+            guild.loadMembers();
             guild.updateCommands()
                     .addCommands(new CommandData("player", "Open player menu")
                             .addOption(OptionType.STRING, "song", "Enter song name to play", false)

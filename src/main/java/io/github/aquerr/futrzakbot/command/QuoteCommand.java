@@ -18,7 +18,7 @@ public class QuoteCommand implements Command
     @Override
     public boolean execute(CommandContext context)
     {
-        this.quoteGame.printQuote(context.getTextChannel());
+        this.quoteGame.printRandomQuote(context.getTextChannel(), context.getMember());
         return true;
     }
 
