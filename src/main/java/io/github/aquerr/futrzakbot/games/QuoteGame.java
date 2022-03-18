@@ -1,20 +1,17 @@
 package io.github.aquerr.futrzakbot.games;
 
-import net.dv8tion.jda.api.MessageBuilder;
-import net.dv8tion.jda.api.entities.Message;
+import io.github.aquerr.futrzakbot.placeholder.PlaceholderContext;
+import io.github.aquerr.futrzakbot.placeholder.PlaceholderService;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
-import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class QuoteGame
@@ -23,6 +20,8 @@ public class QuoteGame
     private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
     private static final QuoteGame INSTANCE = new QuoteGame();
 
+    private final PlaceholderService placeholderService = PlaceholderService.getInstance();
+
     private QuoteGame() {}
 
     public static QuoteGame getInstance()
@@ -30,9 +29,17 @@ public class QuoteGame
         return INSTANCE;
     }
 
-    public void printQuote(TextChannel textChannel)
+    public void printRandomQuote(TextChannel textChannel, Member member)
     {
-        textChannel.sendMessage(getRandomQuote()).queue();
+        String randomQuote = getRandomQuote();
+        String processedRandomQuote = processPlaceholders(randomQuote, textChannel, member);
+
+        textChannel.sendMessage(processedRandomQuote).queue();
+    }
+
+    private String processPlaceholders(String randomQuote, TextChannel textChannel, Member member)
+    {
+        return placeholderService.processPlaceholders(new PlaceholderContext(randomQuote, textChannel, member));
     }
 
     private List<String> getAllQuotesFromFile() throws IOException
