@@ -67,6 +67,21 @@ public final class FutrzakAudioPlayerManager
         futrzakAudioPlayer.clear();
     }
 
+    public void removeElement(int element, long guildId,TextChannel textChannel)
+    {
+        FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
+        futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
+        if (0 < element && element <= futrzakAudioPlayer.getQueue().size())
+        {
+            AudioTrack audioTrack = futrzakAudioPlayer.remove(element);
+            textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createRemoveMessage(element, audioTrack)).queue();
+        }
+        else
+        {
+            textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createOutOfRangeMessage()).queue();
+        }
+    }
+
     public void stop(long guildId, TextChannel textChannel)
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);

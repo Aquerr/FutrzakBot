@@ -18,7 +18,7 @@ import java.util.*;
 
 public class CommandManager
 {
-    public static final String COMMAND_PREFIX = "!f";
+    public static final String COMMAND_PREFIX = "!t";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandManager.class);
 
@@ -45,6 +45,7 @@ public class CommandManager
         addCommand(new ResumeCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
         addCommand(new VolumeCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
         addCommand(new SkipCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
+        addCommand(new RemoveComand(this.futrzakBot.getFutrzakAudioPlayerManager()));
         addCommand(new ClearCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
         addCommand(new QueueCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
         addCommand(new InfoCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
