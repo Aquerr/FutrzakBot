@@ -7,6 +7,8 @@ import io.github.aquerr.futrzakbot.events.MessageListener;
 import io.github.aquerr.futrzakbot.events.ReadyListener;
 import io.github.aquerr.futrzakbot.events.SlashCommandListener;
 import io.github.aquerr.futrzakbot.games.GameManager;
+import io.github.aquerr.futrzakbot.message.Localization;
+import io.github.aquerr.futrzakbot.message.MessageSource;
 import io.github.aquerr.futrzakbot.role.DiscordRoleGiver;
 import io.github.aquerr.futrzakbot.role.RoleMessageReactListener;
 import net.dv8tion.jda.api.JDA;
@@ -29,6 +31,8 @@ import java.nio.file.Paths;
 public class FutrzakBot
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(FutrzakBot.class);
+    private static final String ERROR_MISSING_BOT_TOKEN = "error.missing-bot-token";
+    private static final String COULD_NOT_REGISTER_SLASH_COMMANDS = "error.command.slash.could-not-register";
 
     private final Path botDirectory = Paths.get(".").toAbsolutePath();
 
@@ -39,27 +43,27 @@ public class FutrzakBot
     }
 
     private JDA jda;
-
     private FutrzakAudioPlayerManager futrzakAudioPlayerManager;
     private GameManager gameManager;
     private CommandManager commandManager;
     private Configuration configuration;
     private DiscordRoleGiver discordRoleGiver;
+    private MessageSource messageSource;
 
     private void start()
     {
-        Configuration configuration = Configuration.loadConfiguration();
+        this.configuration = Configuration.loadConfiguration();
+        this.messageSource = new MessageSource(Localization.forTag(this.configuration.getLanguageTag()));
         if (configuration.getBotToken().isEmpty())
         {
-            throw new IllegalArgumentException("Nie podano tokenu bota. Wpisz brakujący token w pliku konfiguracyjnym.");
+            throw new IllegalArgumentException(this.messageSource.getMessage(ERROR_MISSING_BOT_TOKEN));
         }
 
         try
         {
-            this.configuration = configuration;
             this.futrzakAudioPlayerManager = new FutrzakAudioPlayerManager(this);
             this.gameManager = new GameManager(this);
-            this.commandManager = new CommandManager(this);
+            this.commandManager = new CommandManager(this.messageSource, this.futrzakAudioPlayerManager, this.gameManager);
 
             this.jda = JDABuilder.createDefault(configuration.getBotToken())
                     .enableIntents(GatewayIntent.GUILD_MEMBERS)
@@ -127,11 +131,15 @@ public class FutrzakBot
         return configuration;
     }
 
+    public MessageSource getMessageSource()
+    {
+        return messageSource;
+    }
+
     private void tryToRegisterPlayerGuildSlashCommands(Guild guild)
     {
         try
         {
-            guild.loadMembers();
             guild.updateCommands()
                     .addCommands(new CommandData("player", "Open player menu")
                             .addOption(OptionType.STRING, "song", "Enter song name to play", false)
@@ -140,7 +148,7 @@ public class FutrzakBot
         }
         catch (Exception exception)
         {
-            LOGGER.warn("Slash commands could not be registered for guild '{}'. Reason: {}", guild.getName(), exception.getMessage());
+            LOGGER.warn(messageSource.getMessage(COULD_NOT_REGISTER_SLASH_COMMANDS, guild.getName(), exception.getMessage()));
         }
     }
 }

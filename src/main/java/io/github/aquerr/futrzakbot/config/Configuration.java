@@ -3,20 +3,22 @@ package io.github.aquerr.futrzakbot.config;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
-import com.typesafe.config.parser.ConfigDocument;
-import com.typesafe.config.parser.ConfigDocumentFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Map;
 
 public class Configuration
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
+
     private final String botToken;
+    private final String languageTag;
     private final boolean roleGiverEnabled;
     private final long guildId;
     private final long channelId;
@@ -37,11 +39,17 @@ public class Configuration
         this.guildId = config.getConfig("role-giver").getLong("guild-id");
         this.channelId = config.getConfig("role-giver").getLong("channel-id");
         this.messageId = config.getConfig("role-giver").getLong("message-id");
+        this.languageTag = config.getString("lang");
     }
 
     public String getBotToken()
     {
         return botToken;
+    }
+
+    public String getLanguageTag()
+    {
+        return languageTag;
     }
 
     public Map<String, Long> getEmoteRoleIdsMap()
@@ -83,7 +91,7 @@ public class Configuration
             }
             catch (IOException e)
             {
-                e.printStackTrace();
+                LOGGER.error("Could not load configuration file.", e);
             }
         }
         return ConfigFactory.parseFile(configFilePath.toFile());

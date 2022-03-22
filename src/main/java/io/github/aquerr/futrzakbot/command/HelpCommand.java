@@ -3,6 +3,7 @@ package io.github.aquerr.futrzakbot.command;
 import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.message.EmojiUnicodes;
 import io.github.aquerr.futrzakbot.message.FutrzakMessageEmbedFactory;
+import io.github.aquerr.futrzakbot.message.MessageSource;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
@@ -12,11 +13,13 @@ import java.util.Map;
 
 public class HelpCommand implements Command
 {
+    private final MessageSource messageSource;
     private final CommandManager commandManager;
 
-    HelpCommand(CommandManager commandManager)
+    HelpCommand(CommandManager commandManager, MessageSource messageSource)
     {
         this.commandManager = commandManager;
+        this.messageSource = messageSource;
     }
 
     @Override
@@ -37,13 +40,13 @@ public class HelpCommand implements Command
     @Override
     public String getName()
     {
-        return "Komendy";
+        return messageSource.getMessage("command.help.name");
     }
 
     @Override
     public String getDescription()
     {
-        return "Pokazuje wszystkie dostępne komendy";
+        return messageSource.getMessage("command.help.description");
     }
 
     private MessageEmbed buildHelpMessage()

@@ -1,20 +1,25 @@
 package io.github.aquerr.futrzakbot.command;
 
-import io.github.aquerr.futrzakbot.FutrzakBot;
+import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.command.context.CommandContextImpl;
 import io.github.aquerr.futrzakbot.command.exception.CommandArgumentsParseException;
+import io.github.aquerr.futrzakbot.games.GameManager;
 import io.github.aquerr.futrzakbot.games.QuoteGame;
+import io.github.aquerr.futrzakbot.message.MessageSource;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
+import java.awt.Color;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
 
 public class CommandManager
 {
@@ -22,33 +27,43 @@ public class CommandManager
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandManager.class);
 
+    private static final String ERROR_COMMAND_CORRECT_USAGE = "error.command.correct-usage";
+    private static final String ERROR_PARSING_OF_COMMAND_PARAMETERS = "error.command.parameters.parsing";
+    private static final String GENERAL_MESSAGE_LOG = "general.message.log";
+
     private final Map<List<String>, Command> commands = new LinkedHashMap<>();
-    private final FutrzakBot futrzakBot;
+    private final MessageSource messageSource;
+    private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
+    private final GameManager gameManager;
     private final CommandParametersParsingManager commandArgumentParser = new CommandParametersParsingManager();
 
-    public CommandManager(FutrzakBot futrzakBot)
+    public CommandManager(MessageSource messageSource,
+                          FutrzakAudioPlayerManager futrzakAudioPlayerManager,
+                          GameManager gameManager)
     {
-        this.futrzakBot = futrzakBot;
+        this.messageSource = messageSource;
+        this.futrzakAudioPlayerManager = futrzakAudioPlayerManager;
+        this.gameManager = gameManager;
         initCommands();
     }
 
     private void initCommands()
     {
-        addCommand(new HelpCommand(this));
+        addCommand(new HelpCommand(this, this.messageSource));
         addCommand(new EightBallCommand());
         addCommand(new RouletteCommand());
         addCommand(new DebilCommand());
         addCommand(new LoveCommand());
-        addCommand(new FutrzakCommand(this.futrzakBot.getGameManager().getFutrzakGame()));
-        addCommand(new PlayCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
-        addCommand(new StopCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
-        addCommand(new ResumeCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
-        addCommand(new VolumeCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
-        addCommand(new SkipCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
-        addCommand(new RemoveComand(this.futrzakBot.getFutrzakAudioPlayerManager()));
-        addCommand(new ClearCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
-        addCommand(new QueueCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
-        addCommand(new InfoCommand(this.futrzakBot.getFutrzakAudioPlayerManager()));
+        addCommand(new FutrzakCommand(this.gameManager.getFutrzakGame()));
+        addCommand(new PlayCommand(this.futrzakAudioPlayerManager));
+        addCommand(new StopCommand(this.futrzakAudioPlayerManager));
+        addCommand(new ResumeCommand(this.futrzakAudioPlayerManager));
+        addCommand(new VolumeCommand(this.futrzakAudioPlayerManager));
+        addCommand(new SkipCommand(this.futrzakAudioPlayerManager));
+        addCommand(new RemoveComand(this.futrzakAudioPlayerManager)));
+        addCommand(new ClearCommand(this.futrzakAudioPlayerManager));
+        addCommand(new QueueCommand(this.futrzakAudioPlayerManager));
+        addCommand(new InfoCommand(this.futrzakAudioPlayerManager));
         addCommand(new FightCommand());
         addCommand(new QuoteCommand(QuoteGame.getInstance()));
     }
@@ -102,11 +117,12 @@ public class CommandManager
         }
         catch (CommandArgumentsParseException exception)
         {
-            EmbedBuilder embedBuilder = new EmbedBuilder();
-            embedBuilder.setColor(Color.RED);
-            embedBuilder.addField(":warning: Poprawne użycie komendy: ", command.getUsage(),false);
-            channel.sendMessageEmbeds(embedBuilder.build()).queue();
-            LOGGER.error("Error during parsing arguments for command: {}, Exception message: {}", command.getName(), exception.getMessage());
+            MessageEmbed messageEmbed = new EmbedBuilder()
+                    .setColor(Color.RED)
+                    .addField(messageSource.getMessage(ERROR_COMMAND_CORRECT_USAGE), command.getUsage(), false)
+                    .build();
+            channel.sendMessageEmbeds(messageEmbed).queue();
+            LOGGER.error(messageSource.getMessage(ERROR_PARSING_OF_COMMAND_PARAMETERS, command.getName(), exception.getMessage()));
             return;
         }
 
@@ -121,9 +137,9 @@ public class CommandManager
 
     private void logCommandUsage(Member member, TextChannel channel, Message message)
     {
-        LOGGER.info("Guild: {}, Channel: {}, Member: {}, Message: {}", channel.getGuild().getName(),
+        LOGGER.info(messageSource.getMessage(GENERAL_MESSAGE_LOG, channel.getGuild().getName(),
                 channel.getName(), member.getEffectiveName(),
-                message.getContentDisplay());
+                message.getContentDisplay()));
     }
 
     private Optional<Command> getCommand(String commandAlias)
