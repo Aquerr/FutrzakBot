@@ -54,5 +54,11 @@ public class CommandContextImpl implements CommandContext
             this.parameters.put(key, parsedArgument);
             return this;
         }
+
+        public CommandContextImplBuilder putAll(Map<String, Object> parameters)
+        {
+            parameters.forEach(this::put);
+            return this;
+        }
     }
 }

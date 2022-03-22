@@ -1,7 +1,7 @@
 package io.github.aquerr.futrzakbot.command;
 
+import io.github.aquerr.futrzakbot.command.parameters.MemberParameter;
 import io.github.aquerr.futrzakbot.command.parameters.Parameter;
-import io.github.aquerr.futrzakbot.command.parameters.RemainingStringsParameter;
 import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.games.LoveMeter;
 import net.dv8tion.jda.api.entities.Member;
@@ -13,16 +13,16 @@ import java.util.List;
 
 public class LoveCommand implements Command
 {
-    private static final String PARAM_KEY = "message";
+    private static final String PARAM_KEY = "użytkownik";
 
     @Override
     public boolean execute(CommandContext context)
     {
         Member member = context.getMember();
         TextChannel channel = context.getTextChannel();
-        String message = context.require(PARAM_KEY);
+        Member selectedMember = context.require(PARAM_KEY);
 
-        Message loveMessage = LoveMeter.checkLove(member, message);
+        Message loveMessage = LoveMeter.checkLove(member, selectedMember);
         channel.sendMessage(loveMessage).queue();
         return true;
     }
@@ -54,6 +54,6 @@ public class LoveCommand implements Command
     @Override
     public List<Parameter<?>> getParameters()
     {
-        return Collections.singletonList(RemainingStringsParameter.builder().key(PARAM_KEY).build());
+        return Collections.singletonList(MemberParameter.builder().key(PARAM_KEY).build());
     }
 }

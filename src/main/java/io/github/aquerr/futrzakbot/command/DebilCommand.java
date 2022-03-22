@@ -1,7 +1,5 @@
 package io.github.aquerr.futrzakbot.command;
 
-import io.github.aquerr.futrzakbot.command.parameters.Parameter;
-import io.github.aquerr.futrzakbot.command.parameters.RemainingStringsParameter;
 import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -42,11 +40,5 @@ public class DebilCommand implements Command
     public String getDescription()
     {
         return "Debil?";
-    }
-
-    @Override
-    public List<Parameter<?>> getParameters()
-    {
-        return Collections.singletonList(RemainingStringsParameter.builder().build());
     }
 }

@@ -5,6 +5,7 @@ import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.command.context.CommandContextImpl;
 import io.github.aquerr.futrzakbot.command.exception.CommandArgumentsParseException;
 import io.github.aquerr.futrzakbot.games.GameManager;
+import io.github.aquerr.futrzakbot.command.parsing.CommandArgumentsParsingManager;
 import io.github.aquerr.futrzakbot.games.QuoteGame;
 import io.github.aquerr.futrzakbot.message.MessageSource;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -35,7 +36,7 @@ public class CommandManager
     private final MessageSource messageSource;
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
     private final GameManager gameManager;
-    private final CommandParametersParsingManager commandArgumentParser = new CommandParametersParsingManager();
+    private final CommandArgumentsParsingManager commandArgumentParser = new CommandArgumentsParsingManager();
 
     public CommandManager(MessageSource messageSource,
                           FutrzakAudioPlayerManager futrzakAudioPlayerManager,
@@ -60,7 +61,7 @@ public class CommandManager
         addCommand(new ResumeCommand(this.futrzakAudioPlayerManager));
         addCommand(new VolumeCommand(this.futrzakAudioPlayerManager));
         addCommand(new SkipCommand(this.futrzakAudioPlayerManager));
-        addCommand(new RemoveComand(this.futrzakAudioPlayerManager)));
+        addCommand(new RemoveComand(this.futrzakAudioPlayerManager));
         addCommand(new ClearCommand(this.futrzakAudioPlayerManager));
         addCommand(new QueueCommand(this.futrzakAudioPlayerManager));
         addCommand(new InfoCommand(this.futrzakAudioPlayerManager));
@@ -113,7 +114,8 @@ public class CommandManager
 
         try
         {
-            commandContextBuilder = commandArgumentParser.parseCommandArguments(commandContextBuilder, command, arguments);
+            Map<String, Object> parsedParameters = commandArgumentParser.parseCommandArguments(channel, command, arguments);
+            commandContextBuilder.putAll(parsedParameters);
         }
         catch (CommandArgumentsParseException exception)
         {
