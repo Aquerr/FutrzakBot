@@ -23,7 +23,7 @@ import java.util.Optional;
 
 public class CommandManager
 {
-    public static final String COMMAND_PREFIX = "!f";
+    public static final String COMMAND_PREFIX = "!t";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandManager.class);
 
@@ -60,6 +60,7 @@ public class CommandManager
         addCommand(new ResumeCommand(this.futrzakAudioPlayerManager));
         addCommand(new VolumeCommand(this.futrzakAudioPlayerManager));
         addCommand(new SkipCommand(this.futrzakAudioPlayerManager));
+        addCommand(new RemoveComand(this.futrzakAudioPlayerManager)));
         addCommand(new ClearCommand(this.futrzakAudioPlayerManager));
         addCommand(new QueueCommand(this.futrzakAudioPlayerManager));
         addCommand(new InfoCommand(this.futrzakAudioPlayerManager));

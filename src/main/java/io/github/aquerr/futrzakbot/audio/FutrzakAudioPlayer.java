@@ -13,10 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
-import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
+
 
 public class FutrzakAudioPlayer extends AudioEventAdapter
 {
@@ -25,7 +25,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     private final long guildId;
     private final FutrzakAudioLoadHandler audioLoadHandler;
     private final AudioPlayer audioPlayer;
-    private final Queue<AudioTrack> tracksQueue = new ArrayDeque<>();
+    private final LinkedList<AudioTrack> tracksQueue = new LinkedList<>();
     private TextChannel lastBotUsageChannel;
     private Instant lastTrackEndTime = Instant.now();
 
@@ -74,6 +74,11 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         LOGGER.info("cleared the queue");
     }
 
+    public AudioTrack remove(int element)
+    {
+        return this.tracksQueue.remove(element-1);
+    }
+
     @Override
     public void onPlayerPause(AudioPlayer player)
     {
@@ -84,7 +89,6 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     public void onPlayerResume(AudioPlayer player)
     {
         LOGGER.info("Player resumed!");
-
     }
 
     @Override
