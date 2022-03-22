@@ -1,6 +1,7 @@
 package io.github.aquerr.futrzakbot.command;
 
 import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
+import io.github.aquerr.futrzakbot.command.parameters.IntParameter;
 import io.github.aquerr.futrzakbot.command.parameters.Parameter;
 import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -55,6 +56,6 @@ public class VolumeCommand implements Command
     @Override
     public List<Parameter<?>> getParameters()
     {
-        return Collections.singletonList(Parameter.builder().key(VOLUME_PARAM_KEY).type(Integer.class).build());
+        return Collections.singletonList(IntParameter.builder().key(VOLUME_PARAM_KEY).build());
     }
 }

@@ -3,16 +3,16 @@ package io.github.aquerr.futrzakbot.games;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
 
 import java.util.Random;
 
 public class LoveMeter
 {
-    public static Message checkLove(Member requester, String mentionedMemberString)
+    public static Message checkLove(Member requester, Member selectedMember)
     {
-        if (!mentionedMemberString.isBlank())
+        if (selectedMember != null)
         {
+            String mentionedMemberString = selectedMember.getAsMention();
             Random random = new Random();
             int max = 11;
             int min = 1;
