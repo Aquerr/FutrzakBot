@@ -65,6 +65,7 @@ public class CommandManager
         addCommand(new ClearCommand(this.futrzakAudioPlayerManager));
         addCommand(new QueueCommand(this.futrzakAudioPlayerManager));
         addCommand(new InfoCommand(this.futrzakAudioPlayerManager));
+        addCommand(new LoopCommand(this.futrzakAudioPlayerManager));
         addCommand(new FightCommand());
         addCommand(new QuoteCommand(QuoteGame.getInstance()));
     }
