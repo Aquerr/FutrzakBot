@@ -12,74 +12,76 @@ import io.github.aquerr.futrzakbot.command.parsing.parsers.StringArgumentParser;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.StringTokenizer;
+import java.util.Queue;
 
-public class CommandArgumentsParsingManager
+
+public class CommandArgumentsParser
 {
-    private static final String DEFAULT_ARG_SEPARATOR = " ";
+    private final Map<Class<?>, ArgumentParser<?>> parsers;
 
-    private final Map<Class<?>, ArgumentParser<?>> parsers = new HashMap<>();
-
-    public CommandArgumentsParsingManager()
+    public CommandArgumentsParser(Map<Class<?>, ArgumentParser<?>> parsers)
     {
-        registerParsers();
+        this.parsers = parsers;
     }
 
-    private void registerParsers()
+    public static CommandArgumentsParser createDefault()
     {
-        this.parsers.put(Integer.class, new IntegerArgumentParser());
-        this.parsers.put(String.class, new StringArgumentParser());
-        this.parsers.put(Double.class, new DoubleArgumentParser());
-        this.parsers.put(Member.class, new MemberArgumentParser());
+        return new CommandArgumentsParser(getDefaultParsers());
     }
 
-    public Map<String, Object> parseCommandArguments(TextChannel textChannel, Command command, String argsMessage) throws CommandArgumentsParseException
+    private static Map<Class<?>, ArgumentParser<?>> getDefaultParsers()
     {
-        List<Parameter<?>> parameters = command.getParameters();
-        if (parameters == null || parameters.size() == 0)
-            return Collections.emptyMap();
+        Map<Class<?>, ArgumentParser<?>> parsers = new HashMap<>();
+        parsers.put(Integer.class, new IntegerArgumentParser());
+        parsers.put(String.class, new StringArgumentParser());
+        parsers.put(Double.class, new DoubleArgumentParser());
+        parsers.put(Member.class, new MemberArgumentParser());
+        return parsers;
+    }
 
-        Map<String, Object> parsedParameters = new HashMap<>();
-        StringTokenizer argumentTokenizer = new StringTokenizer(argsMessage, DEFAULT_ARG_SEPARATOR, false);
-        Iterator<Parameter<?>> argumentTypeIterator = parameters.iterator();
-
-        while (argumentTokenizer.hasMoreTokens())
+    public Map<String, Object> parseCommandArgs(TextChannel textChannel, Command command, Queue<String> args) throws CommandArgumentsParseException
+    {
+        Map<String, Object> parsedArguments = new HashMap<>();
+        Iterator<Parameter<?>> commandParametersIterator = command.getParameters().iterator();
+        while (commandParametersIterator.hasNext())
         {
-            String arg = argumentTokenizer.nextToken();
-            Parameter<?> parameter = null;
-            if (argumentTypeIterator.hasNext())
+            Parameter<?> parameter = commandParametersIterator.next();
+            String arg = args.poll();
+
+            if (commandParametersIterator.hasNext())
             {
-                parameter = argumentTypeIterator.next();
+                parameter = commandParametersIterator.next();
             }
 
-            if (parameter == null)
-                throw new CommandArgumentsParseException("Not enough command parsers for given argument string!");
+            if (arg == null)
+            {
+                throw new CommandArgumentsParseException("Not enough arguments");
+            }
 
             if (parameter instanceof RemainingStringsParameter)
             {
-                parsedParameters.put(parameter.getKey(), argsMessage.substring(argsMessage.indexOf(arg)));
+                String argsMessage = arg + " " + String.join(" ", args);
+                parsedArguments.put(parameter.getKey(), argsMessage);
                 break;
             }
+
             ArgumentParser<?> parser = getParserForParameter(parameter);
             try
             {
                 ParsingContext parsingContext = new ParsingContextImpl(textChannel, arg);
                 Object parsedArgument = parser.parse(parsingContext);
-                parsedParameters.put(parameter.getKey(), parsedArgument);
+                parsedArguments.put(parameter.getKey(), parsedArgument);
             }
             catch (Exception exception)
             {
                 throw new CommandArgumentsParseException("Could not parse command argument: " + arg);
             }
         }
-
-        return parsedParameters;
+        return parsedArguments;
     }
 
     private ArgumentParser<?> getParserForParameter(Parameter<?> parameter)

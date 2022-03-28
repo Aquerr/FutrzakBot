@@ -16,7 +16,7 @@ public class HelpCommand implements Command
     private final MessageSource messageSource;
     private final CommandManager commandManager;
 
-    HelpCommand(CommandManager commandManager, MessageSource messageSource)
+    public HelpCommand(CommandManager commandManager, MessageSource messageSource)
     {
         this.commandManager = commandManager;
         this.messageSource = messageSource;
