@@ -9,6 +9,7 @@ import io.github.aquerr.futrzakbot.command.FightCommand;
 import io.github.aquerr.futrzakbot.command.FutrzakCommand;
 import io.github.aquerr.futrzakbot.command.HelpCommand;
 import io.github.aquerr.futrzakbot.command.InfoCommand;
+import io.github.aquerr.futrzakbot.command.LoopCommand;
 import io.github.aquerr.futrzakbot.command.LoveCommand;
 import io.github.aquerr.futrzakbot.command.PlayCommand;
 import io.github.aquerr.futrzakbot.command.QueueCommand;
@@ -137,6 +138,7 @@ public class FutrzakBot
         this.commandManager.registerCommand(new ClearCommand(this.futrzakAudioPlayerManager));
         this.commandManager.registerCommand(new QueueCommand(this.futrzakAudioPlayerManager));
         this.commandManager.registerCommand(new InfoCommand(this.futrzakAudioPlayerManager));
+        this.commandManager.registerCommand(new LoopCommand(this.futrzakAudioPlayerManager));
         this.commandManager.registerCommand(new FightCommand());
         this.commandManager.registerCommand(new QuoteCommand(QuoteGame.getInstance()));
     }
