@@ -23,6 +23,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     private static final Logger LOGGER = LoggerFactory.getLogger(FutrzakAudioPlayer.class);
 
     private final long guildId;
+    private boolean loop = false;
     private final FutrzakAudioLoadHandler audioLoadHandler;
     private final AudioPlayer audioPlayer;
     private final LinkedList<AudioTrack> tracksQueue = new LinkedList<>();
@@ -65,7 +66,14 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
             LOGGER.info("Starting playing: {}", audioTrack.getInfo().title);
             this.lastBotUsageChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createNowPlayingMessage(audioTrack)).queue();
         }
+        queueTrackIfLoop(this.getPlayingTrack());
         this.audioPlayer.playTrack(audioTrack);
+    }
+
+    public boolean toggleLoop()
+    {
+        loop = !loop;
+        return loop;
     }
 
     public void clear()
@@ -182,5 +190,13 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     public AudioLoadResultHandler getAudioLoadHandler()
     {
         return this.audioLoadHandler;
+    }
+
+    private void queueTrackIfLoop(AudioTrack audioTrack)
+    {
+        if (loop)
+        {
+            tracksQueue.add(audioTrack);
+        }
     }
 }
