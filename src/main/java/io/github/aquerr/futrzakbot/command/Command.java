@@ -1,5 +1,6 @@
 package io.github.aquerr.futrzakbot.command;
 
+import io.github.aquerr.futrzakbot.command.exception.CommandException;
 import io.github.aquerr.futrzakbot.command.parameters.Parameter;
 import io.github.aquerr.futrzakbot.command.context.CommandContext;
 
@@ -17,8 +18,9 @@ public interface Command
      * Executes the command with given CommandContext.
      * @param commandContext for the command. Contains information about channel and member who invoked the command.
      * @return true if command did execute successfully or false if not
+     * @throws CommandException if execution of the command fails.
      */
-    boolean execute(CommandContext commandContext);
+    boolean execute(CommandContext commandContext) throws CommandException;
 
     /**
      * Aliases of the command.
@@ -74,6 +76,18 @@ public interface Command
      * @return the list of parameters that this command accepts.
      */
     default List<Parameter<?>> getParameters()
+    {
+        return Collections.emptyList();
+    }
+
+    /**
+     * The subcommands of the command. There is no limit for subcommands a command can have.
+     *
+     * Subcommand can have its own subcommands etc.
+     *
+     * @return the {@link List<Command>} that contains subcommands for the given command.
+     */
+    default List<Command> getSubCommands()
     {
         return Collections.emptyList();
     }

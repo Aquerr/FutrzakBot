@@ -2,11 +2,13 @@ package io.github.aquerr.futrzakbot.command.parameters;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
 
 @Builder
 @Getter
 public class RemainingStringsParameter implements Parameter<String>
 {
+    @NonNull
     String key;
 
     @Override

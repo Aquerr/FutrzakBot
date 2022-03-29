@@ -1,12 +1,11 @@
 package io.github.aquerr.futrzakbot.command;
 
-import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.command.context.CommandContextImpl;
 import io.github.aquerr.futrzakbot.command.exception.CommandArgumentsParseException;
-import io.github.aquerr.futrzakbot.games.GameManager;
-import io.github.aquerr.futrzakbot.command.parsing.CommandArgumentsParsingManager;
-import io.github.aquerr.futrzakbot.games.QuoteGame;
+import io.github.aquerr.futrzakbot.command.exception.CommandException;
+import io.github.aquerr.futrzakbot.command.parsing.CommandParsingChain;
+import io.github.aquerr.futrzakbot.command.parsing.CommandResolver;
 import io.github.aquerr.futrzakbot.message.MessageSource;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
@@ -16,7 +15,7 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,47 +29,20 @@ public class CommandManager
 
     private static final String ERROR_COMMAND_CORRECT_USAGE = "error.command.correct-usage";
     private static final String ERROR_PARSING_OF_COMMAND_PARAMETERS = "error.command.parameters.parsing";
+    private static final String ERROR_COMMAND_EXCEPTION = "error.command.exception";
+    private static final String ERROR_GENERAL = "error.command.general";
     private static final String GENERAL_MESSAGE_LOG = "general.message.log";
 
     private final Map<List<String>, Command> commands = new LinkedHashMap<>();
     private final MessageSource messageSource;
-    private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
-    private final GameManager gameManager;
-    private final CommandArgumentsParsingManager commandArgumentParser = new CommandArgumentsParsingManager();
+    private final CommandResolver commandResolver = new CommandResolver();
 
-    public CommandManager(MessageSource messageSource,
-                          FutrzakAudioPlayerManager futrzakAudioPlayerManager,
-                          GameManager gameManager)
+    public CommandManager(MessageSource messageSource)
     {
         this.messageSource = messageSource;
-        this.futrzakAudioPlayerManager = futrzakAudioPlayerManager;
-        this.gameManager = gameManager;
-        initCommands();
     }
 
-    private void initCommands()
-    {
-        addCommand(new HelpCommand(this, this.messageSource));
-        addCommand(new EightBallCommand());
-        addCommand(new RouletteCommand());
-        addCommand(new DebilCommand());
-        addCommand(new LoveCommand());
-        addCommand(new FutrzakCommand(this.gameManager.getFutrzakGame()));
-        addCommand(new PlayCommand(this.futrzakAudioPlayerManager));
-        addCommand(new StopCommand(this.futrzakAudioPlayerManager));
-        addCommand(new ResumeCommand(this.futrzakAudioPlayerManager));
-        addCommand(new VolumeCommand(this.futrzakAudioPlayerManager));
-        addCommand(new SkipCommand(this.futrzakAudioPlayerManager));
-        addCommand(new RemoveComand(this.futrzakAudioPlayerManager));
-        addCommand(new ClearCommand(this.futrzakAudioPlayerManager));
-        addCommand(new QueueCommand(this.futrzakAudioPlayerManager));
-        addCommand(new InfoCommand(this.futrzakAudioPlayerManager));
-        addCommand(new LoopCommand(this.futrzakAudioPlayerManager));
-        addCommand(new FightCommand());
-        addCommand(new QuoteCommand(QuoteGame.getInstance()));
-    }
-
-    public void addCommand(Command command)
+    public void registerCommand(Command command)
     {
         if (command.getAliases().isEmpty())
             throw new IllegalArgumentException("Command must provide at least one alias! Command: " + command.getName());
@@ -98,6 +70,9 @@ public class CommandManager
 
     public void processCommand(Member member, TextChannel channel, Message message)
     {
+        //Log
+        logCommandUsage(member, channel, message);
+
         String text = message.getContentRaw().substring(COMMAND_PREFIX.length() + 1); // Remove "!f "
         String commandAlias = text.split(" ")[0]; // Take command alias
         String arguments = text.substring(commandAlias.length()).trim(); // Rest are arguments
@@ -106,6 +81,11 @@ public class CommandManager
         if(command == null)
             return;
 
+        processCommand(member, channel, command, arguments);
+    }
+
+    private void processCommand(Member member, TextChannel channel, Command command, String arguments)
+    {
         if(!hasPermissions(member, command))
             return;
 
@@ -115,34 +95,43 @@ public class CommandManager
 
         try
         {
-            Map<String, Object> parsedParameters = commandArgumentParser.parseCommandArguments(channel, command, arguments);
-            commandContextBuilder.putAll(parsedParameters);
+            CommandParsingChain parsingChain = commandResolver.resolveAndParseCommandArgs(channel, command, arguments);
+            commandContextBuilder.putAll(parsingChain.getArguments());
+            command = parsingChain.getCommandChain().getLast(); // Returns this command or last subcommand in chain
         }
         catch (CommandArgumentsParseException exception)
         {
-            MessageEmbed messageEmbed = new EmbedBuilder()
-                    .setColor(Color.RED)
-                    .addField(messageSource.getMessage(ERROR_COMMAND_CORRECT_USAGE), command.getUsage(), false)
-                    .build();
-            channel.sendMessageEmbeds(messageEmbed).queue();
-            LOGGER.error(messageSource.getMessage(ERROR_PARSING_OF_COMMAND_PARAMETERS, command.getName(), exception.getMessage()));
+            handleArgumentsParseException(channel, command, exception);
             return;
         }
 
         CommandContext commandContext = commandContextBuilder.build();
 
-        //Log
-        logCommandUsage(member, channel, message);
-
         //Execute
-        command.execute(commandContext);
+        try
+        {
+            command.execute(commandContext);
+        }
+        catch (CommandException exception)
+        {
+            // Normal Command Exception handling here...
+            handleCommandException(channel, command, exception);
+        }
+        catch (Exception exception)
+        {
+            // General error...
+            handleException(channel, command, exception);
+        }
     }
 
     private void logCommandUsage(Member member, TextChannel channel, Message message)
     {
-        LOGGER.info(messageSource.getMessage(GENERAL_MESSAGE_LOG, channel.getGuild().getName(),
-                channel.getName(), member.getEffectiveName(),
-                message.getContentDisplay()));
+        if (LOGGER.isInfoEnabled())
+        {
+            LOGGER.info(messageSource.getMessage(GENERAL_MESSAGE_LOG, channel.getGuild().getName(),
+                    channel.getName(), member.getEffectiveName(),
+                    message.getContentDisplay()));
+        }
     }
 
     private Optional<Command> getCommand(String commandAlias)
@@ -153,5 +142,35 @@ public class CommandManager
                 return Optional.of(this.commands.get(commandAliases));
         }
         return Optional.empty();
+    }
+
+    private void handleArgumentsParseException(TextChannel channel, Command command, CommandArgumentsParseException exception)
+    {
+        LOGGER.error(messageSource.getMessage(ERROR_PARSING_OF_COMMAND_PARAMETERS, command.getName(), exception.getMessage()));
+        MessageEmbed messageEmbed = new EmbedBuilder()
+                .setColor(Color.RED)
+                .addField(messageSource.getMessage(ERROR_COMMAND_CORRECT_USAGE), command.getUsage(), false)
+                .build();
+        channel.sendMessageEmbeds(messageEmbed).queue();
+    }
+
+    private void handleCommandException(TextChannel channel, Command command, CommandException exception)
+    {
+        LOGGER.error(messageSource.getMessage(ERROR_COMMAND_EXCEPTION, command.getName(), exception.getMessage()));
+        MessageEmbed messageEmbed = new EmbedBuilder()
+                .setColor(Color.RED)
+                .setDescription(messageSource.getMessage(ERROR_COMMAND_EXCEPTION, exception.getMessage()))
+                .build();
+        channel.sendMessageEmbeds(messageEmbed).queue();
+    }
+
+    private void handleException(TextChannel channel, Command command, Exception exception)
+    {
+        LOGGER.error(messageSource.getMessage(ERROR_GENERAL, command.getName(), exception.getMessage()), exception);
+        MessageEmbed messageEmbed = new EmbedBuilder()
+                .setColor(Color.RED)
+                .setDescription(messageSource.getMessage(ERROR_GENERAL, exception.getMessage()))
+                .build();
+        channel.sendMessageEmbeds(messageEmbed).queue();
     }
 }

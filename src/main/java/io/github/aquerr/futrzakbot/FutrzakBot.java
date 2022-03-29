@@ -1,12 +1,31 @@
 package io.github.aquerr.futrzakbot;
 
 import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
+import io.github.aquerr.futrzakbot.command.ClearCommand;
 import io.github.aquerr.futrzakbot.command.CommandManager;
+import io.github.aquerr.futrzakbot.command.DebilCommand;
+import io.github.aquerr.futrzakbot.command.EightBallCommand;
+import io.github.aquerr.futrzakbot.command.FightCommand;
+import io.github.aquerr.futrzakbot.command.FutrzakCommand;
+import io.github.aquerr.futrzakbot.command.HelpCommand;
+import io.github.aquerr.futrzakbot.command.InfoCommand;
+import io.github.aquerr.futrzakbot.command.LoopCommand;
+import io.github.aquerr.futrzakbot.command.LoveCommand;
+import io.github.aquerr.futrzakbot.command.PlayCommand;
+import io.github.aquerr.futrzakbot.command.QueueCommand;
+import io.github.aquerr.futrzakbot.command.QuoteCommand;
+import io.github.aquerr.futrzakbot.command.RemoveComand;
+import io.github.aquerr.futrzakbot.command.ResumeCommand;
+import io.github.aquerr.futrzakbot.command.RouletteCommand;
+import io.github.aquerr.futrzakbot.command.SkipCommand;
+import io.github.aquerr.futrzakbot.command.StopCommand;
+import io.github.aquerr.futrzakbot.command.VolumeCommand;
 import io.github.aquerr.futrzakbot.config.Configuration;
 import io.github.aquerr.futrzakbot.events.MessageListener;
 import io.github.aquerr.futrzakbot.events.ReadyListener;
 import io.github.aquerr.futrzakbot.events.SlashCommandListener;
 import io.github.aquerr.futrzakbot.games.GameManager;
+import io.github.aquerr.futrzakbot.games.QuoteGame;
 import io.github.aquerr.futrzakbot.message.Localization;
 import io.github.aquerr.futrzakbot.message.MessageSource;
 import io.github.aquerr.futrzakbot.role.DiscordRoleGiver;
@@ -63,7 +82,8 @@ public class FutrzakBot
         {
             this.futrzakAudioPlayerManager = new FutrzakAudioPlayerManager(this);
             this.gameManager = new GameManager(this);
-            this.commandManager = new CommandManager(this.messageSource, this.futrzakAudioPlayerManager, this.gameManager);
+            this.commandManager = new CommandManager(this.messageSource);
+            registerCommands();
 
             this.jda = JDABuilder.createDefault(configuration.getBotToken())
                     .enableIntents(GatewayIntent.GUILD_MEMBERS)
@@ -99,6 +119,28 @@ public class FutrzakBot
             this.jda.addEventListener(new RoleMessageReactListener(this, this.discordRoleGiver));
             this.discordRoleGiver.init();
         }
+    }
+
+    private void registerCommands()
+    {
+        this.commandManager.registerCommand(new HelpCommand(this.commandManager, this.messageSource));
+        this.commandManager.registerCommand(new EightBallCommand());
+        this.commandManager.registerCommand(new RouletteCommand());
+        this.commandManager.registerCommand(new DebilCommand());
+        this.commandManager.registerCommand(new LoveCommand());
+        this.commandManager.registerCommand(new FutrzakCommand(this.gameManager.getFutrzakGame()));
+        this.commandManager.registerCommand(new PlayCommand(this.futrzakAudioPlayerManager));
+        this.commandManager.registerCommand(new StopCommand(this.futrzakAudioPlayerManager));
+        this.commandManager.registerCommand(new ResumeCommand(this.futrzakAudioPlayerManager));
+        this.commandManager.registerCommand(new VolumeCommand(this.futrzakAudioPlayerManager));
+        this.commandManager.registerCommand(new SkipCommand(this.futrzakAudioPlayerManager));
+        this.commandManager.registerCommand(new RemoveComand(this.futrzakAudioPlayerManager));
+        this.commandManager.registerCommand(new ClearCommand(this.futrzakAudioPlayerManager));
+        this.commandManager.registerCommand(new QueueCommand(this.futrzakAudioPlayerManager));
+        this.commandManager.registerCommand(new InfoCommand(this.futrzakAudioPlayerManager));
+        this.commandManager.registerCommand(new LoopCommand(this.futrzakAudioPlayerManager));
+        this.commandManager.registerCommand(new FightCommand());
+        this.commandManager.registerCommand(new QuoteCommand(QuoteGame.getInstance()));
     }
 
     public JDA getJda()
