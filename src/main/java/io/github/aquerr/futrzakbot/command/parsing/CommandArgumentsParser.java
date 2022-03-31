@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
 
-
 public class CommandArgumentsParser
 {
     private final Map<Class<?>, ArgumentParser<?>> parsers;
@@ -51,11 +50,6 @@ public class CommandArgumentsParser
         {
             Parameter<?> parameter = commandParametersIterator.next();
             String arg = args.poll();
-
-            if (commandParametersIterator.hasNext())
-            {
-                parameter = commandParametersIterator.next();
-            }
 
             if (arg == null)
             {

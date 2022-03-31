@@ -6,14 +6,14 @@ import lombok.NonNull;
 
 @Getter
 @Builder
-public class IntParameter implements Parameter<Integer>
+public class StringParameter implements Parameter<String>
 {
     @NonNull
     String key;
 
     @Override
-    public Class<Integer> getType()
+    public Class<String> getType()
     {
-        return Integer.class;
+        return String.class;
     }
 }
