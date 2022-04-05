@@ -23,7 +23,7 @@ import java.util.Optional;
 
 public class CommandManager
 {
-    public static final String COMMAND_PREFIX = "!t";
+    public static final String COMMAND_PREFIX = "!f";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandManager.class);
 

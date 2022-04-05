@@ -21,11 +21,12 @@ import io.github.aquerr.futrzakbot.command.SkipCommand;
 import io.github.aquerr.futrzakbot.command.StopCommand;
 import io.github.aquerr.futrzakbot.command.VolumeCommand;
 import io.github.aquerr.futrzakbot.config.Configuration;
+import io.github.aquerr.futrzakbot.config.JsonPathConfiguration;
 import io.github.aquerr.futrzakbot.events.MessageListener;
 import io.github.aquerr.futrzakbot.events.ReadyListener;
 import io.github.aquerr.futrzakbot.events.SlashCommandListener;
 import io.github.aquerr.futrzakbot.games.GameManager;
-import io.github.aquerr.futrzakbot.games.QuoteGame;
+import io.github.aquerr.futrzakbot.games.quote.QuoteGame;
 import io.github.aquerr.futrzakbot.message.Localization;
 import io.github.aquerr.futrzakbot.message.MessageSource;
 import io.github.aquerr.futrzakbot.role.DiscordRoleGiver;
@@ -66,12 +67,15 @@ public class FutrzakBot
     private GameManager gameManager;
     private CommandManager commandManager;
     private Configuration configuration;
+    private JsonPathConfiguration jsonPathConfiguration;
     private DiscordRoleGiver discordRoleGiver;
     private MessageSource messageSource;
 
     private void start()
     {
         this.configuration = Configuration.loadConfiguration();
+        this.jsonPathConfiguration = new JsonPathConfiguration();
+        this.jsonPathConfiguration.configure();
         this.messageSource = new MessageSource(Localization.forTag(this.configuration.getLanguageTag()));
         if (configuration.getBotToken().isEmpty())
         {
@@ -140,7 +144,7 @@ public class FutrzakBot
         this.commandManager.registerCommand(new InfoCommand(this.futrzakAudioPlayerManager));
         this.commandManager.registerCommand(new LoopCommand(this.futrzakAudioPlayerManager));
         this.commandManager.registerCommand(new FightCommand());
-        this.commandManager.registerCommand(new QuoteCommand(QuoteGame.getInstance()));
+        this.commandManager.registerCommand(new QuoteCommand(QuoteGame.getInstance(), this.messageSource));
     }
 
     public JDA getJda()

@@ -6,6 +6,8 @@ public interface Parameter<T>
 
     Class<T> getType();
 
+    boolean isOptional();
+
     static ParameterImpl.ParameterImplBuilder builder()
     {
         return new ParameterImpl.ParameterImplBuilder();

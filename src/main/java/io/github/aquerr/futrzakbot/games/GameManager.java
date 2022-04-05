@@ -1,6 +1,7 @@
 package io.github.aquerr.futrzakbot.games;
 
 import io.github.aquerr.futrzakbot.FutrzakBot;
+import io.github.aquerr.futrzakbot.games.quote.QuoteGame;
 
 public class GameManager
 {

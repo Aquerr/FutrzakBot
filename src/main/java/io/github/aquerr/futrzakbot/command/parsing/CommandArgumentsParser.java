@@ -53,6 +53,8 @@ public class CommandArgumentsParser
 
             if (arg == null)
             {
+                if (parameter.isOptional())
+                    continue;
                 throw new CommandArgumentsParseException("Not enough arguments");
             }
 
