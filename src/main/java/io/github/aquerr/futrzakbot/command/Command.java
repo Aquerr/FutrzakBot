@@ -48,9 +48,17 @@ public interface Command
         {
             for (final Parameter<?> parameter : parameters)
             {
+                if (parameter.isOptional())
+                    usageBuilder.append("[");
+
                 usageBuilder.append("<")
                         .append(parameter.getKey())
-                        .append("> ");
+                        .append(">");
+
+                if (parameter.isOptional())
+                    usageBuilder.append("]");
+
+                usageBuilder.append(" ");
             }
         }
         return usageBuilder.toString();

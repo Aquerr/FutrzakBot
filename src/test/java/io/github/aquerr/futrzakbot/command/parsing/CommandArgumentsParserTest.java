@@ -19,10 +19,12 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -142,5 +144,31 @@ class CommandArgumentsParserTest
         // when
         // then
         assertThrows(CommandArgumentsParseException.class, () -> commandArgumentsParser.parseCommandArgs(textChannel, command, args));
+    }
+
+    @Test
+    void parseCommandArgsShouldThrowCommandArgumentsParseExceptionWhenArgumentIsMissingAndParameterIsNotOptional()
+    {
+        // given
+        Queue<String> args = new ArrayDeque<>(Collections.emptyList());
+        parsers.put(String.class, stringArgumentParser);
+        given(command.getParameters()).willReturn(List.of(StringParameter.builder().key(STRING_PARAMETER_KEY).build()));
+
+        // when
+        // then
+        assertThrows(CommandArgumentsParseException.class, () -> commandArgumentsParser.parseCommandArgs(textChannel, command, args));
+    }
+
+    @Test
+    void parseCommandArgsShouldContinueIfArgumentIsMissingAndParameterIsOptional()
+    {
+        // given
+        Queue<String> args = new ArrayDeque<>(Collections.emptyList());
+        parsers.put(String.class, stringArgumentParser);
+        given(command.getParameters()).willReturn(List.of(StringParameter.builder().key(STRING_PARAMETER_KEY).optional(true).build()));
+
+        // when
+        // then
+        assertDoesNotThrow(() -> commandArgumentsParser.parseCommandArgs(textChannel, command, args));
     }
 }
