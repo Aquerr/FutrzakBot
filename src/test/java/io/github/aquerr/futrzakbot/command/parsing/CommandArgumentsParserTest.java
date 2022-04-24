@@ -105,6 +105,20 @@ class CommandArgumentsParserTest
     }
 
     @Test
+    void parseCommandArgsShouldNotAddAnySpacesToArgumentWhenEncountersRemainingStringsParameter() throws CommandArgumentsParseException
+    {
+        // given
+        Queue<String> args = new ArrayDeque<>(Arrays.asList(ARGUMENT_1));
+        given(command.getParameters()).willReturn(Collections.singletonList(RemainingStringsParameter.builder().key(STRING_PARAMETER_KEY).build()));
+
+        // when
+        Map<String, Object> parsedArguments = commandArgumentsParser.parseCommandArgs(textChannel, command, args);
+
+        // then
+        assertThat(parsedArguments).containsAllEntriesOf(Map.of(STRING_PARAMETER_KEY, ARGUMENT_1));
+    }
+
+    @Test
     void parseCommandArgsShouldNotParseMoreParametersWhenEncountersRemainingStringsParameter() throws CommandArgumentsParseException
     {
         // given
