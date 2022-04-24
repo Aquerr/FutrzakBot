@@ -34,6 +34,7 @@ class QuoteCommandTest
     private static final String CATEGORY_ALIAS_2 = "categoryAlias2";
 
     private static final String AVAILABLE_CATEGORIES = "command.quote.categories.available";
+    private static final String QUOTE_COMMAND_CATEGORIES_HELP = "command.quote.categories.help";
 
     @Mock
     private QuoteGame quoteGame;
@@ -65,6 +66,8 @@ class QuoteCommandTest
     @Test
     void getUsageShouldReturnCorrectUsage()
     {
+        given(messageSource.getMessage(QUOTE_COMMAND_CATEGORIES_HELP)).willReturn("Use ? to show available categories.");
+
         assertThat(quoteCommand.getUsage()).isEqualTo("!f quote,cytat [<category>] " + "\n" + "Use ? to show available categories.");
     }
 

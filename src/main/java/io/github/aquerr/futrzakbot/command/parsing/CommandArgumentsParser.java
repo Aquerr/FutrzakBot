@@ -60,8 +60,12 @@ public class CommandArgumentsParser
 
             if (parameter instanceof RemainingStringsParameter)
             {
-                String argsMessage = arg + " " + String.join(" ", args);
-                parsedArguments.put(parameter.getKey(), argsMessage);
+                StringBuilder argsMessage = new StringBuilder(arg);
+                for (final String remainingArg : args)
+                {
+                    argsMessage.append(" ").append(remainingArg);
+                }
+                parsedArguments.put(parameter.getKey(), argsMessage.toString());
                 break;
             }
 
