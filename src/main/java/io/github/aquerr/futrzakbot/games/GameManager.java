@@ -8,6 +8,7 @@ public class GameManager
     private final FutrzakBot futrzakBot;
     private final QuoteGame quoteGame;
     private final FutrzakGame futrzakGame;
+    private final ValheimGame valheimGame;
 
     public GameManager(FutrzakBot futrzakBot)
     {
@@ -15,6 +16,7 @@ public class GameManager
         this.quoteGame = QuoteGame.getInstance();
         this.futrzakGame = new FutrzakGame(futrzakBot);
         this.futrzakGame.setup();
+        this.valheimGame = new ValheimGame(futrzakBot.getConfiguration().getValheimServerIp());
     }
 
     public QuoteGame getQuoteGame()
@@ -25,5 +27,10 @@ public class GameManager
     public FutrzakGame getFutrzakGame()
     {
         return futrzakGame;
+    }
+
+    public ValheimGame getValheimGame()
+    {
+        return valheimGame;
     }
 }

@@ -24,6 +24,7 @@ public class Configuration
     private final long channelId;
     private final long messageId;
     private final Map<String, Long> emoteRoleIdsMap;
+    private final String valheimServerIp;
 
     public static Configuration loadConfiguration()
     {
@@ -40,6 +41,7 @@ public class Configuration
         this.channelId = config.getConfig("role-giver").getLong("channel-id");
         this.messageId = config.getConfig("role-giver").getLong("message-id");
         this.languageTag = config.getString("lang");
+        this.valheimServerIp = config.getString("valheim-server-ip");
     }
 
     public String getBotToken()
@@ -75,6 +77,11 @@ public class Configuration
     public boolean isRoleGiverEnabled()
     {
         return roleGiverEnabled;
+    }
+
+    public String getValheimServerIp()
+    {
+        return valheimServerIp;
     }
 
     private static Config loadConfigFile()

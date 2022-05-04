@@ -19,6 +19,7 @@ import io.github.aquerr.futrzakbot.command.ResumeCommand;
 import io.github.aquerr.futrzakbot.command.RouletteCommand;
 import io.github.aquerr.futrzakbot.command.SkipCommand;
 import io.github.aquerr.futrzakbot.command.StopCommand;
+import io.github.aquerr.futrzakbot.command.ValheimCommand;
 import io.github.aquerr.futrzakbot.command.VolumeCommand;
 import io.github.aquerr.futrzakbot.config.Configuration;
 import io.github.aquerr.futrzakbot.config.JsonPathConfiguration;
@@ -145,6 +146,7 @@ public class FutrzakBot
         this.commandManager.registerCommand(new LoopCommand(this.futrzakAudioPlayerManager));
         this.commandManager.registerCommand(new FightCommand());
         this.commandManager.registerCommand(new QuoteCommand(QuoteGame.getInstance(), this.messageSource));
+        this.commandManager.registerCommand(new ValheimCommand(this.messageSource, this.gameManager.getValheimGame()));
     }
 
     public JDA getJda()

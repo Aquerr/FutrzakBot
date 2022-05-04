@@ -23,11 +23,13 @@ dependencies {
         exclude module: 'opus-java'
     }
     implementation 'com.vdurmont:emoji-java:5.1.1'
+    implementation 'com.ibasco.agql:agql-steam-master:0.1.7'
 
     // https://mvnrepository.com/artifact/org.json/json
     implementation 'org.json:json:20220320'
     implementation 'com.typesafe:config:1.4.1'
     implementation 'com.jayway.jsonpath:json-path:2.7.0'
+    implementation 'com.ibasco.agql:agql-source-query:0.1.7'
 
     // Logging (Log4j2)
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.2'
