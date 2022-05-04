@@ -4,10 +4,15 @@ import io.github.aquerr.futrzakbot.games.quote.exception.QuoteCategoryNotFound;
 import io.github.aquerr.futrzakbot.games.quote.exception.QuotesNotFoundException;
 import io.github.aquerr.futrzakbot.placeholder.PlaceholderContext;
 import io.github.aquerr.futrzakbot.placeholder.PlaceholderService;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import java.awt.*;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -40,8 +45,7 @@ public class QuoteGame
             throw new QuotesNotFoundException("Quotes not found for category: " + categoryAlias);
 
         String randomQuote = getRandomQuote(quotes);
-        String processedRandomQuote = processPlaceholders(randomQuote, textChannel, member);
-        textChannel.sendMessage(processedRandomQuote).queue();
+        processPlaceholersAndPrintQuote(randomQuote, textChannel, member, category);
     }
 
     public void printRandomQuote(TextChannel textChannel, Member member) throws QuotesNotFoundException, IOException
@@ -51,8 +55,17 @@ public class QuoteGame
         if (quotes.isEmpty())
             throw new QuotesNotFoundException("Quotes not found!");
         String quote = getRandomQuote(quotes);
+        processPlaceholersAndPrintQuote(quote, textChannel, member, randomCategory);
+    }
+    private void processPlaceholersAndPrintQuote(String quote, TextChannel textChannel, Member member, QuoteCategory category)
+    {
         String processedRandomQuote = processPlaceholders(quote, textChannel, member);
-        textChannel.sendMessage(processedRandomQuote).queue();
+        MessageEmbed messageEmbed = new EmbedBuilder()
+                .setTitle(category.getName())
+                .setDescription(processedRandomQuote)
+                .setColor(Color.GREEN)
+                .build();
+        textChannel.sendMessageEmbeds(messageEmbed).queue();
     }
 
     private QuoteCategory getRandomCategory() throws QuotesNotFoundException
