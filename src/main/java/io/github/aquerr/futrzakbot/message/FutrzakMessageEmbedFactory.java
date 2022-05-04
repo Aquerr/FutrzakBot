@@ -24,7 +24,7 @@ public class FutrzakMessageEmbedFactory
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle("Utwór dodany do kolejki");
+        embedBuilder.setTitle(":white_check_mark: Utwór dodany do kolejki");
         embedBuilder.addField(new MessageEmbed.Field("Wykonawca:", artist, false));
         embedBuilder.addField(new MessageEmbed.Field("Tytuł:", title, false));
         return embedBuilder.build();
@@ -34,7 +34,7 @@ public class FutrzakMessageEmbedFactory
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle("Playlista " + playlist.getName() + " dodana do kolejki");
+        embedBuilder.setTitle(":white_check_mark: Playlista " + playlist.getName() + " dodana do kolejki");
         int count = Math.min(playlist.getTracks().size(), 10);
         for (int i = 0; i < count; i++)
         {
@@ -50,11 +50,36 @@ public class FutrzakMessageEmbedFactory
 
     public static MessageEmbed createNowPlayingMessage(AudioTrack audioTrack)
     {
+        int currentMinutes = (int)audioTrack.getPosition() / 60000;
+        int currentSeconds = (int)audioTrack.getPosition() % 60000 / 1000;
+
+        int totalMinutes = (int)audioTrack.getDuration() / 60000;
+        int totalSeconds = (int)audioTrack.getDuration() % 60000 / 1000;
+
+        int numberOfBars = 10;
+        int bar = (int)(((double)audioTrack.getPosition() / audioTrack.getDuration()) * 100 / numberOfBars - 1);
+
+        String[] progressBar = new String[numberOfBars];
+        for (int i = 0; i < numberOfBars; i++)
+        {
+            if (bar >= i - 1)
+            {
+                progressBar[i] = ":blue_square:";
+            }
+            else
+            {
+                progressBar[i] = ":white_large_square:";
+            }
+        }
+
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle("Obecnie gra");
+        embedBuilder.setTitle(":notes: Obecnie gra :notes:");
         embedBuilder.addField(new MessageEmbed.Field("Wykonawca:", audioTrack.getInfo().author, false));
         embedBuilder.addField(new MessageEmbed.Field("Tytuł:", audioTrack.getInfo().title, false));
+        embedBuilder.addField(new MessageEmbed.Field("", String.format("%02d", currentMinutes) + ":" + String.format("%02d", currentSeconds)
+                + " " + String.join("", progressBar) + " "
+                + String.format("%02d", totalMinutes) + ":" + String.format("%02d", totalSeconds), false));
         return embedBuilder.build();
     }
 
@@ -77,7 +102,7 @@ public class FutrzakMessageEmbedFactory
     public static MessageEmbed createQueueMessage(List<AudioTrack> queue)
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Kolejka utworów");
+        embedBuilder.setTitle(":notes: Kolejka utworów :notes:");
         embedBuilder.setColor(DEFAULT_COLOR);
 
         int maxTrackCount = 20;
@@ -101,7 +126,7 @@ public class FutrzakMessageEmbedFactory
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle("Odtwarzacz został zatrzymany!");
+        embedBuilder.setTitle(":pause_button: Odtwarzacz został zatrzymany!");
         return embedBuilder.build();
     }
 
@@ -109,7 +134,7 @@ public class FutrzakMessageEmbedFactory
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle("Odtwarzacz został wznowiony!");
+        embedBuilder.setTitle(":arrow_forward: Odtwarzacz został wznowiony!");
         return embedBuilder.build();
     }
 
@@ -117,7 +142,7 @@ public class FutrzakMessageEmbedFactory
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle("Głośność została zmieniona na " + volume + "!");
+        embedBuilder.setTitle(":loud_sound: Głośność została zmieniona na " + volume + "!");
         return embedBuilder.build();
     }
 
@@ -125,7 +150,7 @@ public class FutrzakMessageEmbedFactory
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle("Pomijam utwór");
+        embedBuilder.setTitle(":track_next: Pomijam utwór");
         embedBuilder.addField(new MessageEmbed.Field("Wykonawca:", audioTrack.getInfo().author, false));
         embedBuilder.addField(new MessageEmbed.Field("Tytuł:", audioTrack.getInfo().title, false));
         return embedBuilder.build();
@@ -135,7 +160,7 @@ public class FutrzakMessageEmbedFactory
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle("Wyczyszczono kolejkę!");
+        embedBuilder.setTitle(":recycle: Wyczyszczono kolejkę!");
         return embedBuilder.build();
     }
 
@@ -143,7 +168,7 @@ public class FutrzakMessageEmbedFactory
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle("Pominołem utwór nr. " + element);
+        embedBuilder.setTitle(":track_next: Pominołem utwór nr. " + element);
         embedBuilder.addField(new MessageEmbed.Field("Wykonawca:", audioTrack.getInfo().author, false));
         embedBuilder.addField(new MessageEmbed.Field("Tytuł:", audioTrack.getInfo().title, false));
         return embedBuilder.build();
@@ -163,11 +188,11 @@ public class FutrzakMessageEmbedFactory
         embedBuilder.setColor(DEFAULT_COLOR);
         if (loop)
         {
-            embedBuilder.setTitle("Zapętliłem kolejkę");
+            embedBuilder.setTitle(":repeat: Zapętliłem kolejkę");
         }
         else
         {
-            embedBuilder.setTitle("Odpętliłem kolejkę");
+            embedBuilder.setTitle(":repeat: Odpętliłem kolejkę");
         }
         return embedBuilder.build();
     }
