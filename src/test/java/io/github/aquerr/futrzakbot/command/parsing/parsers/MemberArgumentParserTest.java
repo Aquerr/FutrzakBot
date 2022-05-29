@@ -23,7 +23,7 @@ import static org.mockito.MockitoAnnotations.openMocks;
 
 class MemberArgumentParserTest
 {
-    private static final String MEMBER_AS_MENTION = "<@!32130813908>";
+    private static final String MEMBER_AS_MENTION = "<@32130813908>";
     private static final String MEMBER_AS_NICKNAME = "Stefan";
     private static final String MEMBER_AS_NICKNAME_2 = "stefanooo";
 

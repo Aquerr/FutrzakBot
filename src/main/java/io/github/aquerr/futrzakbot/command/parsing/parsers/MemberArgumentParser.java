@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public class MemberArgumentParser implements ArgumentParser<Member>
 {
-    private static final Pattern MENTION_PATTERN = Pattern.compile("^<@!\\d+>$");
+    private static final Pattern MENTION_PATTERN = Pattern.compile("^<@\\d+>$");
 
     @Override
     public Member parse(ParsingContext context) throws ArgumentParseException
@@ -29,7 +29,7 @@ public class MemberArgumentParser implements ArgumentParser<Member>
 
     private String getMemberIdFromMention(String mentionString)
     {
-        return mentionString.substring(3, mentionString.length() - 1);
+        return mentionString.substring(2, mentionString.length() - 1);
     }
 
     private Member resolveMember(Guild guild, String argument) throws ArgumentParseException
