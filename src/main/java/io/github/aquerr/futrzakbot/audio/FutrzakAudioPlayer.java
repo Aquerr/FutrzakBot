@@ -156,7 +156,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
 
     public void stop()
     {
-        this.audioPlayer.stopTrack();
+        this.audioPlayer.setPaused(true);
         this.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlayerStoppedMessage()).queue();
     }
 
