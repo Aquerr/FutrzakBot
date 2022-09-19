@@ -10,12 +10,16 @@ import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.util.Collections;
 import java.util.List;
 
-public class PlayCommand implements Command
+public class PlayCommand implements Command, SlashCommand
 {
     private static final String SONG_PARAM_KEY = "song";
 
@@ -82,5 +86,37 @@ public class PlayCommand implements Command
     public List<Parameter<?>> getParameters()
     {
         return Collections.singletonList(RemainingStringsParameter.builder().key(SONG_PARAM_KEY).build());
+    }
+
+    @Override
+    public CommandData getSlashCommandData()
+    {
+        return new CommandData("player", "Open player menu")
+                            .addOption(OptionType.STRING, "song", "Enter song name to play", false)
+                            .setDefaultEnabled(true);
+    }
+
+    @Override
+    public boolean onSlashCommand(SlashCommandEvent event)
+    {
+        return false;
+    }
+
+    @Override
+    public boolean onButtonClick(ButtonClickEvent event)
+    {
+        return false;
+    }
+
+    @Override
+    public boolean supports(SlashCommandEvent event)
+    {
+        return false;
+    }
+
+    @Override
+    public boolean supports(ButtonClickEvent event)
+    {
+        return false;
     }
 }

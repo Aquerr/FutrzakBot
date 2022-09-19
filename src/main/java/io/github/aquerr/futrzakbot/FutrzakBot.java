@@ -2,6 +2,7 @@ package io.github.aquerr.futrzakbot;
 
 import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.command.ClearCommand;
+import io.github.aquerr.futrzakbot.command.Command;
 import io.github.aquerr.futrzakbot.command.CommandManager;
 import io.github.aquerr.futrzakbot.command.DebilCommand;
 import io.github.aquerr.futrzakbot.command.EightBallCommand;
@@ -18,6 +19,7 @@ import io.github.aquerr.futrzakbot.command.RemoveComand;
 import io.github.aquerr.futrzakbot.command.ResumeCommand;
 import io.github.aquerr.futrzakbot.command.RouletteCommand;
 import io.github.aquerr.futrzakbot.command.SkipCommand;
+import io.github.aquerr.futrzakbot.command.SlashCommand;
 import io.github.aquerr.futrzakbot.command.StopCommand;
 import io.github.aquerr.futrzakbot.command.VolumeCommand;
 import io.github.aquerr.futrzakbot.config.Configuration;
@@ -38,6 +40,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -47,6 +50,8 @@ import org.slf4j.LoggerFactory;
 import javax.security.auth.login.LoginException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
 
 public class FutrzakBot
 {
@@ -95,7 +100,7 @@ public class FutrzakBot
                     .setChunkingFilter(ChunkingFilter.ALL)
                     .addEventListeners(new MessageListener(this))
                     .addEventListeners(new ReadyListener())
-                    .addEventListeners(new SlashCommandListener(this.futrzakAudioPlayerManager))
+                    .addEventListeners(new SlashCommandListener(this.commandManager, this.futrzakAudioPlayerManager))
                     .setAutoReconnect(true)
                     .enableCache(CacheFlag.VOICE_STATE)
                     .setActivity(Activity.of(Activity.ActivityType.DEFAULT, "FutrzakiShow " + CommandManager.COMMAND_PREFIX + " help https://github.com/Aquerr/FutrzakBot"))
@@ -186,11 +191,7 @@ public class FutrzakBot
     {
         try
         {
-            guild.updateCommands()
-                    .addCommands(new CommandData("player", "Open player menu")
-                            .addOption(OptionType.STRING, "song", "Enter song name to play", false)
-                            .setDefaultEnabled(true))
-                    .complete();
+            this.commandManager.registerSlashCommandsForGuild(guild);
         }
         catch (Exception exception)
         {

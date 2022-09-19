@@ -3,6 +3,8 @@ package io.github.aquerr.futrzakbot.events;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.audio.handler.AudioPlayerSendHandler;
+import io.github.aquerr.futrzakbot.command.CommandManager;
+import io.github.aquerr.futrzakbot.command.SlashCommand;
 import io.github.aquerr.futrzakbot.message.FutrzakMessageEmbedFactory;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
@@ -17,15 +19,24 @@ import java.util.List;
 
 public class SlashCommandListener extends ListenerAdapter
 {
+    private final CommandManager commandManager;
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
 
-    public SlashCommandListener(final FutrzakAudioPlayerManager futrzakAudioPlayerManager)
+    public SlashCommandListener(final CommandManager commandManager,
+                                final FutrzakAudioPlayerManager futrzakAudioPlayerManager)
     {
+        this.commandManager = commandManager;
         this.futrzakAudioPlayerManager = futrzakAudioPlayerManager;
     }
 
     @Override
     public void onSlashCommand(SlashCommandEvent event) {
+        for (final SlashCommand slashCommand : this.commandManager.getSlashCommands())
+        {
+            if (slashCommand.onSlashCommand(event))
+                break;
+        }
+
         if (event.getName().equals("player")) {
             if (event.getOption("song") != null)
             {
@@ -52,6 +63,12 @@ public class SlashCommandListener extends ListenerAdapter
 
     @Override
     public void onButtonClick(ButtonClickEvent event) {
+        for (final SlashCommand slashCommand : this.commandManager.getSlashCommands())
+        {
+            if (slashCommand.onButtonClick(event))
+                break;
+        }
+
         if (event.getComponentId().equals("queue")) {
             List<AudioTrack> queue = this.futrzakAudioPlayerManager.getQueue(event.getGuild().getIdLong());
             event.replyEmbeds(FutrzakMessageEmbedFactory.createQueueMessage(queue)).queue();

@@ -8,18 +8,24 @@ import io.github.aquerr.futrzakbot.command.parsing.CommandParsingChain;
 import io.github.aquerr.futrzakbot.command.parsing.CommandResolver;
 import io.github.aquerr.futrzakbot.message.MessageSource;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class CommandManager
 {
@@ -172,5 +178,29 @@ public class CommandManager
                 .setDescription(messageSource.getMessage(ERROR_GENERAL, exception.getMessage()))
                 .build();
         channel.sendMessageEmbeds(messageEmbed).queue();
+    }
+
+    public void registerSlashCommandsForGuild(Guild guild)
+    {
+        List<CommandData> slashCommandData = new ArrayList<>();
+        for (Command command : getCommands().values())
+        {
+            if (!(command instanceof SlashCommand))
+                continue;
+
+            SlashCommand slashCommand = (SlashCommand) command;
+
+            slashCommandData.add(slashCommand.getSlashCommandData());
+        }
+        CommandListUpdateAction updateAction = guild.updateCommands();
+        updateAction.addCommands(slashCommandData).complete();
+    }
+
+    public List<SlashCommand> getSlashCommands()
+    {
+        return this.commands.values().stream()
+                .filter(SlashCommand.class::isInstance)
+                .map(SlashCommand.class::cast)
+                .collect(Collectors.toList());
     }
 }
