@@ -97,15 +97,13 @@ public class PlayCommand implements Command, SlashCommand
     }
 
     @Override
-    public boolean onSlashCommand(SlashCommandEvent event)
+    public void onSlashCommand(SlashCommandEvent event)
     {
-        return false;
     }
 
     @Override
-    public boolean onButtonClick(ButtonClickEvent event)
+    public void onButtonClick(ButtonClickEvent event)
     {
-        return false;
     }
 
     @Override

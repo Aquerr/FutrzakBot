@@ -8,9 +8,9 @@ public interface SlashCommand
 {
     CommandData getSlashCommandData();
 
-    boolean onSlashCommand(SlashCommandEvent event);
+    void onSlashCommand(SlashCommandEvent event);
 
-    boolean onButtonClick(ButtonClickEvent event);
+    void onButtonClick(ButtonClickEvent event);
 
     boolean supports(SlashCommandEvent event);
 

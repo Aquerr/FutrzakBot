@@ -73,7 +73,7 @@ public class HelpCommand implements Command, SlashCommand
     }
 
     @Override
-    public boolean onSlashCommand(SlashCommandEvent event)
+    public void onSlashCommand(SlashCommandEvent event)
     {
         if (event.getName().equals(getAliases().get(0)))
         {
@@ -81,19 +81,17 @@ public class HelpCommand implements Command, SlashCommand
                     .addActionRow(Button.primary(BUTTON_HELP_LEFT_ID, Emoji.fromUnicode(EmojiUnicodes.ARROW_LEFT)),
                                     Button.primary(BUTTON_HELP_RIGHT_ID, Emoji.fromUnicode(EmojiUnicodes.ARROW_RIGHT)))
                     .queue();
-            return true;
         }
-        return false;
     }
 
     @Override
-    public boolean onButtonClick(ButtonClickEvent event)
+    public void onButtonClick(ButtonClickEvent event)
     {
         if (event.getComponentId().equals(BUTTON_HELP_LEFT_ID))
         {
             Message message = event.getMessage();
             if (message.getEmbeds().isEmpty())
-                return true;
+                return;
 
             MessageEmbed messageEmbed = message.getEmbeds().get(0);
 
@@ -102,13 +100,12 @@ public class HelpCommand implements Command, SlashCommand
 
             MessageEmbed newMessage = FutrzakMessageEmbedFactory.createHelpMessage(this.commandManager.getCommands().values(), page - 1);
             event.editMessageEmbeds(newMessage).queue();
-            return true;
         }
         else if (event.getComponentId().equals(BUTTON_HELP_RIGHT_ID))
         {
             Message message = event.getMessage();
             if (message.getEmbeds().isEmpty())
-                return true;
+                return;
 
             MessageEmbed messageEmbed = message.getEmbeds().get(0);
 
@@ -117,9 +114,7 @@ public class HelpCommand implements Command, SlashCommand
 
             MessageEmbed newMessage = FutrzakMessageEmbedFactory.createHelpMessage(this.commandManager.getCommands().values(), page + 1);
             event.editMessageEmbeds(newMessage).queue();
-            return true;
         }
-        return false;
     }
 
     @Override

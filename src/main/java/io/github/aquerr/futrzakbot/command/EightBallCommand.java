@@ -69,20 +69,19 @@ public class EightBallCommand implements Command, SlashCommand
     }
 
     @Override
-    public boolean onSlashCommand(SlashCommandEvent event)
+    public void onSlashCommand(SlashCommandEvent event)
     {
         event.deferReply().addEmbeds(new EmbedBuilder()
                 .addField("Pytanie:", event.getOption("question").getAsString(), false)
                 .addField("Odpowiedź wyroczni:", getRandomResponse(event.getTextChannel()), false)
                 .build())
             .queue();
-        return true;
     }
 
     @Override
-    public boolean onButtonClick(ButtonClickEvent event)
+    public void onButtonClick(ButtonClickEvent event)
     {
-        return false;
+
     }
 
     @Override

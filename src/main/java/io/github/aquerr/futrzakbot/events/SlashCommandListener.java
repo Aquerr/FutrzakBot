@@ -33,8 +33,11 @@ public class SlashCommandListener extends ListenerAdapter
     public void onSlashCommand(SlashCommandEvent event) {
         for (final SlashCommand slashCommand : this.commandManager.getSlashCommands())
         {
-            if (slashCommand.onSlashCommand(event))
+            if(slashCommand.supports(event))
+            {
+                slashCommand.onSlashCommand(event);
                 break;
+            }
         }
 
         if (event.getName().equals("player")) {
@@ -65,8 +68,11 @@ public class SlashCommandListener extends ListenerAdapter
     public void onButtonClick(ButtonClickEvent event) {
         for (final SlashCommand slashCommand : this.commandManager.getSlashCommands())
         {
-            if (slashCommand.onButtonClick(event))
+            if(slashCommand.supports(event))
+            {
+                slashCommand.onButtonClick(event);
                 break;
+            }
         }
 
         if (event.getComponentId().equals("queue")) {
