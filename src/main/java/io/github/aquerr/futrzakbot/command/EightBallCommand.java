@@ -6,7 +6,6 @@ import io.github.aquerr.futrzakbot.command.parameters.RemainingStringsParameter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -76,24 +75,6 @@ public class EightBallCommand implements Command, SlashCommand
                 .addField("Odpowiedź wyroczni:", getRandomResponse(event.getTextChannel()), false)
                 .build())
             .queue();
-    }
-
-    @Override
-    public void onButtonClick(ButtonClickEvent event)
-    {
-
-    }
-
-    @Override
-    public boolean supports(SlashCommandEvent event)
-    {
-        return event.getName().equals(getAliases().get(0));
-    }
-
-    @Override
-    public boolean supports(ButtonClickEvent event)
-    {
-        return false;
     }
 
     private String getRandomResponse(TextChannel channel)

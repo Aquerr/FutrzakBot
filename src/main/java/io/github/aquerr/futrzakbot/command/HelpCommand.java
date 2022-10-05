@@ -9,8 +9,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.components.Button;
 
 import java.util.Collections;
@@ -66,13 +64,6 @@ public class HelpCommand implements Command, SlashCommand
     }
 
     @Override
-    public CommandData getSlashCommandData()
-    {
-        return new CommandData(getAliases().get(0), getDescription())
-                .setDefaultEnabled(true);
-    }
-
-    @Override
     public void onSlashCommand(SlashCommandEvent event)
     {
         if (event.getName().equals(getAliases().get(0)))
@@ -115,12 +106,6 @@ public class HelpCommand implements Command, SlashCommand
             MessageEmbed newMessage = FutrzakMessageEmbedFactory.createHelpMessage(this.commandManager.getCommands().values(), page + 1);
             event.editMessageEmbeds(newMessage).queue();
         }
-    }
-
-    @Override
-    public boolean supports(SlashCommandEvent event)
-    {
-        return event.getName().equals(getAliases().get(0));
     }
 
     @Override

@@ -4,9 +4,7 @@ import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.games.RouletteGame;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.Collections;
 import java.util.List;
@@ -76,34 +74,9 @@ public class RouletteCommand implements Command, SlashCommand
     }
 
     @Override
-    public CommandData getSlashCommandData()
-    {
-        return new CommandData(getAliases().get(0), getDescription())
-                .setDefaultEnabled(true);
-    }
-
-    @Override
     public void onSlashCommand(SlashCommandEvent event)
     {
         event.reply("Zagrajmy więc!").queue();
         useRoulette(event.getTextChannel(), event.getMember());
-    }
-
-    @Override
-    public void onButtonClick(ButtonClickEvent event)
-    {
-
-    }
-
-    @Override
-    public boolean supports(SlashCommandEvent event)
-    {
-        return event.getName().equals(getAliases().get(0));
-    }
-
-    @Override
-    public boolean supports(ButtonClickEvent event)
-    {
-        return false;
     }
 }
