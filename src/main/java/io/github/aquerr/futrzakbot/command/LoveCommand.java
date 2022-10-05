@@ -7,11 +7,14 @@ import io.github.aquerr.futrzakbot.games.LoveMeter;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.Collections;
 import java.util.List;
 
-public class LoveCommand implements Command
+public class LoveCommand implements Command, SlashCommand
 {
     private static final String PARAM_KEY = "użytkownik";
 
@@ -49,6 +52,19 @@ public class LoveCommand implements Command
     public String getDescription()
     {
         return "Licznik miłości";
+    }
+
+    @Override
+    public CommandData getSlashCommandData()
+    {
+        return SlashCommand.super.getSlashCommandData()
+                .addOption(OptionType.MENTIONABLE, PARAM_KEY, "Cel", true);
+    }
+
+    @Override
+    public void onSlashCommand(SlashCommandEvent event)
+    {
+        event.reply(LoveMeter.checkLove(event.getMember(), event.getOption(PARAM_KEY).getAsMember())).queue();
     }
 
     @Override
