@@ -39,29 +39,6 @@ public class SlashCommandListener extends ListenerAdapter
                 break;
             }
         }
-
-        if (event.getName().equals("player")) {
-            if (event.getOption("song") != null)
-            {
-                GuildVoiceState guildVoiceState = event.getMember().getVoiceState();
-                VoiceChannel voiceChannel = guildVoiceState.getChannel();
-                if (voiceChannel == null)
-                {
-                    event.reply("Aby użyć tej komendy musisz być na kanale głosowym!").queue();
-                }
-                Guild guild = event.getGuild();
-                AudioManager audioManager = guild.getAudioManager();
-                audioManager.setSendingHandler(new AudioPlayerSendHandler(this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(guild.getIdLong()).getInternalAudioPlayer()));
-                audioManager.openAudioConnection(voiceChannel);
-                this.futrzakAudioPlayerManager.queue(event.getGuild().getIdLong(), event.getTextChannel(), event.getOption("song").getAsString());
-            }
-
-            event.reply("Futrzak Song Player")
-                    .addActionRow(
-                            Button.primary("queue", "View Song Queue"), // Button with only a label
-                            Button.success("next", ":track_next:")) // Button with only an emoji
-                    .queue();
-        }
     }
 
     @Override

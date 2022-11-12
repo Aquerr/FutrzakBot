@@ -2,6 +2,7 @@ package io.github.aquerr.futrzakbot.command;
 
 import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.command.context.CommandContext;
+import io.github.aquerr.futrzakbot.message.MessageSource;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
@@ -12,9 +13,12 @@ public class SkipCommand implements Command, SlashCommand
 {
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
 
-    public SkipCommand(FutrzakAudioPlayerManager futrzakAudioPlayerManager)
+    private final MessageSource messageSource;
+
+    public SkipCommand(FutrzakAudioPlayerManager futrzakAudioPlayerManager, MessageSource messageSource)
     {
         this.futrzakAudioPlayerManager = futrzakAudioPlayerManager;
+        this.messageSource = messageSource;
     }
 
     @Override
@@ -34,19 +38,19 @@ public class SkipCommand implements Command, SlashCommand
     @Override
     public String getName()
     {
-        return ":track_next: Pomiń utwór: ";
+        return messageSource.getMessage("command.skip.name");
     }
 
     @Override
     public String getDescription()
     {
-        return "Pomiń utwór";
+        return this.messageSource.getMessage("command.skip.description");
     }
 
     @Override
     public void onSlashCommand(SlashCommandEvent event)
     {
-        event.reply("Skipping track...").queue();
+        event.reply(this.messageSource.getMessage("command.skip.skipping")).queue();
         TextChannel textChannel = event.getTextChannel();
         this.futrzakAudioPlayerManager.skipAndPlayNextTrack(textChannel.getGuild().getIdLong(), textChannel);
     }

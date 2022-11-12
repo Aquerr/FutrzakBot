@@ -5,12 +5,12 @@ import io.github.aquerr.futrzakbot.audio.handler.AudioPlayerSendHandler;
 import io.github.aquerr.futrzakbot.command.parameters.Parameter;
 import io.github.aquerr.futrzakbot.command.parameters.RemainingStringsParameter;
 import io.github.aquerr.futrzakbot.command.context.CommandContext;
+import io.github.aquerr.futrzakbot.message.MessageSource;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -22,39 +22,35 @@ import java.util.List;
 public class PlayCommand implements Command, SlashCommand
 {
     private static final String SONG_PARAM_KEY = "song";
+    private static final String MUST_BE_ON_VOICE_CHANNEL = "error.command.play.must-be-on-voice-channel";
 
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
 
-    public PlayCommand(FutrzakAudioPlayerManager futrzakAudioPlayerManager)
+    private final MessageSource messageSource;
+
+    public PlayCommand(FutrzakAudioPlayerManager futrzakAudioPlayerManager, MessageSource messageSource)
     {
         this.futrzakAudioPlayerManager = futrzakAudioPlayerManager;
+        this.messageSource = messageSource;
     }
 
     @Override
     public boolean execute(CommandContext context)
     {
+        String songName = context.require(SONG_PARAM_KEY);
         TextChannel textChannel = context.getTextChannel();
         Member member = context.getMember();
-
 
         Guild guild = textChannel.getGuild();
         GuildVoiceState guildVoiceState = member.getVoiceState();
         VoiceChannel voiceChannel = guildVoiceState.getChannel();
         if (voiceChannel == null)
         {
-            textChannel.sendMessage("Aby użyć tej komendy musisz być na kanale głosowym!").complete();
+            textChannel.sendMessage(this.messageSource.getMessage(MUST_BE_ON_VOICE_CHANNEL)).complete();
+            return false;
         }
-        else
-        {
-            AudioManager audioManager = guild.getAudioManager();
-            if (audioManager.getSendingHandler() == null)
-            {
-                audioManager.setSendingHandler(new AudioPlayerSendHandler(this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(guild.getIdLong()).getInternalAudioPlayer()));
-            }
-            audioManager.openAudioConnection(voiceChannel);
-            String songName = context.require(SONG_PARAM_KEY);
-            this.futrzakAudioPlayerManager.queue(guild.getIdLong(), textChannel, songName);
-        }
+
+        queueTrack(guild, textChannel, voiceChannel, songName);
         return true;
     }
 
@@ -65,21 +61,15 @@ public class PlayCommand implements Command, SlashCommand
     }
 
     @Override
-    public String getUsage()
-    {
-        return CommandManager.COMMAND_PREFIX + " play <utwór>";
-    }
-
-    @Override
     public String getName()
     {
-        return ":microphone2: Dodaj utwór do kolejki odtwarzacza: ";
+        return this.messageSource.getMessage("command.play.name");
     }
 
     @Override
     public String getDescription()
     {
-        return "Dodaj podany utwór do kolejki odtwarzacza";
+        return this.messageSource.getMessage("command.play.description");
     }
 
     @Override
@@ -91,30 +81,34 @@ public class PlayCommand implements Command, SlashCommand
     @Override
     public CommandData getSlashCommandData()
     {
-        return new CommandData("player", "Open player menu")
-                            .addOption(OptionType.STRING, "song", "Enter song name to play", false)
-                            .setDefaultEnabled(true);
+        return SlashCommand.super.getSlashCommandData()
+                .addOption(OptionType.STRING, SONG_PARAM_KEY, this.messageSource.getMessage("command.play.slash.param.song.desc"), true);
     }
 
     @Override
     public void onSlashCommand(SlashCommandEvent event)
     {
+        String songName = event.getOption(SONG_PARAM_KEY).getAsString();
+        GuildVoiceState guildVoiceState = event.getMember().getVoiceState();
+        VoiceChannel voiceChannel = guildVoiceState.getChannel();
+        if (voiceChannel == null)
+        {
+            event.reply(this.messageSource.getMessage(MUST_BE_ON_VOICE_CHANNEL)).queue();
+            return;
+        }
+
+        event.reply(this.messageSource.getMessage("command.play.adding")).complete();
+        queueTrack(event.getGuild(), event.getTextChannel(), voiceChannel, songName);
     }
 
-    @Override
-    public void onButtonClick(ButtonClickEvent event)
+    private void queueTrack(Guild guild, TextChannel textChannel, VoiceChannel voiceChannel, String songName)
     {
-    }
-
-    @Override
-    public boolean supports(SlashCommandEvent event)
-    {
-        return false;
-    }
-
-    @Override
-    public boolean supports(ButtonClickEvent event)
-    {
-        return false;
+        AudioManager audioManager = guild.getAudioManager();
+        if (audioManager.getSendingHandler() == null)
+        {
+            audioManager.setSendingHandler(new AudioPlayerSendHandler(this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(guild.getIdLong()).getInternalAudioPlayer()));
+        }
+        audioManager.openAudioConnection(voiceChannel);
+        this.futrzakAudioPlayerManager.queue(guild.getIdLong(), textChannel, songName);
     }
 }
