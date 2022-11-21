@@ -2,25 +2,28 @@ package io.github.aquerr.futrzakbot.command;
 
 import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.command.context.CommandContext;
+import io.github.aquerr.futrzakbot.message.MessageSource;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
 import java.util.Collections;
 import java.util.List;
 
-public class ResumeCommand implements Command
+public class ResumeCommand implements Command, SlashCommand
 {
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
+    private final MessageSource messageSource;
 
-    public ResumeCommand(final FutrzakAudioPlayerManager futrzakAudioPlayerManager)
+    public ResumeCommand(final FutrzakAudioPlayerManager futrzakAudioPlayerManager, final MessageSource messageSource)
     {
         this.futrzakAudioPlayerManager = futrzakAudioPlayerManager;
+        this.messageSource = messageSource;
     }
 
     @Override
     public boolean execute(CommandContext context)
     {
-        TextChannel textChannel = context.getTextChannel();
-        this.futrzakAudioPlayerManager.resume(textChannel.getGuild().getIdLong(), textChannel);
+        resumePlayer(context.getTextChannel());
         return true;
     }
 
@@ -33,12 +36,24 @@ public class ResumeCommand implements Command
     @Override
     public String getName()
     {
-        return ":play_pause: Wznów odtwarzacz";
+        return messageSource.getMessage("command.resume.name");
     }
 
     @Override
     public String getDescription()
     {
-        return "Wznów odtwarzacz";
+        return messageSource.getMessage("command.resume.description");
+    }
+
+    @Override
+    public void onSlashCommand(SlashCommandEvent event)
+    {
+        event.reply(messageSource.getMessage("command.resume.resuming")).complete();
+        resumePlayer(event.getTextChannel());
+    }
+
+    private void resumePlayer(TextChannel textChannel)
+    {
+        this.futrzakAudioPlayerManager.resume(textChannel.getGuild().getIdLong(), textChannel);
     }
 }
