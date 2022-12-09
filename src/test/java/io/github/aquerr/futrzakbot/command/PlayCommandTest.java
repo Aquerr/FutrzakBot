@@ -40,7 +40,7 @@ class PlayCommandTest
     private static final String COMMAND_DESC = "Command description";
     private static final String SONG_PARAM_DESC_KEY = "command.play.slash.param.song.desc";
     private static final String SONG_PARAM_DESC = "Song param description";
-    private static final String MUST_BE_ON_VOICE_CHANNEL_KEY = "error.command.play.must-be-on-voice-channel";
+    private static final String MUST_BE_ON_VOICE_CHANNEL_KEY = "error.command.must-be-on-voice-channel";
     private static final String MUST_BE_ON_VOICE_CHANNEL = "User must be on voice channel";
     private static final String SONG_PARAM_KEY = "song";
     private static final long GUILD_ID = 1L;
@@ -87,7 +87,7 @@ class PlayCommandTest
         playCommand.onSlashCommand(slashCommandEvent);
 
         verify(slashCommandEvent, times(1)).reply(ADDING_TRACK);
-        verify(futrzakAudioPlayerManager, times(1)).queue(GUILD_ID, textChannel, SONG_NAME);
+        verify(futrzakAudioPlayerManager, times(1)).queue(GUILD_ID, textChannel, SONG_NAME, true);
     }
 
     @Test

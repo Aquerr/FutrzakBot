@@ -5,6 +5,7 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import io.github.aquerr.futrzakbot.FutrzakBot;
+import io.github.aquerr.futrzakbot.audio.handler.FutrzakQueueAndDontPlayLoadHandler;
 import io.github.aquerr.futrzakbot.message.FutrzakMessageEmbedFactory;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
@@ -38,12 +39,19 @@ public final class FutrzakAudioPlayerManager
         AudioSourceManagers.registerRemoteSources(audioPlayerManager);
     }
 
-    public void queue(long guildId, TextChannel textChannel, String trackName)
+    public void queue(long guildId, TextChannel textChannel, String trackName, boolean shouldStartPlaying)
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
         futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
 
-        this.audioPlayerManager.loadItem(getYoutTubeAudioIdentifierForTrack(trackName), futrzakAudioPlayer.getAudioLoadHandler());
+        if (shouldStartPlaying)
+        {
+            this.audioPlayerManager.loadItem(getYoutTubeAudioIdentifierForTrack(trackName), futrzakAudioPlayer.getAudioLoadHandler());
+        }
+        else
+        {
+            this.audioPlayerManager.loadItem(getYoutTubeAudioIdentifierForTrack(trackName), new FutrzakQueueAndDontPlayLoadHandler(futrzakAudioPlayer));
+        }
     }
 
     public void skipAndPlayNextTrack(long guildId, TextChannel textChannel)

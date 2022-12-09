@@ -22,7 +22,7 @@ import java.util.List;
 public class PlayCommand implements Command, SlashCommand
 {
     private static final String SONG_PARAM_KEY = "song";
-    private static final String MUST_BE_ON_VOICE_CHANNEL = "error.command.play.must-be-on-voice-channel";
+    private static final String MUST_BE_ON_VOICE_CHANNEL = "error.command.must-be-on-voice-channel";
 
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
 
@@ -109,6 +109,6 @@ public class PlayCommand implements Command, SlashCommand
             audioManager.setSendingHandler(new AudioPlayerSendHandler(this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(guild.getIdLong()).getInternalAudioPlayer()));
         }
         audioManager.openAudioConnection(voiceChannel);
-        this.futrzakAudioPlayerManager.queue(guild.getIdLong(), textChannel, songName);
+        this.futrzakAudioPlayerManager.queue(guild.getIdLong(), textChannel, songName, true);
     }
 }

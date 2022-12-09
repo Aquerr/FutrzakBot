@@ -48,22 +48,25 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         return lastBotUsageChannel;
     }
 
-    public void queue(AudioTrack track)
+    public void queue(AudioTrack track, boolean shouldStartPlaying)
     {
         if(track == null)
             return;
 
         this.tracksQueue.offer(track);
 
-        if (this.audioPlayer.getPlayingTrack() == null)
+        if (shouldStartPlaying)
         {
-            skip();
+            if (this.audioPlayer.getPlayingTrack() == null)
+            {
+                skip();
+            }
         }
     }
 
     public void skip()
     {
-        queueLastTrackIfLoop(this.getPlayingTrack());
+        queueLastTrackIfLoop();
         AudioTrack audioTrack = this.tracksQueue.poll();
         if(audioTrack != null)
         {
@@ -166,6 +169,11 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     public void resume()
     {
         this.audioPlayer.setPaused(false);
+        if (!isPlayingTrack())
+        {
+            skip();
+        }
+
         this.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlayerResumedMessage()).queue();
     }
 
@@ -195,11 +203,17 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         return this.audioLoadHandler;
     }
 
-    private void queueLastTrackIfLoop(AudioTrack audioTrack)
+    private void queueLastTrackIfLoop()
     {
+        AudioTrack audioTrack = this.getPlayingTrack();
         if (audioTrack != null && isLoop)
         {
             tracksQueue.add(audioTrack.makeClone());
         }
+    }
+
+    private boolean isPlayingTrack()
+    {
+        return this.getPlayingTrack() != null;
     }
 }
