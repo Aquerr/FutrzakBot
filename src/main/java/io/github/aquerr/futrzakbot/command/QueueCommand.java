@@ -3,6 +3,8 @@ package io.github.aquerr.futrzakbot.command;
 import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.audio.handler.AudioPlayerSendHandler;
 import io.github.aquerr.futrzakbot.command.context.CommandContext;
+import io.github.aquerr.futrzakbot.command.parameters.Parameter;
+import io.github.aquerr.futrzakbot.command.parameters.StringParameter;
 import io.github.aquerr.futrzakbot.message.FutrzakMessageEmbedFactory;
 import io.github.aquerr.futrzakbot.message.MessageSource;
 import net.dv8tion.jda.api.entities.Guild;
@@ -106,6 +108,12 @@ public class QueueCommand implements Command, SlashCommand
         }
 
         event.deferReply().addEmbeds(FutrzakMessageEmbedFactory.createQueueMessage(this.futrzakAudioPlayerManager.getQueue(event.getTextChannel().getGuild().getIdLong()))).queue();
+    }
+
+    @Override
+    public List<Parameter<?>> getParameters()
+    {
+        return Collections.singletonList(StringParameter.builder().key(SONG_PARAM_KEY).optional(true).build());
     }
 
     private void queueTrack(Guild guild, TextChannel textChannel, VoiceChannel voiceChannel, String songName)
