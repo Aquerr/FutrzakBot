@@ -122,7 +122,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
 
         if (isLoop)
         {
-            queue(track.makeClone(), false);
+            queue(track.makeClone(), true);
         }
 
         if (this.audioPlayer.getPlayingTrack() != null)
