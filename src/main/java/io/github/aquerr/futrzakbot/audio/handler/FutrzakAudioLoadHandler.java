@@ -20,7 +20,7 @@ public class FutrzakAudioLoadHandler implements AudioLoadResultHandler
     public void trackLoaded(AudioTrack track)
     {
         this.futrzakAudioPlayer.queue(track, true);
-        this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongAddedToQueueMessage(track.getInfo().author, track.getInfo().title)).queue();
+        this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongAddedToQueueMessage(track.getInfo().author, track.getInfo().title)).complete();
     }
 
     @Override
@@ -30,7 +30,7 @@ public class FutrzakAudioLoadHandler implements AudioLoadResultHandler
         {
             AudioTrack track = playlist.getTracks().get(0);
             this.futrzakAudioPlayer.queue(track, true);
-            this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongAddedToQueueMessage(track.getInfo().author, track.getInfo().title)).queue();
+            this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongAddedToQueueMessage(track.getInfo().author, track.getInfo().title)).complete();
         }
         else
         {
@@ -38,19 +38,19 @@ public class FutrzakAudioLoadHandler implements AudioLoadResultHandler
             {
                 this.futrzakAudioPlayer.queue(track, true);
             }
-            this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlaylistAddedToQueueMessage(playlist)).queue();
+            this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlaylistAddedToQueueMessage(playlist)).complete();
         }
     }
 
     @Override
     public void noMatches()
     {
-        this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongNotFoundMessage()).queue();
+        this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongNotFoundMessage()).complete();
     }
 
     @Override
     public void loadFailed(FriendlyException exception)
     {
-        this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongLoadFailedMessage(exception.getLocalizedMessage())).queue();
+        this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongLoadFailedMessage(exception.getLocalizedMessage())).complete();
     }
 }

@@ -71,7 +71,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         if(audioTrack != null)
         {
             LOGGER.info("Starting playing: {}", audioTrack.getInfo().title);
-            this.lastBotUsageChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createNowPlayingMessage(audioTrack)).queue();
+            this.lastBotUsageChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createNowPlayingMessage(audioTrack)).complete();
         }
         this.audioPlayer.playTrack(audioTrack);
     }
@@ -118,6 +118,11 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         if (endReason.mayStartNext)
         {
             skip();
+        }
+
+        if (isLoop)
+        {
+            queue(track.makeClone(), false);
         }
 
         if (this.audioPlayer.getPlayingTrack() != null)

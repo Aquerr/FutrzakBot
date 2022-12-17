@@ -99,7 +99,20 @@ class CommandResolverTest
 
         // when
         // then
-         commandResolver.resolveAndParseCommandArgs(textChannel, command, args);
+        commandResolver.resolveAndParseCommandArgs(textChannel, command, args);
+    }
+
+    @Test
+    void resolveAndParseCommandArgsShouldNotParseMissingOptionalArguments() throws Exception
+    {
+        // given
+        String args = COMMAND_ARG_1;
+
+        // when
+        given(commandArgumentsParser.parseCommandArgs(any(TextChannel.class), any(Command.class), any(Queue.class))).willReturn(Map.of(COMMAND_ARG_1, COMMAND_ARG_1));
+
+        // then
+
     }
 
     private Command prepareCommand(List<String> aliases)

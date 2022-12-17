@@ -25,11 +25,11 @@ public class InfoCommand implements Command
         AudioTrack audioTrack = this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(textChannel.getGuild().getIdLong()).getPlayingTrack();
         if (audioTrack != null)
         {
-            textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createNowPlayingMessage(audioTrack)).queue();
+            textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createNowPlayingMessage(audioTrack)).complete();
         }
         else
         {
-            textChannel.sendMessage("Obecnie nie gra żaden utwór!").queue();
+            textChannel.sendMessage("Obecnie nie gra żaden utwór!").complete();
         }
         return true;
     }

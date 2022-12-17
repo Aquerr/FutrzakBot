@@ -16,7 +16,7 @@ public class FutrzakQueueAndDontPlayLoadHandler extends FutrzakAudioLoadHandler
     public void trackLoaded(AudioTrack track)
     {
         futrzakAudioPlayer.queue(track, false);
-        this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongAddedToQueueMessage(track.getInfo().author, track.getInfo().title)).queue();
+        this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongAddedToQueueMessage(track.getInfo().author, track.getInfo().title)).complete();
     }
 
     @Override
@@ -26,7 +26,7 @@ public class FutrzakQueueAndDontPlayLoadHandler extends FutrzakAudioLoadHandler
         {
             AudioTrack track = playlist.getTracks().get(0);
             this.futrzakAudioPlayer.queue(track, false);
-            this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongAddedToQueueMessage(track.getInfo().author, track.getInfo().title)).queue();
+            this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongAddedToQueueMessage(track.getInfo().author, track.getInfo().title)).complete();
         }
         else
         {
@@ -34,7 +34,7 @@ public class FutrzakQueueAndDontPlayLoadHandler extends FutrzakAudioLoadHandler
             {
                 this.futrzakAudioPlayer.queue(track, false);
             }
-            this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlaylistAddedToQueueMessage(playlist)).queue();
+            this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlaylistAddedToQueueMessage(playlist)).complete();
         }
     }
 }
