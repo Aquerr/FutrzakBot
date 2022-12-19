@@ -2,13 +2,14 @@ package io.github.aquerr.futrzakbot.command;
 
 import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.command.context.CommandContext;
-import io.github.aquerr.futrzakbot.command.parameters.Parameter;
+import io.github.aquerr.futrzakbot.message.FutrzakMessageEmbedFactory;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
 import java.util.Collections;
 import java.util.List;
 
-public class LoopCommand implements Command
+public class LoopCommand implements Command, SlashCommand
 {
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
 
@@ -21,7 +22,8 @@ public class LoopCommand implements Command
     public boolean execute(CommandContext context)
     {
         TextChannel textChannel = context.getTextChannel();
-        futrzakAudioPlayerManager.toggleLoop(textChannel.getGuild().getIdLong(),textChannel);
+        boolean newLoopState = futrzakAudioPlayerManager.toggleLoop(textChannel.getGuild().getIdLong(),textChannel);
+        textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createLoopMessage(newLoopState)).queue();
         return true;
     }
 
@@ -41,5 +43,12 @@ public class LoopCommand implements Command
     public String getDescription()
     {
         return "Zapętlanie kolejki";
+    }
+
+    @Override
+    public void onSlashCommand(SlashCommandEvent event)
+    {
+        boolean newLoopState = futrzakAudioPlayerManager.toggleLoop(event.getGuild().getIdLong(), event.getTextChannel());
+        event.replyEmbeds(FutrzakMessageEmbedFactory.createLoopMessage(newLoopState)).queue();
     }
 }

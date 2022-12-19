@@ -67,12 +67,11 @@ public final class FutrzakAudioPlayerManager
         futrzakAudioPlayer.skip();
     }
 
-    public void toggleLoop(long guildId,TextChannel textChannel)
+    public boolean toggleLoop(long guildId,TextChannel textChannel)
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
         futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
-        boolean loop = futrzakAudioPlayer.toggleLoop();
-        textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createLoopMessage(loop)).queue();
+        return futrzakAudioPlayer.toggleLoop();
     }
 
     public void clearQueue(long guildId, TextChannel textChannel)
