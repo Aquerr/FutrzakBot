@@ -144,7 +144,7 @@ public class FutrzakBot
         this.commandManager.registerCommand(new VolumeCommand(this.futrzakAudioPlayerManager));
         this.commandManager.registerCommand(new SkipCommand(this.futrzakAudioPlayerManager, this.messageSource));
         this.commandManager.registerCommand(new RemoveComand(this.futrzakAudioPlayerManager));
-        this.commandManager.registerCommand(new ClearCommand(this.futrzakAudioPlayerManager));
+        this.commandManager.registerCommand(new ClearCommand(this.futrzakAudioPlayerManager, this.messageSource));
         this.commandManager.registerCommand(new QueueCommand(this.futrzakAudioPlayerManager, this.messageSource));
         this.commandManager.registerCommand(new InfoCommand(this.futrzakAudioPlayerManager));
         this.commandManager.registerCommand(new LoopCommand(this.futrzakAudioPlayerManager, this.messageSource));

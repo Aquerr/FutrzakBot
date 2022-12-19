@@ -78,7 +78,6 @@ public final class FutrzakAudioPlayerManager
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
         futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
-        textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createClearMessage()).queue();
         futrzakAudioPlayer.clear();
     }
 
