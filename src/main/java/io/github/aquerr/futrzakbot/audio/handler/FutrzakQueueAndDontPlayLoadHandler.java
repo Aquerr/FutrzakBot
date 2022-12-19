@@ -7,16 +7,16 @@ import io.github.aquerr.futrzakbot.message.FutrzakMessageEmbedFactory;
 
 public class FutrzakQueueAndDontPlayLoadHandler extends FutrzakAudioLoadHandler
 {
-    public FutrzakQueueAndDontPlayLoadHandler(FutrzakAudioPlayer futrzakAudioPlayer)
+    public FutrzakQueueAndDontPlayLoadHandler(FutrzakAudioPlayer futrzakAudioPlayer, FutrzakMessageEmbedFactory messageEmbedFactory)
     {
-        super(futrzakAudioPlayer);
+        super(futrzakAudioPlayer, messageEmbedFactory);
     }
 
     @Override
     public void trackLoaded(AudioTrack track)
     {
         futrzakAudioPlayer.queue(track, false);
-        this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongAddedToQueueMessage(track.getInfo().author, track.getInfo().title)).complete();
+        this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(messageEmbedFactory.createSongAddedToQueueMessage(track.getInfo().author, track.getInfo().title)).complete();
     }
 
     @Override
@@ -26,7 +26,7 @@ public class FutrzakQueueAndDontPlayLoadHandler extends FutrzakAudioLoadHandler
         {
             AudioTrack track = playlist.getTracks().get(0);
             this.futrzakAudioPlayer.queue(track, false);
-            this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongAddedToQueueMessage(track.getInfo().author, track.getInfo().title)).complete();
+            this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(messageEmbedFactory.createSongAddedToQueueMessage(track.getInfo().author, track.getInfo().title)).complete();
         }
         else
         {
@@ -34,7 +34,7 @@ public class FutrzakQueueAndDontPlayLoadHandler extends FutrzakAudioLoadHandler
             {
                 this.futrzakAudioPlayer.queue(track, false);
             }
-            this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlaylistAddedToQueueMessage(playlist)).complete();
+            this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(messageEmbedFactory.createPlaylistAddedToQueueMessage(playlist)).complete();
         }
     }
 }

@@ -14,11 +14,13 @@ public class ClearCommand implements Command, SlashCommand
 {
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
     private final MessageSource messageSource;
+    private final FutrzakMessageEmbedFactory messageEmbedFactory;
 
-    public ClearCommand(FutrzakAudioPlayerManager futrzakAudioPlayerManager, MessageSource messageSource)
+    public ClearCommand(FutrzakAudioPlayerManager futrzakAudioPlayerManager, MessageSource messageSource, FutrzakMessageEmbedFactory messageEmbedFactory)
     {
         this.futrzakAudioPlayerManager = futrzakAudioPlayerManager;
         this.messageSource = messageSource;
+        this.messageEmbedFactory = messageEmbedFactory;
     }
 
     @Override
@@ -51,6 +53,6 @@ public class ClearCommand implements Command, SlashCommand
     public void onSlashCommand(SlashCommandEvent event)
     {
         this.futrzakAudioPlayerManager.clearQueue(event.getGuild().getIdLong(), event.getTextChannel());
-        event.replyEmbeds(FutrzakMessageEmbedFactory.createClearMessage()).queue();
+        event.replyEmbeds(messageEmbedFactory.createClearMessage()).queue();
     }
 }

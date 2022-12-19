@@ -29,11 +29,13 @@ public class QueueCommand implements Command, SlashCommand
 
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
     private final MessageSource messageSource;
+    private final FutrzakMessageEmbedFactory messageEmbedFactory;
 
-    public QueueCommand(FutrzakAudioPlayerManager futrzakAudioPlayerManager, MessageSource messageSource)
+    public QueueCommand(FutrzakAudioPlayerManager futrzakAudioPlayerManager, MessageSource messageSource, FutrzakMessageEmbedFactory messageEmbedFactory)
     {
         this.futrzakAudioPlayerManager = futrzakAudioPlayerManager;
         this.messageSource = messageSource;
+        this.messageEmbedFactory = messageEmbedFactory;
     }
 
     @Override
@@ -58,7 +60,7 @@ public class QueueCommand implements Command, SlashCommand
             return true;
         }
 
-        textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createQueueMessage(this.futrzakAudioPlayerManager.getQueue(textChannel.getGuild().getIdLong()))).queue();
+        textChannel.sendMessageEmbeds(messageEmbedFactory.createQueueMessage(this.futrzakAudioPlayerManager.getQueue(textChannel.getGuild().getIdLong()))).queue();
         return true;
     }
 
@@ -107,7 +109,7 @@ public class QueueCommand implements Command, SlashCommand
             queueTrack(event.getGuild(), event.getTextChannel(), voiceChannel, songName);
         }
 
-        event.deferReply().addEmbeds(FutrzakMessageEmbedFactory.createQueueMessage(this.futrzakAudioPlayerManager.getQueue(event.getTextChannel().getGuild().getIdLong()))).queue();
+        event.deferReply().addEmbeds(messageEmbedFactory.createQueueMessage(this.futrzakAudioPlayerManager.getQueue(event.getTextChannel().getGuild().getIdLong()))).queue();
     }
 
     @Override

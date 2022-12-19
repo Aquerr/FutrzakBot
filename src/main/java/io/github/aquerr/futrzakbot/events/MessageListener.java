@@ -18,10 +18,12 @@ import java.util.Optional;
 public class MessageListener extends ListenerAdapter
 {
     private final FutrzakBot futrzakBot;
+    private final FutrzakMessageEmbedFactory messageEmbedFactory;
 
-    public MessageListener(FutrzakBot futrzakBot)
+    public MessageListener(FutrzakBot futrzakBot, FutrzakMessageEmbedFactory messageEmbedFactory)
     {
         this.futrzakBot = futrzakBot;
+        this.messageEmbedFactory = messageEmbedFactory;
     }
 
     @Override
@@ -71,7 +73,7 @@ public class MessageListener extends ListenerAdapter
                 // Get current page and move back
                 int page = getCurrentHelpPage(messageEmbed);
 
-                MessageEmbed newMessage = FutrzakMessageEmbedFactory.createHelpMessage(this.futrzakBot.getCommandManager().getCommands().values(), page - 1);
+                MessageEmbed newMessage = messageEmbedFactory.createHelpMessage(this.futrzakBot.getCommandManager().getCommands().values(), page - 1);
                 message.editMessageEmbeds(newMessage).queue();
             }
             else if (emoji.equals(EmojiUnicodes.ARROW_RIGHT))
@@ -79,7 +81,7 @@ public class MessageListener extends ListenerAdapter
                 // Get current page and move forward
                 int page = getCurrentHelpPage(messageEmbed);
 
-                MessageEmbed newMessage = FutrzakMessageEmbedFactory.createHelpMessage(this.futrzakBot.getCommandManager().getCommands().values(), page + 1);
+                MessageEmbed newMessage = messageEmbedFactory.createHelpMessage(this.futrzakBot.getCommandManager().getCommands().values(), page + 1);
                 message.editMessageEmbeds(newMessage).queue();
             }
         }

@@ -27,6 +27,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     private final FutrzakAudioLoadHandler audioLoadHandler;
     private final AudioPlayer audioPlayer;
     private final LinkedList<AudioTrack> tracksQueue = new LinkedList<>();
+    private final FutrzakMessageEmbedFactory messageEmbedFactory;
     private TextChannel lastBotUsageChannel;
     private Instant lastTrackEndTime = Instant.now();
 
@@ -35,7 +36,8 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         this.guildId = guildId;
         this.audioPlayer = audioPlayer;
         this.audioPlayer.addListener(this);
-        this.audioLoadHandler = new FutrzakAudioLoadHandler(this);
+        this.audioLoadHandler = new FutrzakAudioLoadHandler(this, FutrzakMessageEmbedFactory.getInstance());
+        this.messageEmbedFactory = FutrzakMessageEmbedFactory.getInstance();
     }
 
     public void setLastBotUsageChannel(TextChannel lastBotUsageChannel)
@@ -71,7 +73,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         if(audioTrack != null)
         {
             LOGGER.info("Starting playing: {}", audioTrack.getInfo().title);
-            this.lastBotUsageChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createNowPlayingMessage(audioTrack)).complete();
+            this.lastBotUsageChannel.sendMessageEmbeds(messageEmbedFactory.createNowPlayingMessage(audioTrack)).complete();
         }
         this.audioPlayer.playTrack(audioTrack);
     }
@@ -135,7 +137,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception)
     {
         LOGGER.error("Track exception: ", exception);
-        this.lastBotUsageChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongErrorMessage(track, exception)).queue();
+        this.lastBotUsageChannel.sendMessageEmbeds(messageEmbedFactory.createSongErrorMessage(track, exception)).queue();
         this.lastTrackEndTime = Instant.now();
     }
 
@@ -143,7 +145,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs)
     {
         LOGGER.warn("Track stuck: {}", track.getInfo().title);
-        this.lastBotUsageChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongErrorMessage(track)).queue();
+        this.lastBotUsageChannel.sendMessageEmbeds(messageEmbedFactory.createSongErrorMessage(track)).queue();
         this.lastTrackEndTime = Instant.now();
     }
 
@@ -151,7 +153,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs, StackTraceElement[] stackTrace)
     {
         LOGGER.warn("Track stuck: {}", Arrays.asList(stackTrace));
-        this.lastBotUsageChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createSongErrorMessage(track)).queue();
+        this.lastBotUsageChannel.sendMessageEmbeds(messageEmbedFactory.createSongErrorMessage(track)).queue();
         this.lastTrackEndTime = Instant.now();
     }
 
@@ -168,7 +170,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     public void stop()
     {
         this.audioPlayer.setPaused(true);
-        this.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlayerStoppedMessage()).queue();
+        this.getLastBotUsageChannel().sendMessageEmbeds(messageEmbedFactory.createPlayerStoppedMessage()).queue();
     }
 
     public void resume()
@@ -179,13 +181,13 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
             skip();
         }
 
-        this.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlayerResumedMessage()).queue();
+        this.getLastBotUsageChannel().sendMessageEmbeds(messageEmbedFactory.createPlayerResumedMessage()).queue();
     }
 
     public void setVolume(int volume)
     {
         this.audioPlayer.setVolume(volume);
-        this.getLastBotUsageChannel().sendMessageEmbeds(FutrzakMessageEmbedFactory.createPlayerVolumeChangedMessage(volume)).queue();
+        this.getLastBotUsageChannel().sendMessageEmbeds(messageEmbedFactory.createPlayerVolumeChangedMessage(volume)).queue();
     }
 
     public AudioPlayer getInternalAudioPlayer()

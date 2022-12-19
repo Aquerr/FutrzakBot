@@ -12,10 +12,12 @@ import java.util.List;
 public class InfoCommand implements Command
 {
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
+    private final FutrzakMessageEmbedFactory messageEmbedFactory;
 
-    public InfoCommand(FutrzakAudioPlayerManager futrzakAudioPlayerManager)
+    public InfoCommand(FutrzakAudioPlayerManager futrzakAudioPlayerManager, FutrzakMessageEmbedFactory messageEmbedFactory)
     {
         this.futrzakAudioPlayerManager = futrzakAudioPlayerManager;
+        this.messageEmbedFactory = messageEmbedFactory;
     }
 
     @Override
@@ -25,7 +27,7 @@ public class InfoCommand implements Command
         AudioTrack audioTrack = this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(textChannel.getGuild().getIdLong()).getPlayingTrack();
         if (audioTrack != null)
         {
-            textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createNowPlayingMessage(audioTrack)).complete();
+            textChannel.sendMessageEmbeds(messageEmbedFactory.createNowPlayingMessage(audioTrack)).complete();
         }
         else
         {

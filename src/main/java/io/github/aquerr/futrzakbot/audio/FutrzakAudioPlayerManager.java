@@ -28,15 +28,17 @@ public final class FutrzakAudioPlayerManager
     private final FutrzakBot futrzakBot;
     private final AudioPlayerManager audioPlayerManager;
     private final Map<Long, FutrzakAudioPlayer> guildAudioPlayers = new ConcurrentHashMap<>();
+    private final FutrzakMessageEmbedFactory messageEmbedFactory;
 
     private final ScheduledFuture<?> botKickSechuldedFuture = Executors.newSingleThreadScheduledExecutor()
             .scheduleAtFixedRate(this::botKickTaskRun, 5, 5, TimeUnit.MINUTES);
 
-    public FutrzakAudioPlayerManager(FutrzakBot futrzakBot)
+    public FutrzakAudioPlayerManager(FutrzakBot futrzakBot, FutrzakMessageEmbedFactory messageEmbedFactory)
     {
         this.futrzakBot = futrzakBot;
         this.audioPlayerManager = new DefaultAudioPlayerManager();
         AudioSourceManagers.registerRemoteSources(audioPlayerManager);
+        this.messageEmbedFactory = messageEmbedFactory;
     }
 
     public void queue(long guildId, TextChannel textChannel, String trackName, boolean shouldStartPlaying)
@@ -50,7 +52,7 @@ public final class FutrzakAudioPlayerManager
         }
         else
         {
-            this.audioPlayerManager.loadItem(getYoutTubeAudioIdentifierForTrack(trackName), new FutrzakQueueAndDontPlayLoadHandler(futrzakAudioPlayer));
+            this.audioPlayerManager.loadItem(getYoutTubeAudioIdentifierForTrack(trackName), new FutrzakQueueAndDontPlayLoadHandler(futrzakAudioPlayer, messageEmbedFactory));
         }
     }
 
@@ -61,7 +63,7 @@ public final class FutrzakAudioPlayerManager
         AudioTrack audioTrack = futrzakAudioPlayer.getPlayingTrack();
         if (audioTrack != null)
         {
-            textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createSkipTrackMessage(audioTrack)).queue();
+            textChannel.sendMessageEmbeds(messageEmbedFactory.createSkipTrackMessage(audioTrack)).queue();
         }
 
         futrzakAudioPlayer.skip();
@@ -88,11 +90,11 @@ public final class FutrzakAudioPlayerManager
         if (0 < element && element <= futrzakAudioPlayer.getQueue().size())
         {
             AudioTrack audioTrack = futrzakAudioPlayer.remove(element);
-            textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createRemoveMessage(element, audioTrack)).queue();
+            textChannel.sendMessageEmbeds(messageEmbedFactory.createRemoveMessage(element, audioTrack)).queue();
         }
         else
         {
-            textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createOutOfRangeMessage()).queue();
+            textChannel.sendMessageEmbeds(messageEmbedFactory.createOutOfRangeMessage()).queue();
         }
     }
 

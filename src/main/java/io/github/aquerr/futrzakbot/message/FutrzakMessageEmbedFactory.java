@@ -15,12 +15,34 @@ import java.util.List;
 
 public class FutrzakMessageEmbedFactory
 {
-    public static final String HELP_MESSAGE_TITLE = "Futrzak - Lista Komend";
+    public static FutrzakMessageEmbedFactory getInstance()
+    {
+        return InstanceHolder.INSTANCE;
+    }
 
+    public static void init(MessageSource messageSource)
+    {
+        InstanceHolder.INSTANCE = new FutrzakMessageEmbedFactory(messageSource);
+    }
+
+    private static class InstanceHolder
+    {
+
+        public static FutrzakMessageEmbedFactory INSTANCE = null;
+    }
+
+    public static final String HELP_MESSAGE_TITLE = "Futrzak - Lista Komend";
     private static final Color DEFAULT_COLOR = Color.GREEN;
     private static final Color ERROR_COLOR = Color.RED;
 
-    public static MessageEmbed createSongAddedToQueueMessage(String artist, String title)
+    private final MessageSource messageSource;
+
+    private FutrzakMessageEmbedFactory(MessageSource messageSource)
+    {
+        this.messageSource = messageSource;
+    }
+
+    public MessageEmbed createSongAddedToQueueMessage(String artist, String title)
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
@@ -30,7 +52,7 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
-    public static MessageEmbed createPlaylistAddedToQueueMessage(AudioPlaylist playlist)
+    public MessageEmbed createPlaylistAddedToQueueMessage(AudioPlaylist playlist)
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
@@ -48,7 +70,7 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
-    public static MessageEmbed createNowPlayingMessage(AudioTrack audioTrack)
+    public MessageEmbed createNowPlayingMessage(AudioTrack audioTrack)
     {
         int currentMinutes = (int)audioTrack.getPosition() / 60000;
         int currentSeconds = (int)audioTrack.getPosition() % 60000 / 1000;
@@ -83,7 +105,7 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
-    public static MessageEmbed createSongNotFoundMessage()
+    public MessageEmbed createSongNotFoundMessage()
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(ERROR_COLOR);
@@ -91,7 +113,7 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
-    public static MessageEmbed createSongLoadFailedMessage(String localizedMessage)
+    public MessageEmbed createSongLoadFailedMessage(String localizedMessage)
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(ERROR_COLOR);
@@ -99,7 +121,7 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
-    public static MessageEmbed createQueueMessage(List<AudioTrack> queue)
+    public MessageEmbed createQueueMessage(List<AudioTrack> queue)
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle(":notes: Kolejka utworów :notes:");
@@ -122,7 +144,7 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
-    public static MessageEmbed createPlayerStoppedMessage()
+    public MessageEmbed createPlayerStoppedMessage()
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
@@ -130,7 +152,7 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
-    public static MessageEmbed createPlayerResumedMessage()
+    public MessageEmbed createPlayerResumedMessage()
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
@@ -138,7 +160,7 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
-    public static MessageEmbed createPlayerVolumeChangedMessage(int volume)
+    public MessageEmbed createPlayerVolumeChangedMessage(int volume)
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
@@ -146,7 +168,7 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
-    public static MessageEmbed createSkipTrackMessage(AudioTrack audioTrack)
+    public MessageEmbed createSkipTrackMessage(AudioTrack audioTrack)
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
@@ -156,7 +178,7 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
-    public static MessageEmbed createClearMessage()
+    public MessageEmbed createClearMessage()
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
@@ -164,7 +186,7 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
-    public static MessageEmbed createRemoveMessage(int element, AudioTrack audioTrack)
+    public MessageEmbed createRemoveMessage(int element, AudioTrack audioTrack)
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
@@ -174,7 +196,7 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
-    public static MessageEmbed createOutOfRangeMessage()
+    public MessageEmbed createOutOfRangeMessage()
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(ERROR_COLOR);
@@ -182,7 +204,7 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
-    public static MessageEmbed createLoopMessage(boolean loop)
+    public MessageEmbed createLoopMessage(boolean loop)
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(DEFAULT_COLOR);
@@ -197,7 +219,7 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
-    public static MessageEmbed createSongErrorMessage(AudioTrack track)
+    public MessageEmbed createSongErrorMessage(AudioTrack track)
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(ERROR_COLOR);
@@ -206,7 +228,7 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
-    public static MessageEmbed createSongErrorMessage(AudioTrack track, FriendlyException exception)
+    public MessageEmbed createSongErrorMessage(AudioTrack track, FriendlyException exception)
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(ERROR_COLOR);
@@ -215,7 +237,7 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
-    public static MessageEmbed createHelpMessage(Collection<Command> commands, int page)
+    public MessageEmbed createHelpMessage(Collection<Command> commands, int page)
     {
         PaginatedMessageEmbed paginatedMessageEmbed = PaginatedMessageEmbed.ofFields(commands)
                 .title(HELP_MESSAGE_TITLE, "https://github.com/Aquerr/FutrzakBot")

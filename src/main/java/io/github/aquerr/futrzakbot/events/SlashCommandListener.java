@@ -21,12 +21,15 @@ public class SlashCommandListener extends ListenerAdapter
 {
     private final CommandManager commandManager;
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
+    private final FutrzakMessageEmbedFactory messageEmbedFactory;
 
     public SlashCommandListener(final CommandManager commandManager,
-                                final FutrzakAudioPlayerManager futrzakAudioPlayerManager)
+                                final FutrzakAudioPlayerManager futrzakAudioPlayerManager,
+                                final FutrzakMessageEmbedFactory messageEmbedFactory)
     {
         this.commandManager = commandManager;
         this.futrzakAudioPlayerManager = futrzakAudioPlayerManager;
+        this.messageEmbedFactory = messageEmbedFactory;
     }
 
     @Override
@@ -54,7 +57,7 @@ public class SlashCommandListener extends ListenerAdapter
 
         if (event.getComponentId().equals("queue")) {
             List<AudioTrack> queue = this.futrzakAudioPlayerManager.getQueue(event.getGuild().getIdLong());
-            event.replyEmbeds(FutrzakMessageEmbedFactory.createQueueMessage(queue)).queue();
+            event.replyEmbeds(messageEmbedFactory.createQueueMessage(queue)).queue();
         } else if (event.getComponentId().equals("next")) {
             this.futrzakAudioPlayerManager.skipAndPlayNextTrack(event.getGuild().getIdLong(), event.getTextChannel());
             event.reply("next track").queue();

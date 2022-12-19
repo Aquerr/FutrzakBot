@@ -2,7 +2,6 @@ package io.github.aquerr.futrzakbot;
 
 import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.command.ClearCommand;
-import io.github.aquerr.futrzakbot.command.Command;
 import io.github.aquerr.futrzakbot.command.CommandManager;
 import io.github.aquerr.futrzakbot.command.DebilCommand;
 import io.github.aquerr.futrzakbot.command.EightBallCommand;
@@ -19,7 +18,6 @@ import io.github.aquerr.futrzakbot.command.RemoveComand;
 import io.github.aquerr.futrzakbot.command.ResumeCommand;
 import io.github.aquerr.futrzakbot.command.RouletteCommand;
 import io.github.aquerr.futrzakbot.command.SkipCommand;
-import io.github.aquerr.futrzakbot.command.SlashCommand;
 import io.github.aquerr.futrzakbot.command.StopCommand;
 import io.github.aquerr.futrzakbot.command.VolumeCommand;
 import io.github.aquerr.futrzakbot.config.Configuration;
@@ -29,6 +27,7 @@ import io.github.aquerr.futrzakbot.events.ReadyListener;
 import io.github.aquerr.futrzakbot.events.SlashCommandListener;
 import io.github.aquerr.futrzakbot.games.GameManager;
 import io.github.aquerr.futrzakbot.games.quote.QuoteGame;
+import io.github.aquerr.futrzakbot.message.FutrzakMessageEmbedFactory;
 import io.github.aquerr.futrzakbot.message.Localization;
 import io.github.aquerr.futrzakbot.message.MessageSource;
 import io.github.aquerr.futrzakbot.role.DiscordRoleGiver;
@@ -37,10 +36,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -50,8 +46,6 @@ import org.slf4j.LoggerFactory;
 import javax.security.auth.login.LoginException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
 
 public class FutrzakBot
 {
@@ -75,6 +69,7 @@ public class FutrzakBot
     private JsonPathConfiguration jsonPathConfiguration;
     private DiscordRoleGiver discordRoleGiver;
     private MessageSource messageSource;
+    private FutrzakMessageEmbedFactory messageEmbedFactory;
 
     private void start()
     {
@@ -82,6 +77,8 @@ public class FutrzakBot
         this.jsonPathConfiguration = new JsonPathConfiguration();
         this.jsonPathConfiguration.configure();
         this.messageSource = new MessageSource(Localization.forTag(this.configuration.getLanguageTag()));
+        FutrzakMessageEmbedFactory.init(messageSource);
+        this.messageEmbedFactory = FutrzakMessageEmbedFactory.getInstance();
         if (configuration.getBotToken().isEmpty())
         {
             throw new IllegalArgumentException(this.messageSource.getMessage(ERROR_MISSING_BOT_TOKEN));
@@ -89,7 +86,7 @@ public class FutrzakBot
 
         try
         {
-            this.futrzakAudioPlayerManager = new FutrzakAudioPlayerManager(this);
+            this.futrzakAudioPlayerManager = new FutrzakAudioPlayerManager(this, this.messageEmbedFactory);
             this.gameManager = new GameManager(this);
             this.commandManager = new CommandManager(this.messageSource);
             registerCommands();
@@ -98,9 +95,9 @@ public class FutrzakBot
                     .enableIntents(GatewayIntent.GUILD_MEMBERS)
                     .setMemberCachePolicy(MemberCachePolicy.ALL)
                     .setChunkingFilter(ChunkingFilter.ALL)
-                    .addEventListeners(new MessageListener(this))
+                    .addEventListeners(new MessageListener(this, this.messageEmbedFactory))
                     .addEventListeners(new ReadyListener())
-                    .addEventListeners(new SlashCommandListener(this.commandManager, this.futrzakAudioPlayerManager))
+                    .addEventListeners(new SlashCommandListener(this.commandManager, this.futrzakAudioPlayerManager, this.messageEmbedFactory))
                     .setAutoReconnect(true)
                     .enableCache(CacheFlag.VOICE_STATE)
                     .setActivity(Activity.of(Activity.ActivityType.DEFAULT, "FutrzakiShow " + CommandManager.COMMAND_PREFIX + " help https://github.com/Aquerr/FutrzakBot"))
@@ -132,7 +129,7 @@ public class FutrzakBot
 
     private void registerCommands()
     {
-        this.commandManager.registerCommand(new HelpCommand(this.commandManager, this.messageSource));
+        this.commandManager.registerCommand(new HelpCommand(this.commandManager, this.messageSource, this.messageEmbedFactory));
         this.commandManager.registerCommand(new EightBallCommand());
         this.commandManager.registerCommand(new RouletteCommand());
         this.commandManager.registerCommand(new DebilCommand());
@@ -144,10 +141,10 @@ public class FutrzakBot
         this.commandManager.registerCommand(new VolumeCommand(this.futrzakAudioPlayerManager));
         this.commandManager.registerCommand(new SkipCommand(this.futrzakAudioPlayerManager, this.messageSource));
         this.commandManager.registerCommand(new RemoveComand(this.futrzakAudioPlayerManager));
-        this.commandManager.registerCommand(new ClearCommand(this.futrzakAudioPlayerManager, this.messageSource));
-        this.commandManager.registerCommand(new QueueCommand(this.futrzakAudioPlayerManager, this.messageSource));
-        this.commandManager.registerCommand(new InfoCommand(this.futrzakAudioPlayerManager));
-        this.commandManager.registerCommand(new LoopCommand(this.futrzakAudioPlayerManager, this.messageSource));
+        this.commandManager.registerCommand(new ClearCommand(this.futrzakAudioPlayerManager, this.messageSource, this.messageEmbedFactory));
+        this.commandManager.registerCommand(new QueueCommand(this.futrzakAudioPlayerManager, this.messageSource, this.messageEmbedFactory));
+        this.commandManager.registerCommand(new InfoCommand(this.futrzakAudioPlayerManager, this.messageEmbedFactory));
+        this.commandManager.registerCommand(new LoopCommand(this.futrzakAudioPlayerManager, this.messageSource, this.messageEmbedFactory));
         this.commandManager.registerCommand(new FightCommand());
         this.commandManager.registerCommand(new QuoteCommand(QuoteGame.getInstance(), this.messageSource));
     }

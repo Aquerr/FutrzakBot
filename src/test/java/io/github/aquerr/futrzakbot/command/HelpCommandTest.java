@@ -3,7 +3,9 @@ package io.github.aquerr.futrzakbot.command;
 import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.command.parameters.Parameter;
 import io.github.aquerr.futrzakbot.message.EmojiUnicodes;
+import io.github.aquerr.futrzakbot.message.FutrzakMessageEmbedFactory;
 import io.github.aquerr.futrzakbot.message.MessageSource;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -19,6 +21,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -37,6 +40,8 @@ class HelpCommandTest
 
     @Mock
     private MessageSource messageSource;
+    @Mock
+    private FutrzakMessageEmbedFactory messageEmbedFactory;
 
     @InjectMocks
     private HelpCommand helpCommand;
@@ -51,6 +56,7 @@ class HelpCommandTest
     void executeShouldGetCommandsFromCommandManagerAndBuildHelpMessage()
     {
         // given
+        MessageEmbed helpMessageEmbed = new EmbedBuilder().setDescription("Test Help").build();
         CommandContext context = mock(CommandContext.class);
         TextChannel textChannel = mock(TextChannel.class);
         MessageAction messageAction = mock(MessageAction.class);
@@ -59,6 +65,7 @@ class HelpCommandTest
         given(textChannel.sendMessageEmbeds(any(MessageEmbed.class))).willReturn(messageAction);
         given(messageAction.complete()).willReturn(message);
         given(message.addReaction(anyString())).willReturn(mock(RestAction.class));
+        given(messageEmbedFactory.createHelpMessage(any(), anyInt())).willReturn(helpMessageEmbed);
 
         // when
         boolean result = helpCommand.execute(context);
@@ -66,7 +73,7 @@ class HelpCommandTest
         // then
         assertThat(result).isTrue();
         verify(commandManager).getCommands();
-        verify(textChannel).sendMessageEmbeds(any(MessageEmbed.class));
+        verify(textChannel).sendMessageEmbeds(helpMessageEmbed);
         verify(messageAction).complete();
         verify(message).addReaction(EmojiUnicodes.ARROW_LEFT);
         verify(message).addReaction(EmojiUnicodes.ARROW_RIGHT);

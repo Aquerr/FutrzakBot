@@ -23,11 +23,13 @@ public class HelpCommand implements Command, SlashCommand
 
     private final MessageSource messageSource;
     private final CommandManager commandManager;
+    private final FutrzakMessageEmbedFactory messageEmbedFactory;
 
-    public HelpCommand(CommandManager commandManager, MessageSource messageSource)
+    public HelpCommand(CommandManager commandManager, MessageSource messageSource, FutrzakMessageEmbedFactory messageEmbedFactory)
     {
         this.commandManager = commandManager;
         this.messageSource = messageSource;
+        this.messageEmbedFactory = messageEmbedFactory;
     }
 
     @Override
@@ -60,7 +62,7 @@ public class HelpCommand implements Command, SlashCommand
     private MessageEmbed buildHelpMessage()
     {
         Map<List<String>, Command> commands = this.commandManager.getCommands();
-        return FutrzakMessageEmbedFactory.createHelpMessage(commands.values(), 1);
+        return messageEmbedFactory.createHelpMessage(commands.values(), 1);
     }
 
     @Override
@@ -89,7 +91,7 @@ public class HelpCommand implements Command, SlashCommand
             // Get current page and move back
             int page = getCurrentHelpPage(messageEmbed);
 
-            MessageEmbed newMessage = FutrzakMessageEmbedFactory.createHelpMessage(this.commandManager.getCommands().values(), page - 1);
+            MessageEmbed newMessage = messageEmbedFactory.createHelpMessage(this.commandManager.getCommands().values(), page - 1);
             event.editMessageEmbeds(newMessage).queue();
         }
         else if (event.getComponentId().equals(BUTTON_HELP_RIGHT_ID))
@@ -103,7 +105,7 @@ public class HelpCommand implements Command, SlashCommand
             // Get current page and move forward
             int page = getCurrentHelpPage(messageEmbed);
 
-            MessageEmbed newMessage = FutrzakMessageEmbedFactory.createHelpMessage(this.commandManager.getCommands().values(), page + 1);
+            MessageEmbed newMessage = messageEmbedFactory.createHelpMessage(this.commandManager.getCommands().values(), page + 1);
             event.editMessageEmbeds(newMessage).queue();
         }
     }

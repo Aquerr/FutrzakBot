@@ -14,11 +14,13 @@ public class LoopCommand implements Command, SlashCommand
 {
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
     private final MessageSource messageSource;
+    private final FutrzakMessageEmbedFactory messageEmbedFactory;
 
-    public LoopCommand(FutrzakAudioPlayerManager futrzakAudioPlayerManager, MessageSource messageSource)
+    public LoopCommand(FutrzakAudioPlayerManager futrzakAudioPlayerManager, MessageSource messageSource, FutrzakMessageEmbedFactory messageEmbedFactory)
     {
         this.futrzakAudioPlayerManager = futrzakAudioPlayerManager;
         this.messageSource = messageSource;
+        this.messageEmbedFactory = messageEmbedFactory;
     }
 
     @Override
@@ -26,7 +28,7 @@ public class LoopCommand implements Command, SlashCommand
     {
         TextChannel textChannel = context.getTextChannel();
         boolean newLoopState = futrzakAudioPlayerManager.toggleLoop(textChannel.getGuild().getIdLong(),textChannel);
-        textChannel.sendMessageEmbeds(FutrzakMessageEmbedFactory.createLoopMessage(newLoopState)).queue();
+        textChannel.sendMessageEmbeds(messageEmbedFactory.createLoopMessage(newLoopState)).queue();
         return true;
     }
 
@@ -52,6 +54,6 @@ public class LoopCommand implements Command, SlashCommand
     public void onSlashCommand(SlashCommandEvent event)
     {
         boolean newLoopState = futrzakAudioPlayerManager.toggleLoop(event.getGuild().getIdLong(), event.getTextChannel());
-        event.replyEmbeds(FutrzakMessageEmbedFactory.createLoopMessage(newLoopState)).queue();
+        event.replyEmbeds(messageEmbedFactory.createLoopMessage(newLoopState)).queue();
     }
 }
