@@ -15,28 +15,35 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 class CommandArgumentsParserTest
 {
+    private static final String DEFAULT_ARG_SEPARATOR = " ";
     private static final String ARGUMENT_1 = "argument1";
     private static final Integer ARGUMENT_2 = 2;
 
     private static final String STRING_PARAMETER_KEY = "stringKey";
     private static final String INTEGER_PARAMETER_KEY = "integerKey";
+
+    private static final String SUB_COMMAND_ALIAS_1 = "subcommand1";
+    private static final String SUB_COMMAND_ALIAS_2 = "subcommand2";
+    private static final String COMMAND_ARG_1 = "commandArg1";
+    private static final String SUB_COMMAND_ARG_1 = "subcommandArg1";
+    private static final String COMMAND_ARG_1_KEY = "commandArg1Key";
+    private static final String SUB_COMMAND_ARG_1_KEY = "subcommandArg1Key";
 
     private Map<Class<?>, ArgumentParser<?>> parsers;
 
@@ -61,128 +68,169 @@ class CommandArgumentsParserTest
     }
 
     @Test
-    void parseCommandArgsShouldParseArgumentsWhenCommandHasParametersAndReturnMapWithParsedArguments() throws CommandArgumentsParseException, ArgumentParseException
+    void resolveAndParseCommandArgsShouldReturnCommandParsingChainWithCommandAndSubcommandAndArguments() throws Exception
     {
         // given
-        Queue<String> args = new ArrayDeque<>(Arrays.asList(ARGUMENT_1, ARGUMENT_2.toString()));
+        this.parsers.put(String.class, this.stringArgumentParser);
+        String args = prepareArgsMessage(COMMAND_ARG_1, SUB_COMMAND_ALIAS_1, SUB_COMMAND_ARG_1);
+        Command subcommand1 = prepareCommand(List.of(SUB_COMMAND_ALIAS_1));
+        Command subcommand2 = prepareCommand(List.of(SUB_COMMAND_ALIAS_2));
+        List<Command> subcommands = List.of(subcommand1, subcommand2);
+        given(command.getSubCommands()).willReturn(subcommands);
+        given(command.getParameters()).willReturn(Collections.singletonList(StringParameter.builder().key(COMMAND_ARG_1_KEY).build()));
+        given(subcommand1.getParameters()).willReturn(Collections.singletonList(StringParameter.builder().key(SUB_COMMAND_ARG_1_KEY).build()));
+        given(stringArgumentParser.parse(any())).willReturn(COMMAND_ARG_1, SUB_COMMAND_ARG_1);
+
+        // when
+        CommandParsingChain parsingChain = assertDoesNotThrow(() -> commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, args));
+
+        // then
+        assertThat(parsingChain.getCommandChain()).containsExactlyElementsOf(Arrays.asList(command, subcommand1));
+        assertThat(parsingChain.getArguments()).containsAllEntriesOf(Map.of(COMMAND_ARG_1_KEY, COMMAND_ARG_1, SUB_COMMAND_ARG_1_KEY, SUB_COMMAND_ARG_1));
+    }
+
+    @Test
+    void resolveAndParseCommandArgsShouldOnlyHaveCommandObjectIfCommandDoesNotHaveSubcommandsAndParameters()
+    {
+        // given
+        String args = prepareArgsMessage(COMMAND_ARG_1, SUB_COMMAND_ALIAS_1, SUB_COMMAND_ARG_1);
+
+        // when
+        CommandParsingChain parsingChain = assertDoesNotThrow(() -> commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, args));
+
+        // then
+        assertThat(parsingChain.getCommandChain()).contains(command);
+        assertThat(parsingChain.getArguments()).isEmpty();
+    }
+
+    @Test
+    void resolveAndParseCommandArgsShouldParseArgumentsWhenCommandHasParametersAndReturnMapWithParsedArguments() throws CommandArgumentsParseException, ArgumentParseException
+    {
+        // given
+        List<String> args = Arrays.asList(ARGUMENT_1, ARGUMENT_2.toString());
         parsers.put(String.class, stringArgumentParser);
         parsers.put(Integer.class, integerArgumentParser);
-        given(command.getParameters()).willReturn(Arrays.asList(StringParameter.builder().key(STRING_PARAMETER_KEY).build(), IntegerParameter.builder().key(INTEGER_PARAMETER_KEY).build()));
+        given(command.getParameters()).willReturn(Arrays.asList(
+                StringParameter.builder().key(STRING_PARAMETER_KEY).build(),
+                IntegerParameter.builder().key(INTEGER_PARAMETER_KEY).build(),
+                IntegerParameter.builder().key(INTEGER_PARAMETER_KEY).optional(true).build()));
         given(stringArgumentParser.parse(any())).willReturn(ARGUMENT_1);
         given(integerArgumentParser.parse(any())).willReturn(ARGUMENT_2);
 
         // when
-        Map<String, Object> parsedArguments = commandArgumentsParser.parseCommandArgs(textChannel, command, args);
+        CommandParsingChain commandParsingChain = commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, prepareArgsMessage(args));
 
         // then
-        assertThat(parsedArguments).containsAllEntriesOf(Map.of(STRING_PARAMETER_KEY, ARGUMENT_1, INTEGER_PARAMETER_KEY, ARGUMENT_2));
+        assertThat(commandParsingChain.getArguments()).containsAllEntriesOf(Map.of(STRING_PARAMETER_KEY, ARGUMENT_1, INTEGER_PARAMETER_KEY, ARGUMENT_2));
     }
 
     @Test
-    void parseCommandArgsShouldThrowCommandArgumentsParseExceptionWhenNumberOfParametersIsMoreThanArguments()
+    void resolveAndParseCommandArgsShouldThrowCommandArgumentsParseExceptionWhenProvidedNotEnoughArguments()
     {
         // given
-        Queue<String> args = new ArrayDeque<>();
         given(command.getParameters()).willReturn(Collections.singletonList(StringParameter.builder().key(STRING_PARAMETER_KEY).build()));
 
         // when
         // then
-        assertThrows(CommandArgumentsParseException.class, () -> commandArgumentsParser.parseCommandArgs(textChannel, command, args));
+        assertThrows(CommandArgumentsParseException.class, () -> commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, prepareArgsMessage()));
     }
 
     @Test
-    void parseCommandArgsShouldPutAllArgsInOneKeyWhenEncountersRemainingStringsParameter() throws CommandArgumentsParseException
+    void resolveAndParseCommandArgsShouldPutAllArgsInOneKeyWhenEncountersRemainingStringsParameter() throws CommandArgumentsParseException
     {
         // given
-        Queue<String> args = new ArrayDeque<>(Arrays.asList(ARGUMENT_1, ARGUMENT_1, ARGUMENT_2.toString()));
+        List<String> args = Arrays.asList(ARGUMENT_1, ARGUMENT_1, ARGUMENT_2.toString());
         given(command.getParameters()).willReturn(Collections.singletonList(RemainingStringsParameter.builder().key(STRING_PARAMETER_KEY).build()));
 
         // when
-        Map<String, Object> parsedArguments = commandArgumentsParser.parseCommandArgs(textChannel, command, args);
+        CommandParsingChain commandParsingChain = commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, prepareArgsMessage(args));
 
         // then
-        assertThat(parsedArguments).containsExactlyEntriesOf(Map.of(STRING_PARAMETER_KEY, ARGUMENT_1 + " " + ARGUMENT_1 + " " + ARGUMENT_2));
+        assertThat(commandParsingChain.getArguments()).containsExactlyEntriesOf(Map.of(STRING_PARAMETER_KEY, ARGUMENT_1 + " " + ARGUMENT_1 + " " + ARGUMENT_2));
     }
 
     @Test
-    void parseCommandArgsShouldNotAddAnySpacesToArgumentWhenEncountersRemainingStringsParameter() throws CommandArgumentsParseException
+    void resolveAndParseCommandArgsShouldNotAddAnySpacesToArgumentWhenEncountersRemainingStringsParameter() throws CommandArgumentsParseException
     {
         // given
-        Queue<String> args = new ArrayDeque<>(Arrays.asList(ARGUMENT_1));
+        List<String> args = Arrays.asList(ARGUMENT_1);
         given(command.getParameters()).willReturn(Collections.singletonList(RemainingStringsParameter.builder().key(STRING_PARAMETER_KEY).build()));
 
         // when
-        Map<String, Object> parsedArguments = commandArgumentsParser.parseCommandArgs(textChannel, command, args);
+        CommandParsingChain commandParsingChain = commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, prepareArgsMessage(args));
 
         // then
-        assertThat(parsedArguments).containsAllEntriesOf(Map.of(STRING_PARAMETER_KEY, ARGUMENT_1));
+        assertThat(commandParsingChain.getArguments()).containsAllEntriesOf(Map.of(STRING_PARAMETER_KEY, ARGUMENT_1));
     }
 
     @Test
-    void parseCommandArgsShouldNotParseMoreParametersWhenEncountersRemainingStringsParameter() throws CommandArgumentsParseException
+    void resolveAndParseCommandArgsShouldNotParseMoreParametersWhenEncountersRemainingStringsParameter() throws CommandArgumentsParseException
     {
         // given
-        Queue<String> args = new ArrayDeque<>(Arrays.asList(ARGUMENT_1, ARGUMENT_1, ARGUMENT_2.toString()));
+        List<String> args = Arrays.asList(ARGUMENT_1, ARGUMENT_1, ARGUMENT_2.toString());
         given(command.getParameters()).willReturn(Arrays.asList(RemainingStringsParameter.builder().key(STRING_PARAMETER_KEY).build(), IntegerParameter.builder().key(INTEGER_PARAMETER_KEY).build()));
         parsers.put(String.class, stringArgumentParser);
 
         // when
-        Map<String, Object> parsedArguments = commandArgumentsParser.parseCommandArgs(textChannel, command, args);
+        CommandParsingChain commandParsingChain = commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, prepareArgsMessage(args));
 
         // then
-        assertThat(parsedArguments).containsOnlyKeys(STRING_PARAMETER_KEY);
+        assertThat(commandParsingChain.getArguments()).containsOnlyKeys(STRING_PARAMETER_KEY);
     }
 
     @Test
-    void parseCommandArgsShouldThrowIllegalStateExceptionWhenNoParserHasBeenFoundForGivenParameterType()
+    void resolveAndParseCommandArgsShouldThrowIllegalStateExceptionWhenNoParserHasBeenFoundForGivenParameterType()
     {
         // given
-        Queue<String> args = new ArrayDeque<>(Arrays.asList(ARGUMENT_1, ARGUMENT_1, ARGUMENT_2.toString()));
+        List<String> args = Arrays.asList(ARGUMENT_1, ARGUMENT_1, ARGUMENT_2.toString());
         given(command.getParameters()).willReturn(Arrays.asList(StringParameter.builder().key(STRING_PARAMETER_KEY).build(), IntegerParameter.builder().key(INTEGER_PARAMETER_KEY).build()));
 
         // when
         // then
-        assertThrows(IllegalStateException.class, () -> commandArgumentsParser.parseCommandArgs(textChannel, command, args));
+        assertThrows(IllegalStateException.class, () -> commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, prepareArgsMessage(args)));
     }
 
     @ValueSource(classes = {ArgumentParseException.class, IllegalArgumentException.class, NumberFormatException.class, NullPointerException.class})
     @ParameterizedTest
-    void parseCommandArgsShouldThrowCommandArgumentsParseExceptionWhenParserThrowsAnyException(Class<? extends Throwable> exceptionClass) throws ArgumentParseException
+    void resolveAndParseCommandArgsShouldThrowCommandArgumentsParseExceptionWhenParserThrowsAnyException(Class<? extends Throwable> exceptionClass) throws ArgumentParseException
     {
         // given
-        Queue<String> args = new ArrayDeque<>(Arrays.asList(ARGUMENT_1, ARGUMENT_1, ARGUMENT_2.toString()));
+        List<String> args = Arrays.asList(ARGUMENT_1, ARGUMENT_1, ARGUMENT_2.toString());
         parsers.put(String.class, stringArgumentParser);
         given(command.getParameters()).willReturn(Arrays.asList(StringParameter.builder().key(STRING_PARAMETER_KEY).build(), IntegerParameter.builder().key(INTEGER_PARAMETER_KEY).build()));
         given(stringArgumentParser.parse(any())).willThrow(exceptionClass);
 
         // when
         // then
-        assertThrows(CommandArgumentsParseException.class, () -> commandArgumentsParser.parseCommandArgs(textChannel, command, args));
+        assertThrows(CommandArgumentsParseException.class, () -> commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, prepareArgsMessage(args)));
     }
 
     @Test
-    void parseCommandArgsShouldThrowCommandArgumentsParseExceptionWhenArgumentIsMissingAndParameterIsNotOptional()
+    void resolveAndParseCommandArgsShouldContinueIfArgumentIsMissingAndParameterIsOptional()
     {
         // given
-        Queue<String> args = new ArrayDeque<>(Collections.emptyList());
-        parsers.put(String.class, stringArgumentParser);
-        given(command.getParameters()).willReturn(List.of(StringParameter.builder().key(STRING_PARAMETER_KEY).build()));
-
-        // when
-        // then
-        assertThrows(CommandArgumentsParseException.class, () -> commandArgumentsParser.parseCommandArgs(textChannel, command, args));
-    }
-
-    @Test
-    void parseCommandArgsShouldContinueIfArgumentIsMissingAndParameterIsOptional()
-    {
-        // given
-        Queue<String> args = new ArrayDeque<>(Collections.emptyList());
         parsers.put(String.class, stringArgumentParser);
         given(command.getParameters()).willReturn(List.of(StringParameter.builder().key(STRING_PARAMETER_KEY).optional(true).build()));
 
         // when
         // then
-        assertDoesNotThrow(() -> commandArgumentsParser.parseCommandArgs(textChannel, command, args));
+        assertDoesNotThrow(() -> commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, prepareArgsMessage()));
+    }
+
+    private String prepareArgsMessage(String... args)
+    {
+        return String.join(DEFAULT_ARG_SEPARATOR, args);
+    }
+
+    private String prepareArgsMessage(List<String> args)
+    {
+        return String.join(DEFAULT_ARG_SEPARATOR, args);
+    }
+
+    private Command prepareCommand(List<String> aliases)
+    {
+        Command command = mock(Command.class);
+        given(command.getAliases()).willReturn(aliases);
+        return command;
     }
 }

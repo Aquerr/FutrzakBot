@@ -15,9 +15,7 @@ public class RemainingStringsParameter implements Parameter<String>
 
     boolean optional;
 
-    @Override
-    public Class<String> getType()
-    {
-        return String.class;
-    }
+    @NonNull
+    @Builder.Default
+    Class<String> type = String.class;
 }

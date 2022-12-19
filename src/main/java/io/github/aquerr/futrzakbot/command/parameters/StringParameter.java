@@ -4,20 +4,19 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.experimental.SuperBuilder;
 
 @Getter
-@Builder
+@SuperBuilder
 @EqualsAndHashCode
 public class StringParameter implements Parameter<String>
 {
     @NonNull
     String key;
 
-    boolean optional;
+    @Builder.Default
+    @NonNull
+    Class<String> type = String.class;
 
-    @Override
-    public Class<String> getType()
-    {
-        return String.class;
-    }
+    boolean optional;
 }

@@ -13,12 +13,9 @@ public class MemberParameter implements Parameter<Member>
 {
     @NonNull
     String key;
-
     boolean optional;
 
-    @Override
-    public Class<Member> getType()
-    {
-        return Member.class;
-    }
+    @Builder.Default
+    @NonNull
+    Class<Member> type = Member.class;
 }

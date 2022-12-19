@@ -13,11 +13,9 @@ public class DoubleParameter implements Parameter<Double>
     @NonNull
     String key;
 
-    boolean optional;
+    @lombok.Builder.Default
+    @NonNull
+    Class<Double> type = Double.class;
 
-    @Override
-    public Class<Double> getType()
-    {
-        return Double.class;
-    }
+    boolean optional;
 }

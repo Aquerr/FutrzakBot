@@ -1,11 +1,11 @@
 package io.github.aquerr.futrzakbot.command.parameters;
 
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.experimental.SuperBuilder;
 
-@Builder
+@SuperBuilder
 @Getter
 @EqualsAndHashCode
 public class ParameterImpl<T> implements Parameter<T>

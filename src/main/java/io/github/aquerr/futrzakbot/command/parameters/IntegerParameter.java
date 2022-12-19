@@ -12,12 +12,9 @@ public class IntegerParameter implements Parameter<Integer>
 {
     @NonNull
     String key;
-
     boolean optional;
 
-    @Override
-    public Class<Integer> getType()
-    {
-        return Integer.class;
-    }
+    @Builder.Default
+    @NonNull
+    Class<Integer> type = Integer.class;
 }

@@ -4,8 +4,8 @@ import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.command.context.CommandContextImpl;
 import io.github.aquerr.futrzakbot.command.exception.CommandArgumentsParseException;
 import io.github.aquerr.futrzakbot.command.exception.CommandException;
+import io.github.aquerr.futrzakbot.command.parsing.CommandArgumentsParser;
 import io.github.aquerr.futrzakbot.command.parsing.CommandParsingChain;
-import io.github.aquerr.futrzakbot.command.parsing.CommandResolver;
 import io.github.aquerr.futrzakbot.message.MessageSource;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.slf4j.Logger;
@@ -41,11 +40,18 @@ public class CommandManager
 
     private final Map<List<String>, Command> commands = new LinkedHashMap<>();
     private final MessageSource messageSource;
-    private final CommandResolver commandResolver = new CommandResolver();
+    private final CommandArgumentsParser commandArgumentParser;
 
     public CommandManager(MessageSource messageSource)
     {
         this.messageSource = messageSource;
+        this.commandArgumentParser = CommandArgumentsParser.createDefault();
+    }
+
+    public CommandManager(MessageSource messageSource, CommandArgumentsParser commandArgumentParser)
+    {
+        this.messageSource = messageSource;
+        this.commandArgumentParser = commandArgumentParser;
     }
 
     public void registerCommand(Command command)
@@ -101,7 +107,7 @@ public class CommandManager
 
         try
         {
-            CommandParsingChain parsingChain = commandResolver.resolveAndParseCommandArgs(channel, command, arguments);
+            CommandParsingChain parsingChain = commandArgumentParser.resolveAndParseCommandArgs(channel, command, arguments);
             commandContextBuilder.putAll(parsingChain.getArguments());
             command = parsingChain.getCommandChain().getLast(); // Returns this command or last subcommand in chain
         }

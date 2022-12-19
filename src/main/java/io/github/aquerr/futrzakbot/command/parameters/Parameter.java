@@ -10,6 +10,6 @@ public interface Parameter<T>
 
     static ParameterImpl.ParameterImplBuilder builder()
     {
-        return new ParameterImpl.ParameterImplBuilder();
+        return ParameterImpl.builder();
     }
 }
