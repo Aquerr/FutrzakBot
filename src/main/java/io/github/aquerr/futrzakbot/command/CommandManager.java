@@ -85,7 +85,11 @@ public class CommandManager
         //Log
         logCommandUsage(member, channel, message);
 
-        String text = message.getContentRaw().substring(COMMAND_PREFIX.length() + 1); // Remove "!f "
+        String messageContentRaw = message.getContentRaw();
+        if ("!f".equals(messageContentRaw))
+            messageContentRaw = "!f help"; //TODO: What if help command alias change? Need to find better solution...
+
+        String text = messageContentRaw.substring(COMMAND_PREFIX.length() + 1); // Remove "!f "
         String commandAlias = text.split(" ")[0]; // Take command alias
         String arguments = text.substring(commandAlias.length()).trim(); // Rest are arguments
 
