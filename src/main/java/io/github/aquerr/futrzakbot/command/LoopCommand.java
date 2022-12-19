@@ -3,6 +3,7 @@ package io.github.aquerr.futrzakbot.command;
 import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.message.FutrzakMessageEmbedFactory;
+import io.github.aquerr.futrzakbot.message.MessageSource;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
@@ -12,10 +13,12 @@ import java.util.List;
 public class LoopCommand implements Command, SlashCommand
 {
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
+    private final MessageSource messageSource;
 
-    public LoopCommand(FutrzakAudioPlayerManager futrzakAudioPlayerManager)
+    public LoopCommand(FutrzakAudioPlayerManager futrzakAudioPlayerManager, MessageSource messageSource)
     {
         this.futrzakAudioPlayerManager = futrzakAudioPlayerManager;
+        this.messageSource = messageSource;
     }
 
     @Override
@@ -36,13 +39,13 @@ public class LoopCommand implements Command, SlashCommand
     @Override
     public String getName()
     {
-        return ":infinity: Zapętl Kolejke";
+        return messageSource.getMessage("command.loop.name");
     }
 
     @Override
     public String getDescription()
     {
-        return "Zapętlanie kolejki";
+        return messageSource.getMessage("command.loop.description");
     }
 
     @Override
