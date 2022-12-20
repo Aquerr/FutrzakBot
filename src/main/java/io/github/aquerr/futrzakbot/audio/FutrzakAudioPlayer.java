@@ -31,12 +31,12 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     private TextChannel lastBotUsageChannel;
     private Instant lastTrackEndTime = Instant.now();
 
-    public FutrzakAudioPlayer(long guildId, AudioPlayer audioPlayer)
+    public FutrzakAudioPlayer(long guildId, AudioPlayer audioPlayer, FutrzakMessageEmbedFactory messageEmbedFactory)
     {
         this.guildId = guildId;
         this.audioPlayer = audioPlayer;
         this.audioPlayer.addListener(this);
-        this.audioLoadHandler = new FutrzakAudioLoadHandler(this, FutrzakMessageEmbedFactory.getInstance());
+        this.audioLoadHandler = new FutrzakAudioLoadHandler(this, messageEmbedFactory);
         this.messageEmbedFactory = FutrzakMessageEmbedFactory.getInstance();
     }
 

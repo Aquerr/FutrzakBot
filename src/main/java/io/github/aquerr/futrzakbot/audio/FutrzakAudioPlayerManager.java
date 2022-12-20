@@ -121,7 +121,7 @@ public final class FutrzakAudioPlayerManager
 
     public FutrzakAudioPlayer getOrCreateAudioPlayer(long guildId)
     {
-        return this.guildAudioPlayers.computeIfAbsent(guildId, id -> new FutrzakAudioPlayer(id, this.audioPlayerManager.createPlayer()));
+        return this.guildAudioPlayers.computeIfAbsent(guildId, id -> new FutrzakAudioPlayer(id, this.audioPlayerManager.createPlayer(), messageEmbedFactory));
     }
 
     private void botKickTaskRun()
