@@ -92,6 +92,9 @@ public class MessageListener extends ListenerAdapter
 
     private boolean isMessageWithFutrzakPrefix(String message)
     {
+        if ("!f".equals(message))
+            return true;
+
         String[] words = message.split(" ");
         return words.length > 1 && words[0].equals(CommandManager.COMMAND_PREFIX);
     }
