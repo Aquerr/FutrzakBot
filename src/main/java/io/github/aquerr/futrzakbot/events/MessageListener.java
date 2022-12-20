@@ -29,6 +29,9 @@ public class MessageListener extends ListenerAdapter
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
+        if (isBot(event.getAuthor().getIdLong()))
+            return;
+
         TextChannel textChannel = event.getTextChannel();
         Member member = event.getMember();
 
@@ -56,7 +59,7 @@ public class MessageListener extends ListenerAdapter
     public void onGenericGuildMessageReaction(@NotNull GenericGuildMessageReactionEvent event)
     {
         // If it is Futrzak who added reaction... don't process further.
-        if (this.futrzakBot.getJda().getSelfUser().getIdLong() == event.getUserIdLong())
+        if (isBot(event.getUserIdLong()))
             return;
 
         Message message = event.retrieveMessage().complete();
@@ -96,7 +99,7 @@ public class MessageListener extends ListenerAdapter
     private boolean isFutrzakHelpMessageReaction(MessageEmbed messageEmbed)
     {
         return Optional.ofNullable(messageEmbed.getTitle()).orElse("")
-                .equals(FutrzakMessageEmbedFactory.HELP_MESSAGE_TITLE);
+                .equals(futrzakBot.getMessageSource().getMessage("embed.command-list"));
     }
 
     private int getCurrentHelpPage(MessageEmbed messageEmbed)
@@ -106,5 +109,10 @@ public class MessageListener extends ListenerAdapter
                 .orElse("");
 
         return Integer.parseInt(footer.split("\\/")[0]);
+    }
+
+    private boolean isBot(final long userId)
+    {
+        return this.futrzakBot.getJda().getSelfUser().getIdLong() == userId;
     }
 }
