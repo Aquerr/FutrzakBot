@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 public class CommandManager
 {
-    public static final String COMMAND_PREFIX = "!f";
+    public static final String COMMAND_PREFIX = "!t";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandManager.class);
 

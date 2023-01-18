@@ -1,5 +1,7 @@
-package io.github.aquerr.futrzakbot.command;
+package io.github.aquerr.futrzakbot.command.futrzak;
 
+import io.github.aquerr.futrzakbot.command.Command;
+import io.github.aquerr.futrzakbot.command.CommandManager;
 import io.github.aquerr.futrzakbot.command.parameters.Parameter;
 import io.github.aquerr.futrzakbot.command.parameters.RemainingStringsParameter;
 import io.github.aquerr.futrzakbot.command.context.CommandContext;

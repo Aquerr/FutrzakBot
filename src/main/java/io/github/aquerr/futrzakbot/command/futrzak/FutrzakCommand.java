@@ -1,5 +1,6 @@
-package io.github.aquerr.futrzakbot.command;
+package io.github.aquerr.futrzakbot.command.futrzak;
 
+import io.github.aquerr.futrzakbot.command.Command;
 import io.github.aquerr.futrzakbot.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.games.FutrzakGame;
 import net.dv8tion.jda.api.entities.Member;
@@ -61,5 +62,11 @@ public class FutrzakCommand implements Command
     public String getDescription()
     {
         return "Sprawdź status swojego futrzaka";
+    }
+
+    @Override
+    public List<Command> getSubCommands()
+    {
+        return List.of(new FightCommand());
     }
 }
