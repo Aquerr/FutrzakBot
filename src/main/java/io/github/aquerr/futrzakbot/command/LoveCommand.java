@@ -58,7 +58,7 @@ public class LoveCommand implements Command, SlashCommand
     public CommandData getSlashCommandData()
     {
         return SlashCommand.super.getSlashCommandData()
-                .addOption(OptionType.MENTIONABLE, PARAM_KEY, "Cel", true);
+                .addOption(OptionType.USER, PARAM_KEY, "Cel", true);
     }
 
     @Override
