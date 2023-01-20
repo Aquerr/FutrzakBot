@@ -1,11 +1,12 @@
 package io.github.aquerr.futrzakbot.command;
 
-import io.github.aquerr.futrzakbot.command.context.CommandContext;
-import io.github.aquerr.futrzakbot.command.exception.CommandException;
-import io.github.aquerr.futrzakbot.command.parameters.StringParameter;
-import io.github.aquerr.futrzakbot.games.quote.QuoteCategory;
-import io.github.aquerr.futrzakbot.games.quote.QuoteGame;
-import io.github.aquerr.futrzakbot.message.MessageSource;
+import io.github.aquerr.futrzakbot.discord.command.QuoteCommand;
+import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
+import io.github.aquerr.futrzakbot.discord.command.exception.CommandException;
+import io.github.aquerr.futrzakbot.discord.command.parameters.StringParameter;
+import io.github.aquerr.futrzakbot.discord.games.quote.QuoteCategory;
+import io.github.aquerr.futrzakbot.discord.games.quote.QuoteGame;
+import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;

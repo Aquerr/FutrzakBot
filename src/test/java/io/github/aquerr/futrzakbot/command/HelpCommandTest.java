@@ -1,10 +1,12 @@
 package io.github.aquerr.futrzakbot.command;
 
-import io.github.aquerr.futrzakbot.command.context.CommandContext;
-import io.github.aquerr.futrzakbot.command.parameters.Parameter;
-import io.github.aquerr.futrzakbot.message.EmojiUnicodes;
-import io.github.aquerr.futrzakbot.message.FutrzakMessageEmbedFactory;
-import io.github.aquerr.futrzakbot.message.MessageSource;
+import io.github.aquerr.futrzakbot.discord.command.CommandManager;
+import io.github.aquerr.futrzakbot.discord.command.HelpCommand;
+import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
+import io.github.aquerr.futrzakbot.discord.command.parameters.Parameter;
+import io.github.aquerr.futrzakbot.discord.message.EmojiUnicodes;
+import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
+import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;

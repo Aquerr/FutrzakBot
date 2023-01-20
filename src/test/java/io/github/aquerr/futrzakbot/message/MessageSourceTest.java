@@ -1,5 +1,7 @@
 package io.github.aquerr.futrzakbot.message;
 
+import io.github.aquerr.futrzakbot.discord.message.Localization;
+import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -1,7 +1,8 @@
 package io.github.aquerr.futrzakbot.command;
 
-import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
-import io.github.aquerr.futrzakbot.message.MessageSource;
+import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
+import io.github.aquerr.futrzakbot.discord.command.PlayCommand;
+import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;

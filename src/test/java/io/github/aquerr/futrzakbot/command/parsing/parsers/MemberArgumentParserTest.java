@@ -1,7 +1,8 @@
 package io.github.aquerr.futrzakbot.command.parsing.parsers;
 
-import io.github.aquerr.futrzakbot.command.exception.ArgumentParseException;
-import io.github.aquerr.futrzakbot.command.parsing.ParsingContext;
+import io.github.aquerr.futrzakbot.discord.command.exception.ArgumentParseException;
+import io.github.aquerr.futrzakbot.discord.command.parsing.ParsingContext;
+import io.github.aquerr.futrzakbot.discord.command.parsing.parsers.MemberArgumentParser;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;

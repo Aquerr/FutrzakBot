@@ -1,12 +1,14 @@
 package io.github.aquerr.futrzakbot.command.parsing;
 
-import io.github.aquerr.futrzakbot.command.Command;
-import io.github.aquerr.futrzakbot.command.exception.ArgumentParseException;
-import io.github.aquerr.futrzakbot.command.exception.CommandArgumentsParseException;
-import io.github.aquerr.futrzakbot.command.parameters.IntegerParameter;
-import io.github.aquerr.futrzakbot.command.parameters.RemainingStringsParameter;
-import io.github.aquerr.futrzakbot.command.parameters.StringParameter;
-import io.github.aquerr.futrzakbot.command.parsing.parsers.ArgumentParser;
+import io.github.aquerr.futrzakbot.discord.command.Command;
+import io.github.aquerr.futrzakbot.discord.command.exception.ArgumentParseException;
+import io.github.aquerr.futrzakbot.discord.command.exception.CommandArgumentsParseException;
+import io.github.aquerr.futrzakbot.discord.command.parameters.IntegerParameter;
+import io.github.aquerr.futrzakbot.discord.command.parameters.RemainingStringsParameter;
+import io.github.aquerr.futrzakbot.discord.command.parameters.StringParameter;
+import io.github.aquerr.futrzakbot.discord.command.parsing.CommandArgumentsParser;
+import io.github.aquerr.futrzakbot.discord.command.parsing.CommandParsingChain;
+import io.github.aquerr.futrzakbot.discord.command.parsing.parsers.ArgumentParser;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

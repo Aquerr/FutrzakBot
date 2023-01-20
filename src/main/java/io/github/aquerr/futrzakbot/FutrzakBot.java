@@ -1,19 +1,20 @@
 package io.github.aquerr.futrzakbot;
 
-import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
+import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.command.*;
-import io.github.aquerr.futrzakbot.config.Configuration;
-import io.github.aquerr.futrzakbot.config.JsonPathConfiguration;
-import io.github.aquerr.futrzakbot.events.MessageListener;
-import io.github.aquerr.futrzakbot.events.ReadyListener;
-import io.github.aquerr.futrzakbot.events.SlashCommandListener;
-import io.github.aquerr.futrzakbot.games.GameManager;
-import io.github.aquerr.futrzakbot.games.quote.QuoteGame;
-import io.github.aquerr.futrzakbot.message.FutrzakMessageEmbedFactory;
-import io.github.aquerr.futrzakbot.message.Localization;
-import io.github.aquerr.futrzakbot.message.MessageSource;
-import io.github.aquerr.futrzakbot.role.DiscordRoleGiver;
-import io.github.aquerr.futrzakbot.role.RoleMessageReactListener;
+import io.github.aquerr.futrzakbot.discord.command.*;
+import io.github.aquerr.futrzakbot.discord.config.Configuration;
+import io.github.aquerr.futrzakbot.discord.config.JsonPathConfiguration;
+import io.github.aquerr.futrzakbot.discord.events.MessageListener;
+import io.github.aquerr.futrzakbot.discord.events.ReadyListener;
+import io.github.aquerr.futrzakbot.discord.events.SlashCommandListener;
+import io.github.aquerr.futrzakbot.discord.games.GameManager;
+import io.github.aquerr.futrzakbot.discord.games.quote.QuoteGame;
+import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
+import io.github.aquerr.futrzakbot.discord.message.Localization;
+import io.github.aquerr.futrzakbot.discord.message.MessageSource;
+import io.github.aquerr.futrzakbot.discord.role.DiscordRoleGiver;
+import io.github.aquerr.futrzakbot.discord.role.RoleMessageReactListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -24,12 +25,18 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.Banner;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
 import javax.security.auth.login.LoginException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class FutrzakBot
+@SpringBootApplication
+public class FutrzakBot implements CommandLineRunner
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(FutrzakBot.class);
     private static final String ERROR_MISSING_BOT_TOKEN = "error.missing-bot-token";
@@ -41,6 +48,17 @@ public class FutrzakBot
     {
         FutrzakBot futrzakBot = new FutrzakBot();
         futrzakBot.start();
+
+        new SpringApplicationBuilder(FutrzakBot.class)
+                .web(WebApplicationType.SERVLET)
+                .bannerMode(Banner.Mode.OFF)
+                .run(args);
+    }
+
+    @Override
+    public void run(String... args) throws Exception
+    {
+        LOGGER.info("Helo from Spring Command Line Runner!");
     }
 
     private JDA jda;

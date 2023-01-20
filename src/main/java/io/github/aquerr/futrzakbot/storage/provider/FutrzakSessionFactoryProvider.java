@@ -1,7 +1,5 @@
 package io.github.aquerr.futrzakbot.storage.provider;
 
-import io.github.aquerr.futrzakbot.storage.entity.MiniGameEncounter;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;

@@ -1,0 +1,26 @@
+html {
+    height: 100%;
+    font-family: Arial, Consolas;
+}
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    height: 100%;
+}
+
+#canvas-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#myCanvas {
+    background: #eee;
+    border: black ridge 3px;
+}
