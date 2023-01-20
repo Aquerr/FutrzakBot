@@ -36,6 +36,14 @@ dependencies {
     implementation("com.typesafe:config:1.4.1")
     implementation("com.jayway.jsonpath:json-path:2.7.0")
 
+    // Database (H2)
+    implementation("com.h2database:h2:2.1.214")
+
+    // ORM
+    implementation("org.hibernate:hibernate-core:6.1.6.Final")
+//    implementation("org.hibernate:hibernate-core-jakarta:6.1.6.Final")
+//    implementation("org.glassfish.jaxb:jaxb-runtime:3.0.0")
+
     // Logging (Log4j2)
     implementation("org.apache.logging.log4j:log4j-api:2.17.2")
     implementation("org.apache.logging.log4j:log4j-core:2.17.2")

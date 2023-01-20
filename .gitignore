@@ -43,3 +43,6 @@ src/main/java/io/github/aquerr/futrzakbot/secret
 /futrzaki
 /config.conf
 /quotes.json
+
+# Ignored files
+*.db

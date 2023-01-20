@@ -1,25 +1,7 @@
 package io.github.aquerr.futrzakbot;
 
 import io.github.aquerr.futrzakbot.audio.FutrzakAudioPlayerManager;
-import io.github.aquerr.futrzakbot.command.ClearCommand;
-import io.github.aquerr.futrzakbot.command.CommandManager;
-import io.github.aquerr.futrzakbot.command.DebilCommand;
-import io.github.aquerr.futrzakbot.command.EightBallCommand;
-import io.github.aquerr.futrzakbot.command.FightCommand;
-import io.github.aquerr.futrzakbot.command.FutrzakCommand;
-import io.github.aquerr.futrzakbot.command.HelpCommand;
-import io.github.aquerr.futrzakbot.command.InfoCommand;
-import io.github.aquerr.futrzakbot.command.LoopCommand;
-import io.github.aquerr.futrzakbot.command.LoveCommand;
-import io.github.aquerr.futrzakbot.command.PlayCommand;
-import io.github.aquerr.futrzakbot.command.QueueCommand;
-import io.github.aquerr.futrzakbot.command.QuoteCommand;
-import io.github.aquerr.futrzakbot.command.RemoveComand;
-import io.github.aquerr.futrzakbot.command.ResumeCommand;
-import io.github.aquerr.futrzakbot.command.RouletteCommand;
-import io.github.aquerr.futrzakbot.command.SkipCommand;
-import io.github.aquerr.futrzakbot.command.StopCommand;
-import io.github.aquerr.futrzakbot.command.VolumeCommand;
+import io.github.aquerr.futrzakbot.command.*;
 import io.github.aquerr.futrzakbot.config.Configuration;
 import io.github.aquerr.futrzakbot.config.JsonPathConfiguration;
 import io.github.aquerr.futrzakbot.events.MessageListener;
