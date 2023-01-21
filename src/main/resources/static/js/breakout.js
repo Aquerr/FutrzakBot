@@ -177,7 +177,7 @@ function detectBallCollisionWithBricks() {
                             console.log(data);
                         });
                         alert("YOU WIN, CONGRATULATIONS!");
-                        document.location.reload();
+                        document.location.url = "/game/thanks-for-playing";
                     }
                 }
             }
