@@ -4,7 +4,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-import io.github.aquerr.futrzakbot.PaginatedMessageEmbed;
+import io.github.aquerr.futrzakbot.discord.util.PaginatedMessageEmbed;
 import io.github.aquerr.futrzakbot.discord.command.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;

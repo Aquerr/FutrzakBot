@@ -28,7 +28,6 @@ import io.github.aquerr.futrzakbot.discord.events.SlashCommandListener;
 import io.github.aquerr.futrzakbot.discord.games.GameManager;
 import io.github.aquerr.futrzakbot.discord.games.quote.QuoteGame;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
-import io.github.aquerr.futrzakbot.discord.message.Localization;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import io.github.aquerr.futrzakbot.discord.role.DiscordRoleGiver;
 import io.github.aquerr.futrzakbot.discord.role.RoleMessageReactListener;
@@ -42,41 +41,21 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.Banner;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
 
 import javax.security.auth.login.LoginException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@SpringBootApplication
-public class FutrzakBot implements CommandLineRunner
+/**
+ * Main bot class.
+ */
+public class FutrzakBot
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(FutrzakBot.class);
     private static final String ERROR_MISSING_BOT_TOKEN = "error.missing-bot-token";
     private static final String COULD_NOT_REGISTER_SLASH_COMMANDS = "error.command.slash.could-not-register";
 
     private final Path botDirectory = Paths.get(".").toAbsolutePath();
-
-    public static void main(String[] args)
-    {
-        FutrzakBot futrzakBot = new FutrzakBot();
-        futrzakBot.start();
-
-        new SpringApplicationBuilder(FutrzakBot.class)
-                .web(WebApplicationType.SERVLET)
-                .bannerMode(Banner.Mode.OFF)
-                .run(args);
-    }
-
-    @Override
-    public void run(String... args) throws Exception
-    {
-        LOGGER.info("Helo from Spring Command Line Runner!");
-    }
 
     private JDA jda;
     private FutrzakAudioPlayerManager futrzakAudioPlayerManager;
@@ -88,12 +67,16 @@ public class FutrzakBot implements CommandLineRunner
     private MessageSource messageSource;
     private FutrzakMessageEmbedFactory messageEmbedFactory;
 
-    private void start()
+    FutrzakBot(Configuration configuration, MessageSource messageSource)
     {
-        this.configuration = Configuration.loadConfiguration();
+        this.configuration = configuration;
+        this.messageSource = messageSource;
+    }
+
+    void start()
+    {
         this.jsonPathConfiguration = new JsonPathConfiguration();
         this.jsonPathConfiguration.configure();
-        this.messageSource = new MessageSource(Localization.forTag(this.configuration.getLanguageTag()));
         FutrzakMessageEmbedFactory.init(messageSource);
         this.messageEmbedFactory = FutrzakMessageEmbedFactory.getInstance();
         if (configuration.getBotToken().isEmpty())

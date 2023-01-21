@@ -1,4 +1,4 @@
-package io.github.aquerr.futrzakbot;
+package io.github.aquerr.futrzakbot.discord.util;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
