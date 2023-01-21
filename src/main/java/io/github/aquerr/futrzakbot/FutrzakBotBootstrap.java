@@ -27,13 +27,17 @@ public class FutrzakBotBootstrap implements CommandLineRunner
         FutrzakBot futrzakBot = new FutrzakBot(configuration, messageSource);
         futrzakBot.start();
 
-        startSpringBoot(args);
+        startSpringBoot(configuration, args);
     }
 
-    private static void startSpringBoot(String[] args)
+    private static void startSpringBoot(Configuration configuration, String[] args)
     {
+        WebApplicationType webApplicationType = WebApplicationType.NONE;
+        if (configuration.isWebEnabled())
+            webApplicationType = WebApplicationType.SERVLET;
+
         new SpringApplicationBuilder(FutrzakBotBootstrap.class)
-                .web(WebApplicationType.SERVLET)
+                .web(webApplicationType)
                 .bannerMode(Banner.Mode.OFF)
                 .run(args);
     }

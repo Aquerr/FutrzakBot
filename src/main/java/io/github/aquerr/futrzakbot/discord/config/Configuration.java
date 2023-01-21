@@ -19,6 +19,7 @@ public class Configuration
 
     private final String botToken;
     private final String languageTag;
+    private final boolean webEnabled;
     private final boolean roleGiverEnabled;
     private final long guildId;
     private final long channelId;
@@ -34,6 +35,7 @@ public class Configuration
     public Configuration(Config config)
     {
         this.botToken = config.getString("bot-token");
+        this.webEnabled = config.getBoolean("web-enabled");
         this.emoteRoleIdsMap = (Map)config.getConfig("role-giver").getAnyRef("roles");
         this.roleGiverEnabled = config.getConfig("role-giver").getBoolean("enabled");
         this.guildId = config.getConfig("role-giver").getLong("guild-id");
@@ -75,6 +77,11 @@ public class Configuration
     public boolean isRoleGiverEnabled()
     {
         return roleGiverEnabled;
+    }
+
+    public boolean isWebEnabled()
+    {
+        return webEnabled;
     }
 
     private static Config loadConfigFile()
