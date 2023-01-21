@@ -1,8 +1,25 @@
 package io.github.aquerr.futrzakbot;
 
 import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
-import io.github.aquerr.futrzakbot.command.*;
-import io.github.aquerr.futrzakbot.discord.command.*;
+import io.github.aquerr.futrzakbot.discord.command.ClearCommand;
+import io.github.aquerr.futrzakbot.discord.command.CommandManager;
+import io.github.aquerr.futrzakbot.discord.command.DebilCommand;
+import io.github.aquerr.futrzakbot.discord.command.EightBallCommand;
+import io.github.aquerr.futrzakbot.discord.command.FightCommand;
+import io.github.aquerr.futrzakbot.discord.command.FutrzakCommand;
+import io.github.aquerr.futrzakbot.discord.command.HelpCommand;
+import io.github.aquerr.futrzakbot.discord.command.InfoCommand;
+import io.github.aquerr.futrzakbot.discord.command.LoopCommand;
+import io.github.aquerr.futrzakbot.discord.command.LoveCommand;
+import io.github.aquerr.futrzakbot.discord.command.PlayCommand;
+import io.github.aquerr.futrzakbot.discord.command.QueueCommand;
+import io.github.aquerr.futrzakbot.discord.command.QuoteCommand;
+import io.github.aquerr.futrzakbot.discord.command.RemoveComand;
+import io.github.aquerr.futrzakbot.discord.command.ResumeCommand;
+import io.github.aquerr.futrzakbot.discord.command.RouletteCommand;
+import io.github.aquerr.futrzakbot.discord.command.SkipCommand;
+import io.github.aquerr.futrzakbot.discord.command.StopCommand;
+import io.github.aquerr.futrzakbot.discord.command.VolumeCommand;
 import io.github.aquerr.futrzakbot.discord.config.Configuration;
 import io.github.aquerr.futrzakbot.discord.config.JsonPathConfiguration;
 import io.github.aquerr.futrzakbot.discord.events.MessageListener;
