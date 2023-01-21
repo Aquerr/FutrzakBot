@@ -16,6 +16,7 @@ public class WebConfiguration implements WebMvcConfigurer
     {
         InternalResourceViewResolver bean = new InternalResourceViewResolver();
         bean.setViewClass(InternalResourceView.class);
+//        bean.setPrefix("/static/");
         bean.setSuffix(".html");
         return bean;
     }

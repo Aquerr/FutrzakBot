@@ -7,6 +7,7 @@ import io.github.aquerr.futrzakbot.discord.command.DebilCommand;
 import io.github.aquerr.futrzakbot.discord.command.EightBallCommand;
 import io.github.aquerr.futrzakbot.discord.command.FightCommand;
 import io.github.aquerr.futrzakbot.discord.command.FutrzakCommand;
+import io.github.aquerr.futrzakbot.discord.command.GameCommand;
 import io.github.aquerr.futrzakbot.discord.command.HelpCommand;
 import io.github.aquerr.futrzakbot.discord.command.InfoCommand;
 import io.github.aquerr.futrzakbot.discord.command.LoopCommand;
@@ -147,6 +148,7 @@ public class FutrzakBot
         this.commandManager.registerCommand(new LoopCommand(this.futrzakAudioPlayerManager, this.messageSource, this.messageEmbedFactory));
         this.commandManager.registerCommand(new FightCommand());
         this.commandManager.registerCommand(new QuoteCommand(QuoteGame.getInstance(), this.messageSource));
+        this.commandManager.registerCommand(new GameCommand(this.messageSource, this.messageEmbedFactory, this.gameManager.getWebGame()));
     }
 
     public JDA getJda()

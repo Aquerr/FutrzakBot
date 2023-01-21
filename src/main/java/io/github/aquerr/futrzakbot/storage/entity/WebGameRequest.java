@@ -8,9 +8,9 @@ import org.hibernate.annotations.TimeZoneStorageType;
 import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "mini_game_encounter")
+@Table(name = "web_game_request")
 @Data
-public class MiniGameEncounter
+public class WebGameRequest
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
