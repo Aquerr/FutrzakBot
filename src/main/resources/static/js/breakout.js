@@ -16,12 +16,12 @@ let ballX;
 let ballY;
 let ballSpeedX = 2;
 let ballSpeedY = -2;
-const ballSpeedIncrementValue = 0.1;
+const ballSpeedIncrementValue = 0.05;
 //////////////
 
 //////////////
 // Player paddle
-let lives = 1;
+let lives = 2;
 const paddleHeight = 10;
 const paddleWidth = 75;
 let paddleX;
@@ -141,7 +141,7 @@ function ballLogic() {
             lives--;
             if (!lives) {
                 alert("GAME OVER");
-                document.location.reload();
+                document.location.pathname = "/game/thanks-for-playing";
             }
             else {
                 ballX = canvas.width / 2;
@@ -177,7 +177,7 @@ function detectBallCollisionWithBricks() {
                             console.log(data);
                         });
                         alert("YOU WIN, CONGRATULATIONS!");
-                        document.location.url = "/game/thanks-for-playing";
+                        document.location.pathname = "/game/thanks-for-playing";
                     }
                 }
             }
