@@ -13,6 +13,11 @@ import net.dv8tion.jda.api.events.message.guild.react.GenericGuildMessageReactio
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Optional;
 
 public class MessageListener extends ListenerAdapter
@@ -39,6 +44,11 @@ public class MessageListener extends ListenerAdapter
         if (member == null)
             return;
 
+        if ("!f debugip".equals(event.getMessage().getContentDisplay()) && event.getAuthor().getIdLong() == 272461089541718017L)
+        {
+            printDebugIp(event);
+        }
+
         if (isMessageWithFutrzakPrefix(event.getMessage().getContentDisplay()))
         {
             this.futrzakBot.getCommandManager().processCommand(member, textChannel, event.getMessage());
@@ -49,6 +59,11 @@ public class MessageListener extends ListenerAdapter
         {
             event.getMessage().addReaction("❤").queue();
         }
+    }
+
+    private void printDebugIp(MessageReceivedEvent event)
+    {
+        event.getAuthor().openPrivateChannel().flatMap(privateChannel -> privateChannel.sendMessage(getPublicIp())).queue();
     }
 
 
@@ -117,5 +132,24 @@ public class MessageListener extends ListenerAdapter
     private boolean isBot(final long userId)
     {
         return this.futrzakBot.getJda().getSelfUser().getIdLong() == userId;
+    }
+
+    private String getPublicIp()
+    {
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest httpRequest = HttpRequest.newBuilder().GET().uri(URI.create("https://api.ipify.org")).build();
+        try
+        {
+            HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            String publicIp = httpResponse.body();
+            if (publicIp == null || publicIp.isBlank())
+                return "Could not get public ip.";
+
+            return publicIp;
+        }
+        catch (IOException | InterruptedException e)
+        {
+            return "Could not get public ip: " + e.getMessage();
+        }
     }
 }
