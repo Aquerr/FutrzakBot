@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GenericGuildMessageReactionEvent;
+import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,6 +33,15 @@ public class MessageListener extends ListenerAdapter
     }
 
     @Override
+    public void onPrivateMessageReceived(PrivateMessageReceivedEvent event)
+    {
+        if ("!f debugip".equals(event.getMessage().getContentDisplay()) && event.getAuthor().getIdLong() == 272461089541718017L)
+        {
+            printDebugIp(event);
+        }
+    }
+
+    @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
         if (isBot(event.getAuthor().getIdLong()))
@@ -43,11 +53,6 @@ public class MessageListener extends ListenerAdapter
         // Bot cannot be used from webhooks and private channels
         if (member == null)
             return;
-
-        if ("!f debugip".equals(event.getMessage().getContentDisplay()) && event.getAuthor().getIdLong() == 272461089541718017L)
-        {
-            printDebugIp(event);
-        }
 
         if (isMessageWithFutrzakPrefix(event.getMessage().getContentDisplay()))
         {
@@ -61,9 +66,9 @@ public class MessageListener extends ListenerAdapter
         }
     }
 
-    private void printDebugIp(MessageReceivedEvent event)
+    private void printDebugIp(PrivateMessageReceivedEvent event)
     {
-        event.getAuthor().openPrivateChannel().flatMap(privateChannel -> privateChannel.sendMessage(getPublicIp())).queue();
+        event.getChannel().sendMessage(getPublicIp()).queue();
     }
 
 
