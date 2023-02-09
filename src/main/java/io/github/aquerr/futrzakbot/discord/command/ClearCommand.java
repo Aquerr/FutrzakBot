@@ -28,6 +28,7 @@ public class ClearCommand implements Command, SlashCommand
     {
         TextChannel textChannel = context.getTextChannel();
         this.futrzakAudioPlayerManager.clearQueue(textChannel.getGuild().getIdLong(),textChannel);
+        textChannel.sendMessage(messageEmbedFactory.createClearMessage()).queue();
         return true;
     }
 
