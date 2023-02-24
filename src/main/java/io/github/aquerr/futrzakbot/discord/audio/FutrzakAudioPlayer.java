@@ -13,9 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import static java.lang.String.format;
 
 
 public class FutrzakAudioPlayer extends AudioEventAdapter
@@ -29,7 +32,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     private final LinkedList<AudioTrack> tracksQueue = new LinkedList<>();
     private final FutrzakMessageEmbedFactory messageEmbedFactory;
     private TextChannel lastBotUsageChannel;
-    private Instant lastTrackEndTime = Instant.now();
+    private Instant lastActiveTime = Instant.now();
 
     public FutrzakAudioPlayer(long guildId, AudioPlayer audioPlayer, FutrzakMessageEmbedFactory messageEmbedFactory)
     {
@@ -76,6 +79,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
             this.lastBotUsageChannel.sendMessageEmbeds(messageEmbedFactory.createNowPlayingMessage(audioTrack)).complete();
         }
         this.audioPlayer.playTrack(audioTrack);
+        updateLastActiveTime();
     }
 
     public boolean toggleLoop()
@@ -98,25 +102,28 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     @Override
     public void onPlayerPause(AudioPlayer player)
     {
-        LOGGER.info("Player paused!");
+        LOGGER.info("Music player for guildId = {} has been paused!", this.guildId);
+        updateLastActiveTime();
     }
 
     @Override
     public void onPlayerResume(AudioPlayer player)
     {
-        LOGGER.info("Player resumed!");
+        LOGGER.info("Music player for guildId = {} has been resumed!", this.guildId);
+        updateLastActiveTime();
     }
 
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track)
     {
-        LOGGER.info("Track started!");
+        LOGGER.info("Music player for guildId = {} has started new track!", this.guildId);
+        updateLastActiveTime();
     }
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason)
     {
-        LOGGER.info("Track ended!");
+        LOGGER.info("Music player for guildId = {} has ended track!", this.guildId);
         if (endReason.mayStartNext)
         {
             skip();
@@ -129,32 +136,33 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
 
         if (this.audioPlayer.getPlayingTrack() != null)
         {
-            this.lastTrackEndTime = Instant.now();
+            updateLastActiveTime();
         }
     }
 
     @Override
     public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception)
     {
-        LOGGER.error("Track exception: ", exception);
+        LOGGER.warn(format("Music player for guildId = %s has caught an exception!", this.guildId), exception);
+
         this.lastBotUsageChannel.sendMessageEmbeds(messageEmbedFactory.createSongErrorMessage(track, exception)).queue();
-        this.lastTrackEndTime = Instant.now();
+        updateLastActiveTime();
     }
 
     @Override
     public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs)
     {
-        LOGGER.warn("Track stuck: {}", track.getInfo().title);
+        LOGGER.info("Music player for guildId = {} got stuck track = {}", this.guildId, track.getInfo().title);
         this.lastBotUsageChannel.sendMessageEmbeds(messageEmbedFactory.createSongErrorMessage(track)).queue();
-        this.lastTrackEndTime = Instant.now();
+        updateLastActiveTime();
     }
 
     @Override
     public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs, StackTraceElement[] stackTrace)
     {
-        LOGGER.warn("Track stuck: {}", Arrays.asList(stackTrace));
+        LOGGER.info("Music player for guildId = {} got stuck track = {}", this.guildId, Arrays.asList(stackTrace));
         this.lastBotUsageChannel.sendMessageEmbeds(messageEmbedFactory.createSongErrorMessage(track)).queue();
-        this.lastTrackEndTime = Instant.now();
+        updateLastActiveTime();
     }
 
     public long getGuildId()
@@ -171,6 +179,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     {
         this.audioPlayer.setPaused(true);
         this.getLastBotUsageChannel().sendMessageEmbeds(messageEmbedFactory.createPlayerStoppedMessage()).queue();
+        updateLastActiveTime();
     }
 
     public void resume()
@@ -182,12 +191,14 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         }
 
         this.getLastBotUsageChannel().sendMessageEmbeds(messageEmbedFactory.createPlayerResumedMessage()).queue();
+        updateLastActiveTime();
     }
 
     public void setVolume(int volume)
     {
         this.audioPlayer.setVolume(volume);
         this.getLastBotUsageChannel().sendMessageEmbeds(messageEmbedFactory.createPlayerVolumeChangedMessage(volume)).queue();
+        updateLastActiveTime();
     }
 
     public AudioPlayer getInternalAudioPlayer()
@@ -195,9 +206,9 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         return audioPlayer;
     }
 
-    public Instant getLastTrackEndTime()
+    private Instant getLastActiveTime()
     {
-        return lastTrackEndTime;
+        return lastActiveTime;
     }
 
     public List<AudioTrack> getQueue()
@@ -222,5 +233,21 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     private boolean isPlayingTrack()
     {
         return this.getPlayingTrack() != null;
+    }
+
+    private void updateLastActiveTime()
+    {
+        this.lastActiveTime = Instant.now();
+    }
+
+    public boolean isActive()
+    {
+        if (isPlayingTrack() && !audioPlayer.isPaused())
+            return true;
+
+        if (getLastActiveTime().plus(5, ChronoUnit.MINUTES).isBefore(Instant.now()))
+            return true;
+
+        return false;
     }
 }

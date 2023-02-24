@@ -131,11 +131,10 @@ public final class FutrzakAudioPlayerManager
         {
             Map.Entry<Long, FutrzakAudioPlayer> futrzakAudioPlayerEntry = futrzakAudioPlayersIterator.next();
             FutrzakAudioPlayer futrzakAudioPlayer = futrzakAudioPlayerEntry.getValue();
-            if (futrzakAudioPlayer.getPlayingTrack() == null && futrzakAudioPlayer.getLastTrackEndTime().plus(5, ChronoUnit.MINUTES).isBefore(Instant.now()))
-            {
-                // Kick bot
-                this.futrzakBot.getJda().getGuildById(futrzakAudioPlayerEntry.getKey()).getAudioManager().closeAudioConnection();
-            }
+            if (futrzakAudioPlayer.isActive())
+                continue;
+
+            this.futrzakBot.getJda().getGuildById(futrzakAudioPlayerEntry.getKey()).getAudioManager().closeAudioConnection();
         }
     }
 
