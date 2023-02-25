@@ -9,6 +9,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import io.github.aquerr.futrzakbot.discord.audio.handler.FutrzakAudioLoadHandler;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     private final LinkedList<AudioTrack> tracksQueue = new LinkedList<>();
     private final FutrzakMessageEmbedFactory messageEmbedFactory;
     private TextChannel lastBotUsageChannel;
+    private VoiceChannel voiceChannel;
     private Instant lastActiveTime = Instant.now();
 
     public FutrzakAudioPlayer(long guildId, AudioPlayer audioPlayer, FutrzakMessageEmbedFactory messageEmbedFactory)
@@ -46,6 +48,16 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     public void setLastBotUsageChannel(TextChannel lastBotUsageChannel)
     {
         this.lastBotUsageChannel = lastBotUsageChannel;
+    }
+
+    public void setVoiceChannel(VoiceChannel voiceChannel)
+    {
+        this.voiceChannel = voiceChannel;
+    }
+
+    public VoiceChannel getVoiceChannel()
+    {
+        return voiceChannel;
     }
 
     public TextChannel getLastBotUsageChannel()

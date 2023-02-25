@@ -109,6 +109,6 @@ public class PlayCommand implements Command, SlashCommand
             audioManager.setSendingHandler(new AudioPlayerSendHandler(this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(guild.getIdLong()).getInternalAudioPlayer()));
         }
         audioManager.openAudioConnection(voiceChannel);
-        this.futrzakAudioPlayerManager.queue(guild.getIdLong(), textChannel, songName, true);
+        this.futrzakAudioPlayerManager.queue(guild.getIdLong(), textChannel, voiceChannel, songName, true);
     }
 }

@@ -10,15 +10,13 @@ import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public final class FutrzakAudioPlayerManager
@@ -30,21 +28,20 @@ public final class FutrzakAudioPlayerManager
     private final Map<Long, FutrzakAudioPlayer> guildAudioPlayers = new ConcurrentHashMap<>();
     private final FutrzakMessageEmbedFactory messageEmbedFactory;
 
-    private final ScheduledFuture<?> botKickSechuldedFuture = Executors.newSingleThreadScheduledExecutor()
-            .scheduleAtFixedRate(this::botKickTaskRun, 5, 5, TimeUnit.MINUTES);
-
     public FutrzakAudioPlayerManager(FutrzakBot futrzakBot, FutrzakMessageEmbedFactory messageEmbedFactory)
     {
         this.futrzakBot = futrzakBot;
         this.audioPlayerManager = new DefaultAudioPlayerManager();
         AudioSourceManagers.registerRemoteSources(audioPlayerManager);
         this.messageEmbedFactory = messageEmbedFactory;
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::botKickTaskRun, 5, 5, TimeUnit.MINUTES);
     }
 
-    public void queue(long guildId, TextChannel textChannel, String trackName, boolean shouldStartPlaying)
+    public void queue(long guildId, TextChannel textChannel, VoiceChannel voiceChannel, String trackName, boolean shouldStartPlaying)
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
         futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
+        futrzakAudioPlayer.setVoiceChannel(voiceChannel);
 
         if (shouldStartPlaying)
         {
@@ -131,7 +128,8 @@ public final class FutrzakAudioPlayerManager
         {
             Map.Entry<Long, FutrzakAudioPlayer> futrzakAudioPlayerEntry = futrzakAudioPlayersIterator.next();
             FutrzakAudioPlayer futrzakAudioPlayer = futrzakAudioPlayerEntry.getValue();
-            if (futrzakAudioPlayer.isActive())
+
+            if (futrzakAudioPlayer.getVoiceChannel().getMembers().size() > 0 && futrzakAudioPlayer.isActive())
                 continue;
 
             this.futrzakBot.getJda().getGuildById(futrzakAudioPlayerEntry.getKey()).getAudioManager().closeAudioConnection();
