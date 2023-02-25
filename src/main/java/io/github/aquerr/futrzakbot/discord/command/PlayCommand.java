@@ -103,12 +103,6 @@ public class PlayCommand implements Command, SlashCommand
 
     private void queueTrack(Guild guild, TextChannel textChannel, VoiceChannel voiceChannel, String songName)
     {
-        AudioManager audioManager = guild.getAudioManager();
-        if (audioManager.getSendingHandler() == null)
-        {
-            audioManager.setSendingHandler(new AudioPlayerSendHandler(this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(guild.getIdLong()).getInternalAudioPlayer()));
-        }
-        audioManager.openAudioConnection(voiceChannel);
-        this.futrzakAudioPlayerManager.queue(guild.getIdLong(), textChannel, voiceChannel, songName, true);
+        this.futrzakAudioPlayerManager.queue(guild, textChannel, voiceChannel, songName, true);
     }
 }

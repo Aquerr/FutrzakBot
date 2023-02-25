@@ -6,10 +6,15 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import io.github.aquerr.futrzakbot.FutrzakBot;
+import io.github.aquerr.futrzakbot.discord.audio.handler.AudioPlayerSendHandler;
 import io.github.aquerr.futrzakbot.discord.audio.handler.FutrzakAudioLoadHandler;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
+import jakarta.annotation.Nonnull;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.managers.AudioManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +23,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.String.format;
 
@@ -26,6 +32,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(FutrzakAudioPlayer.class);
 
+    private final FutrzakBot futrzakBot;
     private final long guildId;
     private boolean isLoop = false;
     private final FutrzakAudioLoadHandler audioLoadHandler;
@@ -36,8 +43,9 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     private VoiceChannel voiceChannel;
     private Instant lastActiveTime = Instant.now();
 
-    public FutrzakAudioPlayer(long guildId, AudioPlayer audioPlayer, FutrzakMessageEmbedFactory messageEmbedFactory)
+    public FutrzakAudioPlayer(final FutrzakBot futrzakBot, long guildId, AudioPlayer audioPlayer, FutrzakMessageEmbedFactory messageEmbedFactory)
     {
+        this.futrzakBot = futrzakBot;
         this.guildId = guildId;
         this.audioPlayer = audioPlayer;
         this.audioPlayer.addListener(this);
@@ -50,9 +58,15 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         this.lastBotUsageChannel = lastBotUsageChannel;
     }
 
-    public void setVoiceChannel(VoiceChannel voiceChannel)
+    public void connectToVoiceChannel(@Nonnull VoiceChannel voiceChannel)
     {
         this.voiceChannel = voiceChannel;
+        AudioManager audioManager = voiceChannel.getGuild().getAudioManager();
+        if (audioManager.getSendingHandler() == null)
+        {
+            audioManager.setSendingHandler(new AudioPlayerSendHandler(this.getInternalAudioPlayer()));
+        }
+        audioManager.openAudioConnection(voiceChannel);
     }
 
     public VoiceChannel getVoiceChannel()
@@ -115,21 +129,18 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     public void onPlayerPause(AudioPlayer player)
     {
         LOGGER.info("Music player for guildId = {} has been paused!", this.guildId);
-        updateLastActiveTime();
     }
 
     @Override
     public void onPlayerResume(AudioPlayer player)
     {
         LOGGER.info("Music player for guildId = {} has been resumed!", this.guildId);
-        updateLastActiveTime();
     }
 
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track)
     {
         LOGGER.info("Music player for guildId = {} has started new track!", this.guildId);
-        updateLastActiveTime();
     }
 
     @Override
@@ -145,17 +156,13 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         {
             queue(track.makeClone(), true);
         }
-
-        if (this.audioPlayer.getPlayingTrack() != null)
-        {
-            updateLastActiveTime();
-        }
     }
 
     @Override
     public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception)
     {
-        LOGGER.warn(format("Music player for guildId = %s has caught an exception!", this.guildId), exception);
+        if (LOGGER.isWarnEnabled())
+            LOGGER.warn(format("Music player for guildId = %s has caught an exception!", this.guildId), exception);
 
         this.lastBotUsageChannel.sendMessageEmbeds(messageEmbedFactory.createSongErrorMessage(track, exception)).queue();
         updateLastActiveTime();
@@ -191,7 +198,6 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     {
         this.audioPlayer.setPaused(true);
         this.getLastBotUsageChannel().sendMessageEmbeds(messageEmbedFactory.createPlayerStoppedMessage()).queue();
-        updateLastActiveTime();
     }
 
     public void resume()
@@ -203,7 +209,6 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         }
 
         this.getLastBotUsageChannel().sendMessageEmbeds(messageEmbedFactory.createPlayerResumedMessage()).queue();
-        updateLastActiveTime();
     }
 
     public void setVolume(int volume)
@@ -254,6 +259,12 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
 
     public boolean isActive()
     {
+        if (!isConnectedToVoiceChannel())
+            return false;
+
+        if (getListeningMembersCount() <= 1)
+            return false;
+
         if (isPlayingTrack() && !audioPlayer.isPaused())
             return true;
 
@@ -261,5 +272,24 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
             return true;
 
         return false;
+    }
+
+    public boolean isConnectedToVoiceChannel()
+    {
+        return this.voiceChannel != null;
+    }
+
+    private int getListeningMembersCount()
+    {
+        return Optional.ofNullable(this.voiceChannel)
+                .map(GuildChannel::getMembers)
+                .map(List::size)
+                .orElse(0);
+    }
+
+    public void disconnectFromVoiceChannel()
+    {
+        this.voiceChannel = null;
+        this.futrzakBot.getJda().getGuildById(this.guildId).getAudioManager().closeAudioConnection();
     }
 }

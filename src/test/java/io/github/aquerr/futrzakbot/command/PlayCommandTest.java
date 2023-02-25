@@ -69,12 +69,7 @@ class PlayCommandTest
         SlashCommandEvent slashCommandEvent = mock(SlashCommandEvent.class);
         OptionMapping optionMapping = mock(OptionMapping.class);
         VoiceChannel voiceChannel = mock(VoiceChannel.class);
-        AudioManager audioManager = mock(AudioManager.class);
-        AudioSendHandler audioSendHandler = mock(AudioSendHandler.class);
 
-        given(guild.getIdLong()).willReturn(GUILD_ID);
-        given(guild.getAudioManager()).willReturn(audioManager);
-        given(audioManager.getSendingHandler()).willReturn(audioSendHandler);
         given(optionMapping.getAsString()).willReturn(SONG_NAME);
         given(slashCommandEvent.getOption(SONG_PARAM_KEY)).willReturn(optionMapping);
         given(slashCommandEvent.getGuild()).willReturn(guild);
@@ -88,7 +83,7 @@ class PlayCommandTest
         playCommand.onSlashCommand(slashCommandEvent);
 
         verify(slashCommandEvent, times(1)).reply(ADDING_TRACK);
-        verify(futrzakAudioPlayerManager, times(1)).queue(GUILD_ID, textChannel, voiceChannel, SONG_NAME, true);
+        verify(futrzakAudioPlayerManager, times(1)).queue(guild, textChannel, voiceChannel, SONG_NAME, true);
     }
 
     @Test
