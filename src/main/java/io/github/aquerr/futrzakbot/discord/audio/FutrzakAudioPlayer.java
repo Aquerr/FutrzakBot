@@ -194,7 +194,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         return this.audioPlayer.getPlayingTrack();
     }
 
-    public void stop()
+    public void pause()
     {
         this.audioPlayer.setPaused(true);
         this.getLastBotUsageChannel().sendMessageEmbeds(messageEmbedFactory.createPlayerStoppedMessage()).queue();
@@ -291,5 +291,11 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     {
         this.voiceChannel = null;
         this.futrzakBot.getJda().getGuildById(this.guildId).getAudioManager().closeAudioConnection();
+    }
+
+    public void stop()
+    {
+        clear();
+        this.audioPlayer.playTrack(null);
     }
 }

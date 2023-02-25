@@ -5,7 +5,6 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import io.github.aquerr.futrzakbot.FutrzakBot;
-import io.github.aquerr.futrzakbot.discord.audio.handler.AudioPlayerSendHandler;
 import io.github.aquerr.futrzakbot.discord.audio.handler.FutrzakQueueAndDontPlayLoadHandler;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.util.Iterator;
 import java.util.List;
@@ -103,7 +101,7 @@ public final class FutrzakAudioPlayerManager
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
         futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
-        futrzakAudioPlayer.stop();
+        futrzakAudioPlayer.pause();
     }
 
     public void resume(long guildId, TextChannel textChannel, VoiceChannel voiceChannel)
@@ -142,6 +140,7 @@ public final class FutrzakAudioPlayerManager
                 if (futrzakAudioPlayer.isConnectedToVoiceChannel())
                 {
                     log.info("Kicking bot due to inactive music player or no members in voice channel. Guild = {}, VoiceChannel = {}", futrzakAudioPlayer.getGuildId(), futrzakAudioPlayer.getVoiceChannel().getName());
+                    futrzakAudioPlayer.stop();
                     futrzakAudioPlayer.disconnectFromVoiceChannel();
                     this.futrzakBot.getJda().getGuildById(futrzakAudioPlayerEntry.getKey()).getAudioManager().closeAudioConnection();
                 }
