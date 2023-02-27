@@ -86,12 +86,9 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
 
         this.tracksQueue.offer(track);
 
-        if (shouldStartPlaying)
+        if (shouldStartPlaying && this.audioPlayer.getPlayingTrack() == null)
         {
-            if (this.audioPlayer.getPlayingTrack() == null)
-            {
-                skip();
-            }
+            skip();
         }
     }
 
@@ -150,11 +147,10 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         if (endReason.mayStartNext)
         {
             skip();
-        }
-
-        if (isLoop)
-        {
-            queue(track.makeClone(), true);
+            if (isLoop)
+            {
+                queue(track.makeClone(), true);
+            }
         }
     }
 
@@ -296,6 +292,6 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     public void stop()
     {
         clear();
-        this.audioPlayer.playTrack(null);
+        this.audioPlayer.destroy();
     }
 }
