@@ -136,13 +136,13 @@ public class FutrzakMessageEmbedFactory
         for (int i = 0; i < count; i++)
         {
             AudioTrackInfo audioTrackInfo = queue.get(i).getInfo();
-            String queueLine = "{position}. `{length}` {title} - {author} {addedBy}\n";
+            String queueLine = "{position}. `{length}` {title} - {author}\n";
             queueLine = queueLine
                             .replace("{position}", String.valueOf(i + 1))
                             .replace("{length}", (int)audioTrackInfo.length / 1000 / 60 + ":" + audioTrackInfo.length / 1000 % 60)
                             .replace("{title}", audioTrackInfo.title)
-                            .replace("{author}", audioTrackInfo.author)
-                            .replace("{addedBy}", "???");
+                            .replace("{author}", audioTrackInfo.author);
+//                            .replace("{addedBy}", "???");
 
             embedBuilder.appendDescription(queueLine);
         }
