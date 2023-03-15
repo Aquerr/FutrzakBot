@@ -25,8 +25,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class FutrzakAudioPlayerManager
 {
-    private static final String PROTOCOL_REGEX = "^(http://)|(https://).*$";
-
     private final FutrzakBot futrzakBot;
     private final AudioPlayerManager audioPlayerManager;
     private final Map<Long, FutrzakAudioPlayer> guildAudioPlayers = new ConcurrentHashMap<>();

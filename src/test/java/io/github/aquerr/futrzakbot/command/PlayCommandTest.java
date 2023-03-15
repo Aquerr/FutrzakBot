@@ -41,6 +41,11 @@ class PlayCommandTest
     private static final String COMMAND_DESC = "Command description";
     private static final String SONG_PARAM_DESC_KEY = "command.play.slash.param.song.desc";
     private static final String SONG_PARAM_DESC = "Song param description";
+    private static final String SOUNDCLOUD_PARAM_DESC_KEY = "command.play.slash.param.soundcloud.desc";
+    private static final String SOUNDCLOUD_PARAM_DESC = "Soundcloud param description";
+
+    private static final String YOUTUBE_PARAM_DESC_KEY = "command.play.slash.param.youtube.desc";
+    private static final String YOUTUBE_PARAM_DESC = "YouTube param description";
     private static final String MUST_BE_ON_VOICE_CHANNEL_KEY = "error.command.must-be-on-voice-channel";
     private static final String MUST_BE_ON_VOICE_CHANNEL = "User must be on voice channel";
     private static final String SONG_PARAM_KEY = "song";
@@ -83,7 +88,7 @@ class PlayCommandTest
         playCommand.onSlashCommand(slashCommandEvent);
 
         verify(slashCommandEvent, times(1)).reply(ADDING_TRACK);
-        verify(futrzakAudioPlayerManager, times(1)).queue(guild, textChannel, voiceChannel, member, SONG_NAME, true);
+        verify(futrzakAudioPlayerManager, times(1)).queue(guild, textChannel, voiceChannel, member, "scsearch: " + SONG_NAME, true);
     }
 
     @Test
@@ -112,6 +117,8 @@ class PlayCommandTest
     {
         given(messageSource.getMessage(COMMAND_DESC_KEY)).willReturn(COMMAND_DESC);
         given(messageSource.getMessage(SONG_PARAM_DESC_KEY)).willReturn(SONG_PARAM_DESC);
+        given(messageSource.getMessage(SOUNDCLOUD_PARAM_DESC_KEY)).willReturn(SOUNDCLOUD_PARAM_DESC);
+        given(messageSource.getMessage(YOUTUBE_PARAM_DESC_KEY)).willReturn(YOUTUBE_PARAM_DESC);
 
         assertThat(playCommand.getSlashCommandData().getName()).isEqualTo("play");
     }
@@ -121,6 +128,8 @@ class PlayCommandTest
     {
         given(messageSource.getMessage(COMMAND_DESC_KEY)).willReturn(COMMAND_DESC);
         given(messageSource.getMessage(SONG_PARAM_DESC_KEY)).willReturn(SONG_PARAM_DESC);
+        given(messageSource.getMessage(SOUNDCLOUD_PARAM_DESC_KEY)).willReturn(SOUNDCLOUD_PARAM_DESC);
+        given(messageSource.getMessage(YOUTUBE_PARAM_DESC_KEY)).willReturn(YOUTUBE_PARAM_DESC);
 
         assertThat(playCommand.getSlashCommandData().getDescription()).isEqualTo(COMMAND_DESC);
     }
@@ -130,14 +139,16 @@ class PlayCommandTest
     {
         given(messageSource.getMessage(COMMAND_DESC_KEY)).willReturn(COMMAND_DESC_KEY);
         given(messageSource.getMessage(SONG_PARAM_DESC_KEY)).willReturn(SONG_PARAM_DESC);
+        given(messageSource.getMessage(SOUNDCLOUD_PARAM_DESC_KEY)).willReturn(SOUNDCLOUD_PARAM_DESC);
+        given(messageSource.getMessage(YOUTUBE_PARAM_DESC_KEY)).willReturn(YOUTUBE_PARAM_DESC);
 
-        assertThat(playCommand.getSlashCommandData().getOptions()).hasSize(1);
+        assertThat(playCommand.getSlashCommandData().getOptions()).hasSize(3);
         List<OptionData> optionDataList = playCommand.getSlashCommandData().getOptions();
         assertWith(optionDataList.get(0), (optionData) -> {
             assertThat(optionData.getType()).isSameAs(OptionType.STRING);
             assertThat(optionData.getName()).isEqualTo(SONG_PARAM_KEY);
             assertThat(optionData.getDescription()).isEqualTo(SONG_PARAM_DESC);
-            assertThat(optionData.isRequired()).isTrue();
+            assertThat(optionData.isRequired()).isFalse();
         });
     }
 }
