@@ -8,12 +8,12 @@
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" charset="UTF-8"/>
         </Console>
-        <RollingRandomAccessFile name="RollingRandomAccessFile" filename="logs/futrzak.log" filePattern="logs/$${date:yyyy-MM}/futrzak-%d{MM-dd-yyyy}-%i.log.gz">
+        <RollingRandomAccessFile name="RollingRandomAccessFile" filename="logs/futrzak.log" filePattern="logs/futrzak-%d{MM-dd-yyyy}-%i.log">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" charset="UTF-8"/>
             <DefaultRolloverStrategy max="10"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
-                <SizeBasedTriggeringPolicy size="250 MB"/>
+                <SizeBasedTriggeringPolicy size="50 MB"/>
             </Policies>
         </RollingRandomAccessFile>
     </Appenders>
