@@ -25,12 +25,15 @@ configure<JavaPluginExtension> {
 repositories {
     mavenCentral()
     maven {
+        url = uri("https://jitpack.io")
+    }
+    maven {
         url = uri("https://m2.dv8tion.net/releases")
     }
 }
 
 dependencies {
-    implementation("com.sedmelluq:lavaplayer:1.3.78")
+    implementation("com.github.walkyst:lavaplayer-fork:1.4.0")
     implementation("net.dv8tion:JDA:4.4.0_350") {
         exclude("opus-java")
     }
