@@ -35,7 +35,6 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     private final FutrzakBot futrzakBot;
     private final long guildId;
     private boolean isLoop = false;
-    private final FutrzakAudioLoadHandler audioLoadHandler;
     private final AudioPlayer audioPlayer;
     private final LinkedList<AudioTrack> tracksQueue = new LinkedList<>();
     private final FutrzakMessageEmbedFactory messageEmbedFactory;
@@ -49,7 +48,6 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         this.guildId = guildId;
         this.audioPlayer = audioPlayer;
         this.audioPlayer.addListener(this);
-        this.audioLoadHandler = new FutrzakAudioLoadHandler(this, messageEmbedFactory);
         this.messageEmbedFactory = FutrzakMessageEmbedFactory.getInstance();
     }
 
@@ -227,11 +225,6 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     public List<AudioTrack> getQueue()
     {
         return List.copyOf(this.tracksQueue);
-    }
-
-    public AudioLoadResultHandler getAudioLoadHandler()
-    {
-        return this.audioLoadHandler;
     }
 
     private void queueLastTrackIfLoop()

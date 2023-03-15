@@ -83,7 +83,7 @@ class PlayCommandTest
         playCommand.onSlashCommand(slashCommandEvent);
 
         verify(slashCommandEvent, times(1)).reply(ADDING_TRACK);
-        verify(futrzakAudioPlayerManager, times(1)).queue(guild, textChannel, voiceChannel, SONG_NAME, true);
+        verify(futrzakAudioPlayerManager, times(1)).queue(guild, textChannel, voiceChannel, member, SONG_NAME, true);
     }
 
     @Test

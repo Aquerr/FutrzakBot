@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
+import io.github.aquerr.futrzakbot.discord.audio.FutrzakAdditionalAudioTrackData;
 import io.github.aquerr.futrzakbot.discord.util.PaginatedMessageEmbed;
 import io.github.aquerr.futrzakbot.discord.command.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -135,14 +136,16 @@ public class FutrzakMessageEmbedFactory
 
         for (int i = 0; i < count; i++)
         {
-            AudioTrackInfo audioTrackInfo = queue.get(i).getInfo();
-            String queueLine = "{position}. `{length}` {title} - {author}\n";
+            AudioTrack audioTrack = queue.get(i);
+            AudioTrackInfo audioTrackInfo = audioTrack.getInfo();
+            FutrzakAdditionalAudioTrackData futrzakAdditionalAudioTrackData = audioTrack.getUserData(FutrzakAdditionalAudioTrackData.class);
+            String queueLine = "{position}. `{length}` {title} - {author} {addedBy}\n";
             queueLine = queueLine
                             .replace("{position}", String.valueOf(i + 1))
                             .replace("{length}", (int)audioTrackInfo.length / 1000 / 60 + ":" + audioTrackInfo.length / 1000 % 60)
                             .replace("{title}", audioTrackInfo.title)
-                            .replace("{author}", audioTrackInfo.author);
-//                            .replace("{addedBy}", "???");
+                            .replace("{author}", audioTrackInfo.author)
+                            .replace("{addedBy}", futrzakAdditionalAudioTrackData.getAddedBy().getAsMention());
 
             embedBuilder.appendDescription(queueLine);
         }

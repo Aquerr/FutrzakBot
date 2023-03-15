@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import io.github.aquerr.futrzakbot.discord.audio.FutrzakAdditionalAudioTrackData;
 import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayer;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 
@@ -11,17 +12,25 @@ public class FutrzakAudioLoadHandler implements AudioLoadResultHandler
 {
     protected final FutrzakAudioPlayer futrzakAudioPlayer;
     protected final FutrzakMessageEmbedFactory messageEmbedFactory;
+    protected final FutrzakAdditionalAudioTrackData futrzakAdditionalAudioTrackData;
 
-    public FutrzakAudioLoadHandler(FutrzakAudioPlayer futrzakAudioPlayer, FutrzakMessageEmbedFactory futrzakMessageEmbedFactory)
+    public FutrzakAudioLoadHandler(FutrzakAudioPlayer futrzakAudioPlayer, FutrzakMessageEmbedFactory futrzakMessageEmbedFactory, FutrzakAdditionalAudioTrackData futrzakAdditionalAudioTrackData)
     {
         this.futrzakAudioPlayer = futrzakAudioPlayer;
         this.messageEmbedFactory = futrzakMessageEmbedFactory;
+        this.futrzakAdditionalAudioTrackData = futrzakAdditionalAudioTrackData;
+    }
+
+    protected boolean shouldStartPlayingLoadedTrack()
+    {
+        return true;
     }
 
     @Override
     public void trackLoaded(AudioTrack track)
     {
-        this.futrzakAudioPlayer.queue(track, true);
+        track.setUserData(futrzakAdditionalAudioTrackData);
+        this.futrzakAudioPlayer.queue(track, shouldStartPlayingLoadedTrack());
         this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(messageEmbedFactory.createSongAddedToQueueMessage(track.getInfo().author, track.getInfo().title)).complete();
     }
 
@@ -31,14 +40,16 @@ public class FutrzakAudioLoadHandler implements AudioLoadResultHandler
         if (playlist.isSearchResult())
         {
             AudioTrack track = playlist.getTracks().get(0);
-            this.futrzakAudioPlayer.queue(track, true);
+            track.setUserData(futrzakAdditionalAudioTrackData);
+            this.futrzakAudioPlayer.queue(track, shouldStartPlayingLoadedTrack());
             this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(messageEmbedFactory.createSongAddedToQueueMessage(track.getInfo().author, track.getInfo().title)).complete();
         }
         else
         {
             for (AudioTrack track : playlist.getTracks())
             {
-                this.futrzakAudioPlayer.queue(track, true);
+                track.setUserData(futrzakAdditionalAudioTrackData);
+                this.futrzakAudioPlayer.queue(track, shouldStartPlayingLoadedTrack());
             }
             this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(messageEmbedFactory.createPlaylistAddedToQueueMessage(playlist)).complete();
         }

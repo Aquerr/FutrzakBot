@@ -5,11 +5,13 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import io.github.aquerr.futrzakbot.FutrzakBot;
+import io.github.aquerr.futrzakbot.discord.audio.handler.FutrzakAudioLoadHandler;
 import io.github.aquerr.futrzakbot.discord.audio.handler.FutrzakQueueAndDontPlayLoadHandler;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 
@@ -39,19 +41,21 @@ public final class FutrzakAudioPlayerManager
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::botKickTaskRun, 1, 5, TimeUnit.MINUTES);
     }
 
-    public void queue(Guild guild, TextChannel textChannel, VoiceChannel voiceChannel, String trackName, boolean shouldStartPlaying)
+    public void queue(Guild guild, TextChannel textChannel, VoiceChannel voiceChannel, Member member, String trackName, boolean shouldStartPlaying)
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guild.getIdLong());
         futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
         futrzakAudioPlayer.connectToVoiceChannel(voiceChannel);
 
+        FutrzakAdditionalAudioTrackData futrzakAdditionalAudioTrackData = new FutrzakAdditionalAudioTrackData(member);
+
         if (shouldStartPlaying)
         {
-            this.audioPlayerManager.loadItem(getYoutTubeAudioIdentifierForTrack(trackName), futrzakAudioPlayer.getAudioLoadHandler());
+            this.audioPlayerManager.loadItem(getYoutTubeAudioIdentifierForTrack(trackName), new FutrzakAudioLoadHandler(futrzakAudioPlayer, messageEmbedFactory, futrzakAdditionalAudioTrackData));
         }
         else
         {
-            this.audioPlayerManager.loadItem(getYoutTubeAudioIdentifierForTrack(trackName), new FutrzakQueueAndDontPlayLoadHandler(futrzakAudioPlayer, messageEmbedFactory));
+            this.audioPlayerManager.loadItem(getYoutTubeAudioIdentifierForTrack(trackName), new FutrzakQueueAndDontPlayLoadHandler(futrzakAudioPlayer, messageEmbedFactory, futrzakAdditionalAudioTrackData));
         }
     }
 

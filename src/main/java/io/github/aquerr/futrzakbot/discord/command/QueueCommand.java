@@ -1,7 +1,6 @@
 package io.github.aquerr.futrzakbot.discord.command;
 
 import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
-import io.github.aquerr.futrzakbot.discord.audio.handler.AudioPlayerSendHandler;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.command.parameters.Parameter;
 import io.github.aquerr.futrzakbot.discord.command.parameters.StringParameter;
@@ -16,7 +15,6 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -56,7 +54,7 @@ public class QueueCommand implements Command, SlashCommand
                 return false;
             }
 
-            queueTrack(guild, textChannel, voiceChannel, songName);
+            queueTrack(guild, textChannel, voiceChannel, member, songName);
             return true;
         }
 
@@ -106,7 +104,7 @@ public class QueueCommand implements Command, SlashCommand
                 return;
             }
             event.reply(this.messageSource.getMessage("command.play.adding")).complete();
-            queueTrack(event.getGuild(), event.getTextChannel(), voiceChannel, songName);
+            queueTrack(event.getGuild(), event.getTextChannel(), voiceChannel, event.getMember(), songName);
         }
 
         event.deferReply().addEmbeds(messageEmbedFactory.createQueueMessage(this.futrzakAudioPlayerManager.getQueue(event.getTextChannel().getGuild().getIdLong()))).queue();
@@ -118,8 +116,8 @@ public class QueueCommand implements Command, SlashCommand
         return Collections.singletonList(StringParameter.builder().key(SONG_PARAM_KEY).optional(true).build());
     }
 
-    private void queueTrack(Guild guild, TextChannel textChannel, VoiceChannel voiceChannel, String songName)
+    private void queueTrack(Guild guild, TextChannel textChannel, VoiceChannel voiceChannel, Member member, String songName)
     {
-        this.futrzakAudioPlayerManager.queue(guild, textChannel, voiceChannel, songName, false);
+        this.futrzakAudioPlayerManager.queue(guild, textChannel, voiceChannel, member, songName, false);
     }
 }
