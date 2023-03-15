@@ -1,5 +1,6 @@
 package io.github.aquerr.futrzakbot.discord.command;
 
+import io.github.aquerr.futrzakbot.discord.audio.AudioSource;
 import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.command.parameters.Parameter;
@@ -12,17 +13,17 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class QueueCommand implements Command, SlashCommand
 {
     private static final String SONG_PARAM_KEY = "song";
+    private static final String SOUNDCLOUD_SONG_PARAM_KEY = "soundcloud";
+    private static final String YOUTUBE_SONG_PARAM_KEY = "youtube";
     private static final String MUST_BE_ON_VOICE_CHANNEL = "error.command.must-be-on-voice-channel";
 
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
@@ -54,6 +55,7 @@ public class QueueCommand implements Command, SlashCommand
                 return false;
             }
 
+            songName = SongParamHelper.getIdentifierForTrack(songName, AudioSource.UNKNOWN);
             queueTrack(guild, textChannel, voiceChannel, member, songName);
             return true;
         }
@@ -84,15 +86,15 @@ public class QueueCommand implements Command, SlashCommand
     public CommandData getSlashCommandData()
     {
         return SlashCommand.super.getSlashCommandData()
-                .addOption(OptionType.STRING, SONG_PARAM_KEY, this.messageSource.getMessage("command.queue.slash.param.song.desc"), false);
+                .addOption(OptionType.STRING, SONG_PARAM_KEY, this.messageSource.getMessage("command.queue.slash.param.song.desc"), false)
+                .addOption(OptionType.STRING, SOUNDCLOUD_SONG_PARAM_KEY, this.messageSource.getMessage("command.queue.slash.param.soundcloud.desc"), false)
+                .addOption(OptionType.STRING, YOUTUBE_SONG_PARAM_KEY, this.messageSource.getMessage("command.queue.slash.param.youtube.desc"), false);
     }
 
     @Override
     public void onSlashCommand(SlashCommandEvent event)
     {
-        String songName = Optional.ofNullable(event.getOption(SONG_PARAM_KEY))
-                .map(OptionMapping::getAsString)
-                .orElse(null);
+        String songName = SongParamHelper.getSongNameFromSlashEvent(event);
 
         if (songName != null)
         {
@@ -105,6 +107,7 @@ public class QueueCommand implements Command, SlashCommand
             }
             event.reply(this.messageSource.getMessage("command.play.adding")).complete();
             queueTrack(event.getGuild(), event.getTextChannel(), voiceChannel, event.getMember(), songName);
+            return;
         }
 
         event.deferReply().addEmbeds(messageEmbedFactory.createQueueMessage(this.futrzakAudioPlayerManager.getQueue(event.getTextChannel().getGuild().getIdLong()))).queue();

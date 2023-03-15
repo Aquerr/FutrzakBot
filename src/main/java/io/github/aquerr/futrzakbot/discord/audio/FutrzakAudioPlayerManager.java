@@ -41,7 +41,7 @@ public final class FutrzakAudioPlayerManager
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::botKickTaskRun, 1, 5, TimeUnit.MINUTES);
     }
 
-    public void queue(Guild guild, TextChannel textChannel, VoiceChannel voiceChannel, Member member, String trackName, boolean shouldStartPlaying)
+    public void queue(Guild guild, TextChannel textChannel, VoiceChannel voiceChannel, Member member, String trackIdentifier, boolean shouldStartPlaying)
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guild.getIdLong());
         futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
@@ -51,11 +51,11 @@ public final class FutrzakAudioPlayerManager
 
         if (shouldStartPlaying)
         {
-            this.audioPlayerManager.loadItem(getYoutTubeAudioIdentifierForTrack(trackName), new FutrzakAudioLoadHandler(futrzakAudioPlayer, messageEmbedFactory, futrzakAdditionalAudioTrackData));
+            this.audioPlayerManager.loadItem(trackIdentifier, new FutrzakAudioLoadHandler(futrzakAudioPlayer, messageEmbedFactory, futrzakAdditionalAudioTrackData));
         }
         else
         {
-            this.audioPlayerManager.loadItem(getYoutTubeAudioIdentifierForTrack(trackName), new FutrzakQueueAndDontPlayLoadHandler(futrzakAudioPlayer, messageEmbedFactory, futrzakAdditionalAudioTrackData));
+            this.audioPlayerManager.loadItem(trackIdentifier, new FutrzakQueueAndDontPlayLoadHandler(futrzakAudioPlayer, messageEmbedFactory, futrzakAdditionalAudioTrackData));
         }
     }
 
@@ -166,14 +166,5 @@ public final class FutrzakAudioPlayerManager
         guilds.stream()
                 .map(ISnowflake::getIdLong)
                 .forEach(this::getOrCreateAudioPlayer);
-    }
-
-    private String getYoutTubeAudioIdentifierForTrack(String trackName)
-    {
-        if (trackName.matches(PROTOCOL_REGEX))
-        {
-            return trackName;
-        }
-        return "ytsearch: " + trackName;
     }
 }

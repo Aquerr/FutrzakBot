@@ -1,5 +1,6 @@
 package io.github.aquerr.futrzakbot.discord.command;
 
+import io.github.aquerr.futrzakbot.discord.audio.AudioSource;
 import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.command.parameters.Parameter;
@@ -20,6 +21,8 @@ import java.util.List;
 public class PlayCommand implements Command, SlashCommand
 {
     private static final String SONG_PARAM_KEY = "song";
+    private static final String SOUNDCLOUD_SONG_PARAM_KEY = "soundcloud";
+    private static final String YOUTUBE_SONG_PARAM_KEY = "youtube";
     private static final String MUST_BE_ON_VOICE_CHANNEL = "error.command.must-be-on-voice-channel";
 
     private final FutrzakAudioPlayerManager futrzakAudioPlayerManager;
@@ -48,6 +51,7 @@ public class PlayCommand implements Command, SlashCommand
             return false;
         }
 
+        songName = SongParamHelper.getIdentifierForTrack(songName, AudioSource.UNKNOWN);
         queueTrack(guild, textChannel, voiceChannel, member, songName);
         return true;
     }
@@ -80,13 +84,15 @@ public class PlayCommand implements Command, SlashCommand
     public CommandData getSlashCommandData()
     {
         return SlashCommand.super.getSlashCommandData()
-                .addOption(OptionType.STRING, SONG_PARAM_KEY, this.messageSource.getMessage("command.play.slash.param.song.desc"), true);
+                .addOption(OptionType.STRING, SONG_PARAM_KEY, this.messageSource.getMessage("command.play.slash.param.song.desc"), false)
+                .addOption(OptionType.STRING, SOUNDCLOUD_SONG_PARAM_KEY, this.messageSource.getMessage("command.play.slash.param.soundcloud.desc"), false)
+                .addOption(OptionType.STRING, YOUTUBE_SONG_PARAM_KEY, this.messageSource.getMessage("command.play.slash.param.youtube.desc"), false);
     }
 
     @Override
     public void onSlashCommand(SlashCommandEvent event)
     {
-        String songName = event.getOption(SONG_PARAM_KEY).getAsString();
+        String songName = SongParamHelper.getSongNameFromSlashEvent(event);
         GuildVoiceState guildVoiceState = event.getMember().getVoiceState();
         VoiceChannel voiceChannel = guildVoiceState.getChannel();
         if (voiceChannel == null)
