@@ -23,7 +23,8 @@ public class QuoteGame
     private final PlaceholderService placeholderService = PlaceholderService.getInstance();
     private final QuoteStorage quoteStorage = QuoteStorage.getInstance();
 
-    private QuoteGame() {
+    private QuoteGame()
+    {
 
     }
 
@@ -32,7 +33,7 @@ public class QuoteGame
         return INSTANCE;
     }
 
-    public void printRandomQuoteFromCategory(TextChannel textChannel, Member member, String categoryAlias) throws IOException, QuoteCategoryNotFound, QuotesNotFoundException
+    public MessageEmbed getRandomQuoteFromCategory(TextChannel textChannel, Member member, String categoryAlias) throws IOException, QuoteCategoryNotFound, QuotesNotFoundException
     {
         QuoteCategory category = getAvailableCategories().stream()
                 .filter(quoteCategory -> quoteCategory.getAliases().contains(categoryAlias))
@@ -43,27 +44,27 @@ public class QuoteGame
             throw new QuotesNotFoundException("Quotes not found for category: " + categoryAlias);
 
         String randomQuote = getRandomQuote(quotes);
-        processPlaceholersAndPrintQuote(randomQuote, textChannel, member, category);
+        return prepareQuoteMessage(randomQuote, textChannel, member, category);
     }
 
-    public void printRandomQuote(TextChannel textChannel, Member member) throws QuotesNotFoundException, IOException
+    public MessageEmbed getRandomQuote(TextChannel textChannel, Member member) throws QuotesNotFoundException, IOException
     {
         QuoteCategory randomCategory = getRandomCategory();
         List<String> quotes = randomCategory.getQuotes();
         if (quotes.isEmpty())
             throw new QuotesNotFoundException("Quotes not found!");
         String quote = getRandomQuote(quotes);
-        processPlaceholersAndPrintQuote(quote, textChannel, member, randomCategory);
+        return prepareQuoteMessage(quote, textChannel, member, randomCategory);
     }
-    private void processPlaceholersAndPrintQuote(String quote, TextChannel textChannel, Member member, QuoteCategory category)
+
+    private MessageEmbed prepareQuoteMessage(String quote, TextChannel textChannel, Member member, QuoteCategory category)
     {
         String processedRandomQuote = processPlaceholders(quote, textChannel, member);
-        MessageEmbed messageEmbed = new EmbedBuilder()
+        return new EmbedBuilder()
                 .setTitle(category.getName())
                 .setDescription(processedRandomQuote)
                 .setColor(Color.GREEN)
                 .build();
-        textChannel.sendMessageEmbeds(messageEmbed).queue();
     }
 
     private QuoteCategory getRandomCategory() throws QuotesNotFoundException

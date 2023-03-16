@@ -9,11 +9,15 @@ import io.github.aquerr.futrzakbot.discord.games.quote.QuoteGame;
 import io.github.aquerr.futrzakbot.discord.games.quote.exception.QuoteCategoryNotFound;
 import io.github.aquerr.futrzakbot.discord.games.quote.exception.QuotesNotFoundException;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.awt.*;
 import java.io.IOException;
@@ -21,10 +25,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class QuoteCommand implements Command
-{
-    private static final Logger LOGGER = LoggerFactory.getLogger(QuoteCommand.class);
+import static java.util.Optional.ofNullable;
 
+@Slf4j
+public class QuoteCommand implements Command, SlashCommand
+{
+    private static final String HELP_PARAM_KEY = "help";
+    private static final String RANDOM_PARAM_KEY = "random";
     private static final String CATEGORY_PARAM_KEY = "category";
 
     private static final String AVAILABLE_CATEGORIES = "command.quote.categories.available";
@@ -51,24 +58,23 @@ public class QuoteCommand implements Command
         if ("?".equals(category))
         {
             // print help + possible categories
-            List<QuoteCategory> categories = this.quoteGame.getAvailableCategories();
-            printAvailableCategories(textChannel, categories);
+            textChannel.sendMessageEmbeds(getHelpMessage()).queue();
         }
         else if ("".equals(category))
         {
             // print quote from random category
             try
             {
-                this.quoteGame.printRandomQuote(textChannel, member);
+                textChannel.sendMessageEmbeds(this.quoteGame.getRandomQuote(textChannel, member)).queue();
             }
             catch (QuotesNotFoundException exception)
             {
-                LOGGER.warn(exception.getMessage(), exception);
+                log.warn(exception.getMessage(), exception);
                 throw new CommandException(messageSource.getMessage(QUOTES_NOT_FOUND));
             }
             catch (IOException exception)
             {
-                LOGGER.error(exception.getMessage(), exception);
+                log.error(exception.getMessage(), exception);
                 throw new CommandException(exception.getMessage());
             }
         }
@@ -77,21 +83,21 @@ public class QuoteCommand implements Command
             // print quote from selected category
             try
             {
-                this.quoteGame.printRandomQuoteFromCategory(textChannel, member, category);
+                textChannel.sendMessageEmbeds(this.quoteGame.getRandomQuoteFromCategory(textChannel, member, category)).queue();
             }
             catch (QuoteCategoryNotFound e)
             {
-                LOGGER.error(e.getMessage(), e);
+                log.warn(e.getMessage(), e);
                 throw new CommandException(messageSource.getMessage(QUOTE_CATEGORY_NOT_FOUND));
             }
             catch (QuotesNotFoundException e)
             {
-                LOGGER.error(e.getMessage(), e);
+                log.warn(e.getMessage(), e);
                 throw new CommandException(messageSource.getMessage(QUOTES_NOT_FOUND));
             }
             catch (IOException e)
             {
-                LOGGER.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
                 throw new CommandException(e.getMessage());
             }
         }
@@ -117,6 +123,80 @@ public class QuoteCommand implements Command
     }
 
     @Override
+    public CommandData getSlashCommandData()
+    {
+        return SlashCommand.super.getSlashCommandData()
+                .addOption(OptionType.BOOLEAN, HELP_PARAM_KEY, messageSource.getMessage("command.quote.slash.param.help.desc"), false)
+                .addOption(OptionType.BOOLEAN, RANDOM_PARAM_KEY, messageSource.getMessage("command.quote.slash.param.random.desc"), false)
+                .addOption(OptionType.STRING, CATEGORY_PARAM_KEY, messageSource.getMessage("command.quote.slash.param.category.desc"), false);
+    }
+
+    @Override
+    public void onSlashCommand(SlashCommandEvent event)
+    {
+        TextChannel textChannel = event.getTextChannel();
+        Member member = event.getMember();
+        boolean shouldShowHelp = ofNullable(event.getOption(HELP_PARAM_KEY)).map(OptionMapping::getAsBoolean).orElse(false);
+        if (shouldShowHelp)
+        {
+            event.replyEmbeds(getHelpMessage()).queue();
+            return;
+        }
+
+        boolean randomQuote = ofNullable(event.getOption(RANDOM_PARAM_KEY)).map(OptionMapping::getAsBoolean).orElse(false);
+        if (randomQuote)
+        {
+            // print quote from random category
+            try
+            {
+                MessageEmbed messageEmbed = this.quoteGame.getRandomQuote(textChannel, member);
+                event.replyEmbeds(messageEmbed).queue();
+            }
+            catch (QuotesNotFoundException exception)
+            {
+                log.warn(exception.getMessage(), exception);
+                event.reply(messageSource.getMessage(QUOTES_NOT_FOUND)).queue();
+            }
+            catch (IOException exception)
+            {
+                log.error(exception.getMessage(), exception);
+                event.reply(exception.getMessage()).queue();
+            }
+            return;
+        }
+
+        String category = ofNullable(event.getOption(CATEGORY_PARAM_KEY)).map(OptionMapping::getAsString).orElse(null);
+        if (category == null)
+        {
+            event.replyEmbeds(getHelpMessage()).queue();
+            return;
+        }
+
+        // print quote from random category
+        try
+        {
+            MessageEmbed messageEmbed = this.quoteGame.getRandomQuoteFromCategory(textChannel, member, category);
+            event.replyEmbeds(messageEmbed).queue();
+        }
+        catch (QuotesNotFoundException exception)
+        {
+            log.warn(exception.getMessage(), exception);
+            event.reply(messageSource.getMessage(QUOTES_NOT_FOUND)).queue();
+        }
+        catch (QuoteCategoryNotFound e)
+        {
+            log.warn(e.getMessage(), e);
+            event.reply(messageSource.getMessage(QUOTE_CATEGORY_NOT_FOUND)).queue();
+        }
+        catch (IOException exception)
+        {
+            log.error(exception.getMessage(), exception);
+            event.reply(exception.getMessage()).queue();
+        }
+        return;
+    }
+
+    @Override
     public String getUsage()
     {
         return Command.super.getUsage() + "\n" + messageSource.getMessage(QUOTE_COMMAND_CATEGORIES_HELP);
@@ -128,8 +208,9 @@ public class QuoteCommand implements Command
         return Collections.singletonList(StringParameter.builder().key(CATEGORY_PARAM_KEY).optional(true).build());
     }
 
-    private void printAvailableCategories(TextChannel textChannel, List<QuoteCategory> categories)
+    private MessageEmbed getHelpMessage()
     {
+        List<QuoteCategory> categories = this.quoteGame.getAvailableCategories();
         EmbedBuilder embedBuilder = new EmbedBuilder()
                 .setColor(Color.GREEN);
         embedBuilder.setTitle(messageSource.getMessage(AVAILABLE_CATEGORIES));
@@ -138,6 +219,6 @@ public class QuoteCommand implements Command
         {
             embedBuilder.addField(quoteCategory.getName(), String.join(", ", quoteCategory.getAliases()), false);
         }
-        textChannel.sendMessageEmbeds(embedBuilder.build()).queue();
+        return embedBuilder.build();
     }
 }
