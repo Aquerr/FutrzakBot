@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
-import java.util.stream.Collectors;
 
 public class CommandArgumentsParser
 {
@@ -64,7 +63,7 @@ public class CommandArgumentsParser
         // Parse required command args
         parseCommandArguments(parsingChain,
                 textChannel,
-                command.getParameters().stream().filter(parameter -> !parameter.isOptional()).collect(Collectors.toList()),
+                command.getParameters().stream().filter(parameter -> !parameter.isOptional()).toList(),
                 args);
 
         // Check subcommand. If it is subcommand then we skip optional arguments for this command.
@@ -78,7 +77,7 @@ public class CommandArgumentsParser
                 textChannel,
                 command.getParameters().stream()
                 .filter(Parameter::isOptional)
-                .collect(Collectors.toList()),
+                .toList(),
                 args);
 
         return parsingChain;
@@ -102,7 +101,7 @@ public class CommandArgumentsParser
 
     private void parseCommandArguments(CommandParsingChain parsingChain, TextChannel textChannel, List<Parameter<?>> commandParameters, Queue<String> args) throws CommandArgumentsParseException
     {
-        if (commandParameters.size() != 0)
+        if (!commandParameters.isEmpty())
         {
             Map<String, Object> parsedParameters = parseCommandArgs(textChannel, commandParameters, args);
             parsedParameters.forEach(parsingChain::putArgument);

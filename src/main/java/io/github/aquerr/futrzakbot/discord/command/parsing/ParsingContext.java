@@ -4,9 +4,8 @@ import io.github.aquerr.futrzakbot.discord.command.parsing.parsers.ArgumentParse
 import net.dv8tion.jda.api.entities.TextChannel;
 
 /**
- * A class used during parsing of command arguments in classes which implement {@link ArgumentParser}.
- *
  * Represents a context in which an argument is being parsed.
+ * Used in {@link ArgumentParser}.
  */
 public interface ParsingContext
 {
