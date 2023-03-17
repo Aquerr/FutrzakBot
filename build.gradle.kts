@@ -42,6 +42,7 @@ dependencies {
     implementation("org.json:json:20220320")
     implementation("com.typesafe:config:1.4.1")
     implementation("com.jayway.jsonpath:json-path:2.7.0")
+    implementation("com.google.guava:guava:31.1-jre")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
 

@@ -37,6 +37,11 @@ class QuoteCommandTest
     private static final String AVAILABLE_CATEGORIES = "command.quote.categories.available";
     private static final String QUOTE_COMMAND_CATEGORIES_HELP = "command.quote.categories.help";
 
+    private static final String QUOTE_COMMAND_NAME_KEY = "command.quote.name";
+    private static final String QUOTE_COMMAND_DESCRIPTION_KEY = "command.quote.description";
+    private static final String QUOTE_COMMAND_NAME = ":thought_balloon: Cytat: ";
+    private static final String COMMAND_QUOTE_DESCRIPTION = "Wylosuj cytat";
+
     @Mock
     private QuoteGame quoteGame;
 
@@ -55,13 +60,17 @@ class QuoteCommandTest
     @Test
     void getNameShouldReturnCorrectName()
     {
-        assertThat(quoteCommand.getName()).isEqualTo(":thought_balloon: Cytat: ");
+        given(messageSource.getMessage(QUOTE_COMMAND_NAME_KEY)).willReturn(QUOTE_COMMAND_NAME);
+
+        assertThat(quoteCommand.getName()).isEqualTo(QUOTE_COMMAND_NAME);
     }
 
     @Test
     void getDescriptionShouldReturnCorrectDescription()
     {
-        assertThat(quoteCommand.getDescription()).isEqualTo("Wylosuj cytat");
+        given(messageSource.getMessage(QUOTE_COMMAND_DESCRIPTION_KEY)).willReturn(COMMAND_QUOTE_DESCRIPTION);
+
+        assertThat(quoteCommand.getDescription()).isEqualTo(COMMAND_QUOTE_DESCRIPTION);
     }
 
     @Test

@@ -131,7 +131,7 @@ public class FutrzakBot
     private void registerCommands()
     {
         this.commandManager.registerCommand(new HelpCommand(this.commandManager, this.messageSource, this.messageEmbedFactory));
-        this.commandManager.registerCommand(new EightBallCommand());
+        this.commandManager.registerCommand(new EightBallCommand(this.messageSource));
         this.commandManager.registerCommand(new RouletteCommand());
         this.commandManager.registerCommand(new DebilCommand());
         this.commandManager.registerCommand(new LoveCommand());
