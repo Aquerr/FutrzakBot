@@ -1,8 +1,8 @@
 package io.github.aquerr.futrzakbot.discord.command;
 
+import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.command.parameters.MemberParameter;
 import io.github.aquerr.futrzakbot.discord.command.parameters.Parameter;
-import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.games.LoveMeter;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;

@@ -1,14 +1,34 @@
 package io.github.aquerr.futrzakbot.discord.games;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import lombok.Value;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 
+import java.time.Duration;
 import java.util.Random;
 
 public class LoveMeter
 {
+    private static final Cache<Lovers, Message> LOVE_CACHE = CacheBuilder.newBuilder()
+            .expireAfterWrite(Duration.ofHours(1))
+            .build();
+
     public static Message checkLove(Member requester, Member selectedMember)
+    {
+        Lovers lovers = new Lovers(requester.getIdLong(), selectedMember.getIdLong());
+        Message message = LOVE_CACHE.getIfPresent(lovers);
+        if (message == null)
+        {
+            message = getLoveMessage(requester, selectedMember);
+            LOVE_CACHE.put(lovers, message);
+        }
+        return message;
+    }
+
+    private static Message getLoveMessage(Member requester, Member selectedMember)
     {
         if (selectedMember != null)
         {
@@ -50,5 +70,12 @@ public class LoveMeter
         {
             return new MessageBuilder("Musisz oznaczyć jakąś osobę żebym wiedział z kim sprawdzić Twój poziom miłości :heart:").build();
         }
+    }
+
+    @Value
+    private static class Lovers
+    {
+        long firstLoverMemberId;
+        long secondLoverMemberId;
     }
 }
