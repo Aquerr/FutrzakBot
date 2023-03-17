@@ -142,9 +142,7 @@ public final class FutrzakAudioPlayerManager
                 if (futrzakAudioPlayer.isConnectedToVoiceChannel())
                 {
                     log.info("Kicking bot due to inactive music player or no members in voice channel. Guild = {}, VoiceChannel = {}", futrzakAudioPlayer.getGuildId(), futrzakAudioPlayer.getVoiceChannel().getName());
-                    futrzakAudioPlayer.stop();
-                    futrzakAudioPlayer.disconnectFromVoiceChannel();
-                    this.futrzakBot.getJda().getGuildById(futrzakAudioPlayerEntry.getKey()).getAudioManager().closeAudioConnection();
+                    disconnect(futrzakAudioPlayer.getGuildId());
                 }
             }
         }
@@ -164,5 +162,16 @@ public final class FutrzakAudioPlayerManager
         guilds.stream()
                 .map(ISnowflake::getIdLong)
                 .forEach(this::getOrCreateAudioPlayer);
+    }
+
+    public void disconnect(long guildId)
+    {
+        FutrzakAudioPlayer futrzakAudioPlayer = this.guildAudioPlayers.get(guildId);
+        if (futrzakAudioPlayer.isConnectedToVoiceChannel())
+        {
+            futrzakAudioPlayer.stop();
+            futrzakAudioPlayer.disconnectFromVoiceChannel();
+            this.futrzakBot.getJda().getGuildById(guildId).getAudioManager().closeAudioConnection();
+        }
     }
 }

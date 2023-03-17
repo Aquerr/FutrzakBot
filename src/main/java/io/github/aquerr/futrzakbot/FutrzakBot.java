@@ -10,6 +10,7 @@ import io.github.aquerr.futrzakbot.discord.command.FutrzakCommand;
 import io.github.aquerr.futrzakbot.discord.command.GameCommand;
 import io.github.aquerr.futrzakbot.discord.command.HelpCommand;
 import io.github.aquerr.futrzakbot.discord.command.InfoCommand;
+import io.github.aquerr.futrzakbot.discord.command.LeaveCommand;
 import io.github.aquerr.futrzakbot.discord.command.LoopCommand;
 import io.github.aquerr.futrzakbot.discord.command.LoveCommand;
 import io.github.aquerr.futrzakbot.discord.command.PlayCommand;
@@ -149,6 +150,7 @@ public class FutrzakBot
         this.commandManager.registerCommand(new FightCommand());
         this.commandManager.registerCommand(new QuoteCommand(QuoteGame.getInstance(), this.messageSource));
         this.commandManager.registerCommand(new GameCommand(this.messageSource, this.messageEmbedFactory, this.gameManager.getWebGame()));
+        this.commandManager.registerCommand(new LeaveCommand(this.messageSource, this.futrzakAudioPlayerManager));
     }
 
     public JDA getJda()

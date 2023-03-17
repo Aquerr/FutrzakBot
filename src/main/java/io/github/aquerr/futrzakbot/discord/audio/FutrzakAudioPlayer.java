@@ -1,6 +1,5 @@
 package io.github.aquerr.futrzakbot.discord.audio;
 
-import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
@@ -8,7 +7,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import io.github.aquerr.futrzakbot.FutrzakBot;
 import io.github.aquerr.futrzakbot.discord.audio.handler.AudioPlayerSendHandler;
-import io.github.aquerr.futrzakbot.discord.audio.handler.FutrzakAudioLoadHandler;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import jakarta.annotation.Nonnull;
 import net.dv8tion.jda.api.entities.GuildChannel;
