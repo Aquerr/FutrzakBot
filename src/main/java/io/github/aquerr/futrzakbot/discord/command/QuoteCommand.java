@@ -113,13 +113,13 @@ public class QuoteCommand implements Command, SlashCommand
     @Override
     public String getName()
     {
-        return ":thought_balloon: Cytat: ";
+        return messageSource.getMessage("command.quote.name");
     }
 
     @Override
     public String getDescription()
     {
-        return "Wylosuj cytat";
+        return messageSource.getMessage("command.quote.description");
     }
 
     @Override
