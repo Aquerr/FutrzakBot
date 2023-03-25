@@ -113,7 +113,7 @@ public class FutrzakMessageEmbedFactory
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(ERROR_COLOR);
-        embedBuilder.setTitle("embed.player.track-could-not-be-found");
+        embedBuilder.setTitle(messageSource.getMessage("embed.player.track-could-not-be-found"));
         return embedBuilder.build();
     }
 
