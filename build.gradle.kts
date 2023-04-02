@@ -34,7 +34,7 @@ repositories {
 
 dependencies {
     implementation("com.github.walkyst:lavaplayer-fork:1.4.0")
-    implementation("net.dv8tion:JDA:4.4.0_350") {
+    implementation("net.dv8tion:JDA:4.4.1_353") {
         exclude("opus-java")
     }
     implementation("com.vdurmont:emoji-java:5.1.1")
