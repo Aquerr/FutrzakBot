@@ -4,11 +4,10 @@ import com.vdurmont.emoji.Emoji;
 import com.vdurmont.emoji.EmojiManager;
 import com.vdurmont.emoji.EmojiParser;
 import io.github.aquerr.futrzakbot.FutrzakBot;
-import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageReaction;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.util.Map;
 
@@ -25,7 +24,7 @@ public class DiscordRoleGiver
     public void giveRole(Member member, MessageReaction reaction)
     {
         Guild guild = member.getGuild();
-        Emoji emoji = EmojiManager.getByUnicode(reaction.getReactionEmote().getEmoji());
+        Emoji emoji = EmojiManager.getByUnicode(reaction.getEmoji().getFormatted());
         Map<String, Long> emoteRoleIdsMap = this.futrzakBot.getConfiguration().getEmoteRoleIdsMap();
         Long roleId = emoteRoleIdsMap.get(EmojiParser.parseToAliases(emoji.getUnicode()));
         guild.addRoleToMember(member, guild.getRoleById(roleId)).queue();
@@ -34,7 +33,7 @@ public class DiscordRoleGiver
     public void removeRole(Member member, MessageReaction reaction)
     {
         Guild guild = member.getGuild();
-        Emoji emoji = EmojiManager.getByUnicode(reaction.getReactionEmote().getEmoji());
+        Emoji emoji = EmojiManager.getByUnicode(reaction.getEmoji().getFormatted());
         Map<String, Long> emoteRoleIdsMap = this.futrzakBot.getConfiguration().getEmoteRoleIdsMap();
         Long roleId = emoteRoleIdsMap.get(EmojiParser.parseToAliases(emoji.getUnicode()));
         guild.removeRoleFromMember(member, guild.getRoleById(roleId)).queue();
@@ -54,7 +53,7 @@ public class DiscordRoleGiver
         for (final Map.Entry<String, Long> emoteRoleEntry : emoteRoleIdsMap.entrySet())
         {
             Emoji emoji = EmojiManager.getForAlias(emoteRoleEntry.getKey());
-            textChannel.addReactionById(messageId, emoji.getUnicode()).queue();
+            textChannel.addReactionById(messageId, net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode(emoji.getUnicode())).queue();
         }
     }
 }

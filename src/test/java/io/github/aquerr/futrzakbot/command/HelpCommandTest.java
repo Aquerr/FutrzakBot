@@ -10,9 +10,10 @@ import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -24,7 +25,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -61,12 +61,12 @@ class HelpCommandTest
         MessageEmbed helpMessageEmbed = new EmbedBuilder().setDescription("Test Help").build();
         CommandContext context = mock(CommandContext.class);
         TextChannel textChannel = mock(TextChannel.class);
-        MessageAction messageAction = mock(MessageAction.class);
+        MessageCreateAction messageAction = mock(MessageCreateAction.class);
         Message message = mock(Message.class);
         given(context.getTextChannel()).willReturn(textChannel);
         given(textChannel.sendMessageEmbeds(any(MessageEmbed.class))).willReturn(messageAction);
         given(messageAction.complete()).willReturn(message);
-        given(message.addReaction(anyString())).willReturn(mock(RestAction.class));
+        given(message.addReaction(any(Emoji.class))).willReturn(mock(RestAction.class));
         given(messageEmbedFactory.createHelpMessage(any(), anyInt())).willReturn(helpMessageEmbed);
 
         // when
@@ -77,8 +77,8 @@ class HelpCommandTest
         verify(commandManager).getCommands();
         verify(textChannel).sendMessageEmbeds(helpMessageEmbed);
         verify(messageAction).complete();
-        verify(message).addReaction(EmojiUnicodes.ARROW_LEFT);
-        verify(message).addReaction(EmojiUnicodes.ARROW_RIGHT);
+        verify(message).addReaction(Emoji.fromUnicode(EmojiUnicodes.ARROW_LEFT));
+        verify(message).addReaction(Emoji.fromUnicode(EmojiUnicodes.ARROW_RIGHT));
     }
 
     @Test

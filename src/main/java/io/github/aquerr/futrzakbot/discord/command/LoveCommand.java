@@ -7,11 +7,12 @@ import io.github.aquerr.futrzakbot.discord.games.LoveMeter;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,8 +31,8 @@ public class LoveCommand implements Command, SlashCommand
         TextChannel channel = context.getTextChannel();
         Member selectedMember = context.require(TARGET_PARAM_KEY);
 
-        Message loveMessage = LoveMeter.checkLove(member, selectedMember);
-        channel.sendMessage(loveMessage).queue();
+        MessageEditData loveMessage = LoveMeter.checkLove(member, selectedMember);
+        channel.sendMessage(MessageCreateData.fromEditData(loveMessage)).queue();
         return true;
     }
 
@@ -54,16 +55,16 @@ public class LoveCommand implements Command, SlashCommand
     }
 
     @Override
-    public CommandData getSlashCommandData()
+    public SlashCommandData getSlashCommandData()
     {
         return SlashCommand.super.getSlashCommandData()
                 .addOption(OptionType.USER, TARGET_PARAM_KEY, messageSource.getMessage("command.love.slash.param.target.desc"), true);
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event)
+    public void onSlashCommand(SlashCommandInteractionEvent event)
     {
-        event.reply(LoveMeter.checkLove(event.getMember(), event.getOption(TARGET_PARAM_KEY).getAsMember())).queue();
+        event.reply(MessageCreateData.fromEditData(LoveMeter.checkLove(event.getMember(), event.getOption(TARGET_PARAM_KEY).getAsMember()))).queue();
     }
 
     @Override

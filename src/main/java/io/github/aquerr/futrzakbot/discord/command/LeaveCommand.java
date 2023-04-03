@@ -5,7 +5,7 @@ import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.command.exception.CommandException;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import lombok.AllArgsConstructor;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.Collections;
 import java.util.List;
@@ -42,7 +42,7 @@ public class LeaveCommand implements Command, SlashCommand
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event)
+    public void onSlashCommand(SlashCommandInteractionEvent event)
     {
         this.futrzakAudioPlayerManager.disconnect(event.getGuild().getIdLong());
         event.reply(messageSource.getMessage("command.leave.leaving")).complete().deleteOriginal().queue();

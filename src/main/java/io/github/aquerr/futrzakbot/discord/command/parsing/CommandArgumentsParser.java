@@ -11,7 +11,7 @@ import io.github.aquerr.futrzakbot.discord.command.parsing.parsers.MemberArgumen
 import io.github.aquerr.futrzakbot.discord.command.parsing.parsers.StringArgumentParser;
 import io.github.aquerr.futrzakbot.util.StringUtils;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;

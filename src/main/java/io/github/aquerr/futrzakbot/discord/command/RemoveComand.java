@@ -3,7 +3,7 @@ package io.github.aquerr.futrzakbot.discord.command;
 import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.command.parameters.Parameter;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.util.Collections;
 import java.util.List;

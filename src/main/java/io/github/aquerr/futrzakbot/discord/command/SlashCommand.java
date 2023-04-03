@@ -1,8 +1,10 @@
 package io.github.aquerr.futrzakbot.discord.command;
 
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import java.util.List;
 
@@ -23,22 +25,22 @@ public interface SlashCommand
      */
     String getDescription();
 
-    default CommandData getSlashCommandData()
+    default SlashCommandData getSlashCommandData()
     {
-        return new CommandData(getAliases().get(0), getDescription())
-                .setDefaultEnabled(true);
+        return Commands.slash(getAliases().get(0), getDescription())
+                .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
     }
 
-    void onSlashCommand(SlashCommandEvent event);
+    void onSlashCommand(SlashCommandInteractionEvent event);
 
-    default void onButtonClick(ButtonClickEvent event) {};
+    default void onButtonClick(ButtonInteractionEvent event) {};
 
-    default boolean supports(SlashCommandEvent event)
+    default boolean supports(SlashCommandInteractionEvent event)
     {
         return event.getName().equals(getAliases().get(0));
     }
 
-    default boolean supports(ButtonClickEvent event)
+    default boolean supports(ButtonInteractionEvent event)
     {
         return false;
     }

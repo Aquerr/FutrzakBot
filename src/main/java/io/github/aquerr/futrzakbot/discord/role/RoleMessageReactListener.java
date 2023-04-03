@@ -3,8 +3,8 @@ package io.github.aquerr.futrzakbot.discord.role;
 import io.github.aquerr.futrzakbot.FutrzakBot;
 import io.github.aquerr.futrzakbot.discord.events.MessageListener;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -24,8 +24,11 @@ public class RoleMessageReactListener extends ListenerAdapter
     }
 
     @Override
-    public void onGuildMessageReactionAdd(@NotNull GuildMessageReactionAddEvent event)
+    public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event)
     {
+        if (!event.isFromGuild())
+            return;
+
         if (this.futrzakBot.getJda().getSelfUser().getIdLong() == event.getUserIdLong())
             return;
 
@@ -52,8 +55,11 @@ public class RoleMessageReactListener extends ListenerAdapter
     }
 
     @Override
-    public void onGuildMessageReactionRemove(@NotNull GuildMessageReactionRemoveEvent event)
+    public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent event)
     {
+        if (!event.isFromGuild())
+            return;
+
         if (this.futrzakBot.getJda().getSelfUser().getIdLong() == event.getUserIdLong())
             return;
 

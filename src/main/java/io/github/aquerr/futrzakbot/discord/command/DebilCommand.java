@@ -2,8 +2,8 @@ package io.github.aquerr.futrzakbot.discord.command;
 
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +44,7 @@ public class DebilCommand implements Command, SlashCommand
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event)
+    public void onSlashCommand(SlashCommandInteractionEvent event)
     {
         event.reply("To Ty " + event.getMember().getAsMention() + " :clown:").queue();
     }

@@ -4,7 +4,7 @@ import io.github.aquerr.futrzakbot.discord.command.exception.ArgumentParseExcept
 import io.github.aquerr.futrzakbot.discord.command.parsing.ParsingContext;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.util.List;
 import java.util.Optional;

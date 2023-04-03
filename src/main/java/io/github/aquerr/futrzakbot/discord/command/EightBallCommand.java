@@ -9,10 +9,13 @@ import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import lombok.Value;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -71,21 +74,21 @@ public class EightBallCommand implements Command, SlashCommand
     }
 
     @Override
-    public CommandData getSlashCommandData()
+    public SlashCommandData getSlashCommandData()
     {
-        return new CommandData(getAliases().get(0), getDescription())
+        return Commands.slash(getAliases().get(0), getDescription())
                 .addOption(OptionType.STRING, "question", messageSource.getMessage("command.eightball.slash.param.question.desc"), true)
-                .setDefaultEnabled(true);
+                .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event)
+    public void onSlashCommand(SlashCommandInteractionEvent event)
     {
         final String question = event.getOption("question").getAsString();
 
         event.deferReply().addEmbeds(new EmbedBuilder()
                 .addField(messageSource.getMessage("command.eightball.answer.question"), question, false)
-                .addField(messageSource.getMessage("command.eightball.answer.answer"), getRandomResponse(event.getTextChannel(), event.getMember(), question.toLowerCase()), false)
+                .addField(messageSource.getMessage("command.eightball.answer.answer"), getRandomResponse(event.getChannel().asTextChannel(), event.getMember(), question.toLowerCase()), false)
                 .build())
             .queue();
     }

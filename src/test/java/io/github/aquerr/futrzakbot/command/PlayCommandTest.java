@@ -3,18 +3,18 @@ package io.github.aquerr.futrzakbot.command;
 import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.discord.command.PlayCommand;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
-import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.managers.AudioManager;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -61,6 +61,8 @@ class PlayCommandTest
     @Mock
     private TextChannel textChannel;
     @Mock
+    private MessageChannelUnion messageChannelUnion;
+    @Mock
     private MessageSource messageSource;
     @Mock
     private FutrzakAudioPlayerManager futrzakAudioPlayerManager;
@@ -71,18 +73,21 @@ class PlayCommandTest
     @Test
     void onSlashCommandShouldAddTrackToQueue()
     {
-        SlashCommandEvent slashCommandEvent = mock(SlashCommandEvent.class);
+        SlashCommandInteractionEvent slashCommandEvent = mock(SlashCommandInteractionEvent.class);
         OptionMapping optionMapping = mock(OptionMapping.class);
         VoiceChannel voiceChannel = mock(VoiceChannel.class);
+        AudioChannelUnion audioChannelUnion = mock(AudioChannelUnion.class);
 
         given(optionMapping.getAsString()).willReturn(SONG_NAME);
         given(slashCommandEvent.getOption(SONG_PARAM_KEY)).willReturn(optionMapping);
         given(slashCommandEvent.getGuild()).willReturn(guild);
         given(slashCommandEvent.getMember()).willReturn(member);
-        given(slashCommandEvent.getTextChannel()).willReturn(textChannel);
+        given(messageChannelUnion.asTextChannel()).willReturn(textChannel);
+        given(slashCommandEvent.getChannel()).willReturn(messageChannelUnion);
         given(member.getVoiceState()).willReturn(guildVoiceState);
-        given(guildVoiceState.getChannel()).willReturn(voiceChannel);
-        given(slashCommandEvent.reply(anyString())).willReturn(mock(ReplyAction.class));
+        given(guildVoiceState.getChannel()).willReturn(audioChannelUnion);
+        given(audioChannelUnion.asVoiceChannel()).willReturn(voiceChannel);
+        given(slashCommandEvent.reply(anyString())).willReturn(mock(ReplyCallbackAction.class));
         given(messageSource.getMessage(ADDING_TRACK_KEY)).willReturn(ADDING_TRACK);
 
         playCommand.onSlashCommand(slashCommandEvent);
@@ -94,13 +99,13 @@ class PlayCommandTest
     @Test
     void onSlashCommandShouldReturnMustBeInVoiceChannelErrorWhenMemberIsNotInVoiceChannel()
     {
-        SlashCommandEvent slashCommandEvent = mock(SlashCommandEvent.class);
+        SlashCommandInteractionEvent slashCommandEvent = mock(SlashCommandInteractionEvent.class);
         OptionMapping optionMapping = mock(OptionMapping.class);
 
         given(optionMapping.getAsString()).willReturn(SONG_NAME);
         given(slashCommandEvent.getOption(SONG_PARAM_KEY)).willReturn(optionMapping);
         given(slashCommandEvent.getMember()).willReturn(member);
-        given(slashCommandEvent.reply(anyString())).willReturn(mock(ReplyAction.class));
+        given(slashCommandEvent.reply(anyString())).willReturn(mock(ReplyCallbackAction.class));
         given(messageSource.getMessage(MUST_BE_ON_VOICE_CHANNEL_KEY)).willReturn(MUST_BE_ON_VOICE_CHANNEL);
         given(member.getVoiceState()).willReturn(guildVoiceState);
         given(guildVoiceState.getChannel()).willReturn(null);

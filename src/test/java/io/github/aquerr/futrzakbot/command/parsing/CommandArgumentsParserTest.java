@@ -9,7 +9,7 @@ import io.github.aquerr.futrzakbot.discord.command.parameters.StringParameter;
 import io.github.aquerr.futrzakbot.discord.command.parsing.CommandArgumentsParser;
 import io.github.aquerr.futrzakbot.discord.command.parsing.CommandParsingChain;
 import io.github.aquerr.futrzakbot.discord.command.parsing.parsers.ArgumentParser;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

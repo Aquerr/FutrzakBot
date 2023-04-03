@@ -6,8 +6,8 @@ import io.github.aquerr.futrzakbot.discord.games.WebGame;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import lombok.AllArgsConstructor;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,7 +48,7 @@ public class GameCommand implements Command, SlashCommand
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event)
+    public void onSlashCommand(SlashCommandInteractionEvent event)
     {
         event.reply("Link do Twojej wylosowanej gry: " + webGame.requestWebGameForUser(event.getUser())).queue();
     }

@@ -3,7 +3,7 @@ package io.github.aquerr.futrzakbot.discord.command;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.games.FutrzakGame;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.io.IOException;
 import java.util.Collections;

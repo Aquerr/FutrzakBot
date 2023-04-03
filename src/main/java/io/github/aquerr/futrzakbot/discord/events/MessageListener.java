@@ -7,10 +7,10 @@ import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.guild.react.GenericGuildMessageReactionEvent;
-import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,21 +33,24 @@ public class MessageListener extends ListenerAdapter
     }
 
     @Override
-    public void onPrivateMessageReceived(PrivateMessageReceivedEvent event)
+    public void onMessageReceived(MessageReceivedEvent event)
     {
-        if ("!f debugip".equals(event.getMessage().getContentDisplay()) && event.getAuthor().getIdLong() == 272461089541718017L)
+        if (event.isFromGuild())
         {
-            printDebugIp(event);
+            handleGuildMessageEvent(event);
+        }
+        else
+        {
+            handlePrivateMessageEvent(event);
         }
     }
 
-    @Override
-    public void onMessageReceived(MessageReceivedEvent event)
+    private void handleGuildMessageEvent(MessageReceivedEvent event)
     {
         if (isBot(event.getAuthor().getIdLong()))
             return;
 
-        TextChannel textChannel = event.getTextChannel();
+        TextChannel textChannel = event.getChannel().asTextChannel();
         Member member = event.getMember();
 
         // Bot cannot be used from webhooks and private channels
@@ -62,11 +65,19 @@ public class MessageListener extends ListenerAdapter
         if(event.getMessage().getContentDisplay().contains("Kocham") || event.getMessage().getContentDisplay().contains("kocham") || event.getMessage().getContentDisplay().contains("lofki")
                 || event.getMessage().getContentDisplay().contains("loffciam") || event.getMessage().getContentDisplay().contains("stellar"))
         {
-            event.getMessage().addReaction("❤").queue();
+            event.getMessage().addReaction(Emoji.fromUnicode("❤")).queue();
         }
     }
 
-    private void printDebugIp(PrivateMessageReceivedEvent event)
+    private void handlePrivateMessageEvent(MessageReceivedEvent event)
+    {
+        if ("!f debugip".equals(event.getMessage().getContentDisplay()) && event.getAuthor().getIdLong() == 272461089541718017L)
+        {
+            printDebugIp(event);
+        }
+    }
+
+    private void printDebugIp(MessageReceivedEvent event)
     {
         event.getChannel().sendMessage(getPublicIp()).queue();
     }
@@ -76,7 +87,7 @@ public class MessageListener extends ListenerAdapter
      * Used for pagination in help command
      */
     @Override
-    public void onGenericGuildMessageReaction(@NotNull GenericGuildMessageReactionEvent event)
+    public void onGenericMessageReaction(@NotNull GenericMessageReactionEvent event)
     {
         // If it is Futrzak who added reaction... don't process further.
         if (isBot(event.getUserIdLong()))
@@ -90,7 +101,7 @@ public class MessageListener extends ListenerAdapter
 
         if (isFutrzakHelpMessageReaction(messageEmbed))
         {
-            String emoji = event.getReactionEmote().getAsCodepoints();
+            String emoji = event.getEmoji().asUnicode().getAsCodepoints();
             if (emoji.equals(EmojiUnicodes.ARROW_LEFT))
             {
                 // Get current page and move back

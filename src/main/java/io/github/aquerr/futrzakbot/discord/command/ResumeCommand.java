@@ -3,12 +3,11 @@ package io.github.aquerr.futrzakbot.discord.command;
 import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +32,7 @@ public class ResumeCommand implements Command, SlashCommand
         Member member = context.getMember();
 
         GuildVoiceState guildVoiceState = member.getVoiceState();
-        VoiceChannel voiceChannel = guildVoiceState.getChannel();
+        VoiceChannel voiceChannel = guildVoiceState.getChannel().asVoiceChannel();
         if (voiceChannel == null)
         {
             textChannel.sendMessage(this.messageSource.getMessage(MUST_BE_ON_VOICE_CHANNEL)).complete();
@@ -62,10 +61,10 @@ public class ResumeCommand implements Command, SlashCommand
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event)
+    public void onSlashCommand(SlashCommandInteractionEvent event)
     {
         GuildVoiceState guildVoiceState = event.getMember().getVoiceState();
-        VoiceChannel voiceChannel = guildVoiceState.getChannel();
+        VoiceChannel voiceChannel = guildVoiceState.getChannel().asVoiceChannel();
         if (voiceChannel == null)
         {
             event.reply(this.messageSource.getMessage(MUST_BE_ON_VOICE_CHANNEL)).queue();
@@ -73,7 +72,7 @@ public class ResumeCommand implements Command, SlashCommand
         }
 
         event.reply(messageSource.getMessage("command.resume.resuming")).complete();
-        resumePlayer(event.getTextChannel(), voiceChannel);
+        resumePlayer(event.getChannel().asTextChannel(), voiceChannel);
     }
 
     private void resumePlayer(TextChannel textChannel, VoiceChannel voiceChannel)

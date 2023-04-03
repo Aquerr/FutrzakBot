@@ -9,9 +9,9 @@ import io.github.aquerr.futrzakbot.FutrzakBot;
 import io.github.aquerr.futrzakbot.discord.audio.handler.AudioPlayerSendHandler;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import jakarta.annotation.Nonnull;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.attribute.IMemberContainer;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -269,7 +269,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     private int getListeningMembersCount()
     {
         return Optional.ofNullable(this.voiceChannel)
-                .map(GuildChannel::getMembers)
+                .map(IMemberContainer::getMembers)
                 .map(List::size)
                 .orElse(0);
     }

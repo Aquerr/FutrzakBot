@@ -8,8 +8,8 @@ import io.github.aquerr.futrzakbot.discord.games.quote.QuoteCategory;
 import io.github.aquerr.futrzakbot.discord.games.quote.QuoteGame;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -93,7 +93,7 @@ class QuoteCommandTest
         // given
         CommandContext commandContext = mock(CommandContext.class);
         TextChannel textChannel = mock(TextChannel.class);
-        given(textChannel.sendMessageEmbeds(any(MessageEmbed.class))).willReturn(mock(MessageAction.class));
+        given(textChannel.sendMessageEmbeds(any(MessageEmbed.class))).willReturn(mock(MessageCreateAction.class));
         given(commandContext.getTextChannel()).willReturn(textChannel);
         given(commandContext.get(CATEGORY_PARAM_KEY)).willReturn(Optional.of("?"));
         given(quoteGame.getAvailableCategories()).willReturn(prepareQuoteCategories());

@@ -44,7 +44,6 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.security.auth.login.LoginException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -94,7 +93,7 @@ public class FutrzakBot
             registerCommands();
 
             this.jda = JDABuilder.createDefault(configuration.getBotToken())
-                    .enableIntents(GatewayIntent.GUILD_MEMBERS)
+                    .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.MESSAGE_CONTENT)
                     .setMemberCachePolicy(MemberCachePolicy.ALL)
                     .setChunkingFilter(ChunkingFilter.ALL)
                     .addEventListeners(new MessageListener(this, this.messageEmbedFactory))
@@ -102,7 +101,7 @@ public class FutrzakBot
                     .addEventListeners(new SlashCommandListener(this.commandManager, this.futrzakAudioPlayerManager, this.messageEmbedFactory))
                     .setAutoReconnect(true)
                     .enableCache(CacheFlag.VOICE_STATE)
-                    .setActivity(Activity.of(Activity.ActivityType.DEFAULT, "FutrzakiShow " + CommandManager.COMMAND_PREFIX + " help https://github.com/Aquerr/FutrzakBot"))
+                    .setActivity(Activity.watching("FutrzakiShow " + CommandManager.COMMAND_PREFIX + " help https://github.com/Aquerr/FutrzakBot"))
                 .build().awaitReady();
 
             initRoleGiver();
@@ -113,7 +112,7 @@ public class FutrzakBot
 
             LOGGER.info("FutrzakBot Connected!");
         }
-        catch (LoginException | InterruptedException e)
+        catch (InterruptedException e)
         {
             e.printStackTrace();
         }

@@ -4,8 +4,8 @@ import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.Collections;
 import java.util.List;
@@ -51,9 +51,9 @@ public class LoopCommand implements Command, SlashCommand
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event)
+    public void onSlashCommand(SlashCommandInteractionEvent event)
     {
-        boolean newLoopState = futrzakAudioPlayerManager.toggleLoop(event.getGuild().getIdLong(), event.getTextChannel());
+        boolean newLoopState = futrzakAudioPlayerManager.toggleLoop(event.getGuild().getIdLong(), event.getChannel().asTextChannel());
         event.replyEmbeds(messageEmbedFactory.createLoopMessage(newLoopState)).queue();
     }
 }

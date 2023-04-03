@@ -9,14 +9,16 @@ import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class PlayCommand implements Command, SlashCommand
 {
@@ -44,7 +46,7 @@ public class PlayCommand implements Command, SlashCommand
 
         Guild guild = textChannel.getGuild();
         GuildVoiceState guildVoiceState = member.getVoiceState();
-        VoiceChannel voiceChannel = guildVoiceState.getChannel();
+        VoiceChannel voiceChannel = guildVoiceState.getChannel().asVoiceChannel();
         if (voiceChannel == null)
         {
             textChannel.sendMessage(this.messageSource.getMessage(MUST_BE_ON_VOICE_CHANNEL)).complete();
@@ -81,7 +83,7 @@ public class PlayCommand implements Command, SlashCommand
     }
 
     @Override
-    public CommandData getSlashCommandData()
+    public SlashCommandData getSlashCommandData()
     {
         return SlashCommand.super.getSlashCommandData()
                 .addOption(OptionType.STRING, SONG_PARAM_KEY, this.messageSource.getMessage("command.play.slash.param.song.desc"), false)
@@ -90,11 +92,14 @@ public class PlayCommand implements Command, SlashCommand
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event)
+    public void onSlashCommand(SlashCommandInteractionEvent event)
     {
         String songName = SongParamHelper.getSongNameFromSlashEvent(event);
         GuildVoiceState guildVoiceState = event.getMember().getVoiceState();
-        VoiceChannel voiceChannel = guildVoiceState.getChannel();
+        VoiceChannel voiceChannel = Optional.ofNullable(guildVoiceState.getChannel())
+                .map(AudioChannelUnion::asVoiceChannel)
+                .orElse(null);
+
         if (voiceChannel == null)
         {
             event.reply(this.messageSource.getMessage(MUST_BE_ON_VOICE_CHANNEL)).queue();
@@ -102,7 +107,7 @@ public class PlayCommand implements Command, SlashCommand
         }
 
         event.reply(this.messageSource.getMessage("command.play.adding")).complete();
-        queueTrack(event.getGuild(), event.getTextChannel(), voiceChannel, event.getMember(), songName);
+        queueTrack(event.getGuild(), event.getChannel().asTextChannel(), voiceChannel, event.getMember(), songName);
     }
 
     private void queueTrack(Guild guild, TextChannel textChannel, VoiceChannel voiceChannel, Member member, String songName)

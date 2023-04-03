@@ -5,8 +5,8 @@ import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.discord.command.CommandManager;
 import io.github.aquerr.futrzakbot.discord.command.SlashCommand;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public class SlashCommandListener extends ListenerAdapter
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event) {
+    public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         for (final SlashCommand slashCommand : this.commandManager.getSlashCommands())
         {
             if(slashCommand.supports(event))
@@ -39,7 +39,7 @@ public class SlashCommandListener extends ListenerAdapter
     }
 
     @Override
-    public void onButtonClick(ButtonClickEvent event) {
+    public void onButtonInteraction(ButtonInteractionEvent event) {
         for (final SlashCommand slashCommand : this.commandManager.getSlashCommands())
         {
             if(slashCommand.supports(event))
@@ -53,7 +53,7 @@ public class SlashCommandListener extends ListenerAdapter
             List<AudioTrack> queue = this.futrzakAudioPlayerManager.getQueue(event.getGuild().getIdLong());
             event.replyEmbeds(messageEmbedFactory.createQueueMessage(queue)).queue();
         } else if (event.getComponentId().equals("next")) {
-            this.futrzakAudioPlayerManager.skipAndPlayNextTrack(event.getGuild().getIdLong(), event.getTextChannel());
+            this.futrzakAudioPlayerManager.skipAndPlayNextTrack(event.getGuild().getIdLong(), event.getChannel().asTextChannel());
             event.reply("next track").queue();
         }
     }

@@ -13,11 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import java.awt.*;
 import java.io.IOException;
@@ -123,7 +123,7 @@ public class QuoteCommand implements Command, SlashCommand
     }
 
     @Override
-    public CommandData getSlashCommandData()
+    public SlashCommandData getSlashCommandData()
     {
         return SlashCommand.super.getSlashCommandData()
                 .addOption(OptionType.BOOLEAN, HELP_PARAM_KEY, messageSource.getMessage("command.quote.slash.param.help.desc"), false)
@@ -132,9 +132,9 @@ public class QuoteCommand implements Command, SlashCommand
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event)
+    public void onSlashCommand(SlashCommandInteractionEvent event)
     {
-        TextChannel textChannel = event.getTextChannel();
+        TextChannel textChannel = event.getChannel().asTextChannel();
         Member member = event.getMember();
         boolean shouldShowHelp = ofNullable(event.getOption(HELP_PARAM_KEY)).map(OptionMapping::getAsBoolean).orElse(false);
         if (shouldShowHelp)

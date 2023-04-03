@@ -1,7 +1,7 @@
 package io.github.aquerr.futrzakbot.discord.command.parsing;
 
 import io.github.aquerr.futrzakbot.discord.command.parsing.parsers.ArgumentParser;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 /**
  * Represents a context in which an argument is being parsed.

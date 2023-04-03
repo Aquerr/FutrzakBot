@@ -5,7 +5,7 @@ import io.github.aquerr.futrzakbot.discord.command.parsing.ParsingContext;
 import io.github.aquerr.futrzakbot.discord.command.parsing.parsers.MemberArgumentParser;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

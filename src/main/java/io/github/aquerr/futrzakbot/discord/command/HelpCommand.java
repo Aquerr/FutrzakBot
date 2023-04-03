@@ -4,12 +4,12 @@ import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.message.EmojiUnicodes;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
-import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,8 +36,8 @@ public class HelpCommand implements Command, SlashCommand
     public boolean execute(CommandContext commandContext)
     {
         Message message = commandContext.getTextChannel().sendMessageEmbeds(buildHelpMessage()).complete();
-        message.addReaction(EmojiUnicodes.ARROW_LEFT).complete();
-        message.addReaction(EmojiUnicodes.ARROW_RIGHT).complete();
+        message.addReaction(Emoji.fromUnicode(EmojiUnicodes.ARROW_LEFT)).complete();
+        message.addReaction(Emoji.fromUnicode(EmojiUnicodes.ARROW_RIGHT)).complete();
         return true;
     }
 
@@ -66,7 +66,7 @@ public class HelpCommand implements Command, SlashCommand
     }
 
     @Override
-    public void onSlashCommand(SlashCommandEvent event)
+    public void onSlashCommand(SlashCommandInteractionEvent event)
     {
         if (event.getName().equals(getAliases().get(0)))
         {
@@ -78,7 +78,7 @@ public class HelpCommand implements Command, SlashCommand
     }
 
     @Override
-    public void onButtonClick(ButtonClickEvent event)
+    public void onButtonClick(ButtonInteractionEvent event)
     {
         if (event.getComponentId().equals(BUTTON_HELP_LEFT_ID))
         {
@@ -111,7 +111,7 @@ public class HelpCommand implements Command, SlashCommand
     }
 
     @Override
-    public boolean supports(ButtonClickEvent event)
+    public boolean supports(ButtonInteractionEvent event)
     {
         return event.getComponentId().equals(BUTTON_HELP_LEFT_ID) || event.getComponentId().equals(BUTTON_HELP_RIGHT_ID);
     }

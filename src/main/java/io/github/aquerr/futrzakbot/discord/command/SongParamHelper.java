@@ -1,7 +1,7 @@
 package io.github.aquerr.futrzakbot.discord.command;
 
 import io.github.aquerr.futrzakbot.discord.audio.AudioSource;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import java.util.Optional;
@@ -13,7 +13,7 @@ public final class SongParamHelper
     private static final String SOUNDCLOUD_SONG_PARAM_KEY = "soundcloud";
     private static final String YOUTUBE_SONG_PARAM_KEY = "youtube";
 
-    public static String getSongNameFromSlashEvent(SlashCommandEvent event)
+    public static String getSongNameFromSlashEvent(SlashCommandInteractionEvent event)
     {
         String songName = Optional.ofNullable(event.getOption(SONG_PARAM_KEY)).map(OptionMapping::getAsString).orElse(null);
         if (songName != null)
