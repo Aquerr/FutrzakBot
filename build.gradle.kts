@@ -56,6 +56,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web") {
         exclude("org.springframework.boot", "spring-boot-starter-logging")
     }
+    implementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude("org.springframework.boot", "spring-boot-starter-logging")
+    }
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     // Logging (Log4j2)
