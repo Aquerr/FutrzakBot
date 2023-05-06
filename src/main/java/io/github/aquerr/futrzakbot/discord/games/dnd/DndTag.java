@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Tag
+public class DndTag
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

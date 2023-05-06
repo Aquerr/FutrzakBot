@@ -2,7 +2,7 @@ package io.github.aquerr.futrzakbot.storage;
 
 import io.github.aquerr.futrzakbot.discord.games.dnd.CompendiumEntry;
 import io.github.aquerr.futrzakbot.discord.games.dnd.CompendiumEntryImpl;
-import io.github.aquerr.futrzakbot.discord.games.dnd.Tag;
+import io.github.aquerr.futrzakbot.discord.games.dnd.DndTag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -15,7 +15,7 @@ public interface CompendiumEntryStorage extends JpaRepository<CompendiumEntryImp
 {
     @Query("SELECT compendium_entry FROM CompendiumEntryImpl compendium_entry WHERE compendium_entry.name = :name " +
             "AND :tags IN (compendium_entry.tags)")
-    List<CompendiumEntry> findAllByTagsAndNameLike(Set<Tag> tags, String name);
+    List<CompendiumEntry> findAllByTagsAndNameLike(Set<DndTag> tags, String name);
 
     CompendiumEntry findByName(String name);
 }

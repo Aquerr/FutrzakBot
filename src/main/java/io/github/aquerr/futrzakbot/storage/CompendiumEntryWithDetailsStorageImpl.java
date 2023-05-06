@@ -10,34 +10,70 @@ import jakarta.persistence.TypedQuery;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @AllArgsConstructor
 public class CompendiumEntryWithDetailsStorageImpl implements CompendiumEntryWithDetailsStorage
 {
+
     @PersistenceContext
     private final EntityManager entityManager;
 
     @Override
-    public CompendiumEntry findWithDetailsByName(String name)
+    public Optional<CompendiumEntry> findWithDetailsByName(String name)
     {
         // Find compendium entry
         TypedQuery<CompendiumEntryImpl> compendiumEntryTypedQuery = entityManager.createQuery("SELECT compendium_entry FROM CompendiumEntryImpl compendium_entry WHERE compendium_entry.name = :name", CompendiumEntryImpl.class);
         compendiumEntryTypedQuery.setParameter("name", name);
 
-        CompendiumEntryImpl compendiumEntry = compendiumEntryTypedQuery.getSingleResult();
+        CompendiumEntryImpl compendiumEntry = compendiumEntryTypedQuery.getResultStream().findFirst().orElse(null);
 
         // Find details for item or creature
         CompendiumEntry result = null;
-        if (compendiumEntry.getEntryType() == CompendiumEntry.EntryType.ITEM)
+        if (compendiumEntry != null)
         {
-            result = findDndItemByCompendiumEntryId(compendiumEntry.getId());
-        }
-        else if (compendiumEntry.getEntryType() == CompendiumEntry.EntryType.CREATURE)
-        {
-            result = findDndCreatureByCompendiumEntryId(compendiumEntry.getId());
+            if (compendiumEntry.getEntryType() == CompendiumEntry.EntryType.ITEM)
+            {
+                result = findDndItemByCompendiumEntryId(compendiumEntry.getId());
+            }
+            else if (compendiumEntry.getEntryType() == CompendiumEntry.EntryType.CREATURE)
+            {
+                result = findDndCreatureByCompendiumEntryId(compendiumEntry.getId());
+            }
         }
 
-        return result;
+        return Optional.ofNullable(result);
+    }
+
+    @Override
+    public Optional<DndItem> findDndItemByName(String name)
+    {
+        CompendiumEntry compendiumEntry = findWithDetailsByName(name).orElse(null);
+        if (compendiumEntry == null)
+        {
+            return Optional.empty();
+        }
+        else if (compendiumEntry.getEntryType() != CompendiumEntry.EntryType.ITEM)
+        {
+            throw new ClassCastException("Could not cast incompatible object to " + DndItem.class.getSimpleName());
+        }
+        return Optional.of((DndItem) compendiumEntry);
+    }
+
+    @Override
+    public Optional<DndCreature> findDndCreatureByName(String name)
+    {
+        CompendiumEntry compendiumEntry = findWithDetailsByName(name).orElse(null);
+        if (compendiumEntry == null)
+        {
+            return Optional.empty();
+        }
+        else if (compendiumEntry.getEntryType() != CompendiumEntry.EntryType.CREATURE)
+        {
+            throw new ClassCastException("Could not cast incompatible object to " + DndCreature.class.getSimpleName());
+        }
+        return Optional.of((DndCreature) compendiumEntry);
     }
 
     private DndItem findDndItemByCompendiumEntryId(Long compendiumEntryId)

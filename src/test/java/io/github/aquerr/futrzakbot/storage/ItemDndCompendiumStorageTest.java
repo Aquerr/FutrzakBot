@@ -3,7 +3,7 @@ package io.github.aquerr.futrzakbot.storage;
 import io.github.aquerr.futrzakbot.discord.games.dnd.CompendiumEntry;
 import io.github.aquerr.futrzakbot.discord.games.dnd.CompendiumEntryImpl;
 import io.github.aquerr.futrzakbot.discord.games.dnd.DndItem;
-import io.github.aquerr.futrzakbot.discord.games.dnd.Tag;
+import io.github.aquerr.futrzakbot.discord.games.dnd.DndTag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -26,7 +26,8 @@ class ItemDndCompendiumStorageTest
         CompendiumEntryImpl compendiumEntry = new CompendiumEntryImpl();
         compendiumEntry.setName("mojItem");
         compendiumEntry.setDescription("moj opis bla bla bla");
-        compendiumEntry.setTags(Set.of(new Tag(null, "mojTag"), new Tag(null, "innyTag")));
+        compendiumEntry.setEntryType(CompendiumEntry.EntryType.ITEM);
+        compendiumEntry.setTags(Set.of(new DndTag(null, "mojTag"), new DndTag(null, "innyTag")));
         compendiumEntryStorage.save(compendiumEntry);
 
         DndItem dndItem = new DndItem();
@@ -42,8 +43,9 @@ class ItemDndCompendiumStorageTest
     {
         CompendiumEntryImpl compendiumEntry = new CompendiumEntryImpl();
         compendiumEntry.setName("mojItem");
+        compendiumEntry.setEntryType(CompendiumEntry.EntryType.ITEM);
         compendiumEntry.setDescription("moj opis bla bla bla");
-        compendiumEntry.setTags(Set.of(new Tag(null, "mojTag"), new Tag(null, "innyTag")));
+        compendiumEntry.setTags(Set.of(new DndTag(null, "mojTag"), new DndTag(null, "innyTag")));
         compendiumEntryStorage.save(compendiumEntry);
 
         DndItem dndItem = new DndItem();
@@ -52,7 +54,7 @@ class ItemDndCompendiumStorageTest
         itemCompendiumStorage.save(dndItem);
 
 
-        CompendiumEntry result = compendiumEntryStorage.findWithDetailsByName("mojItem");
+        CompendiumEntry result = compendiumEntryStorage.findWithDetailsByName("mojItem").orElse(null);
         assertThat(result).isNotNull();
         assertThat(result).isInstanceOf(DndItem.class);
         assertThat(result.getTags()).isNotEmpty();

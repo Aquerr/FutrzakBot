@@ -44,7 +44,7 @@ public class DndCreature implements CompendiumEntry
     }
 
     @Override
-    public Set<Tag> getTags()
+    public Set<DndTag> getTags()
     {
         return this.compendiumEntry.getTags();
     }

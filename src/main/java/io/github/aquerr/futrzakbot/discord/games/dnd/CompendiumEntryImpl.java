@@ -2,8 +2,6 @@ package io.github.aquerr.futrzakbot.discord.games.dnd;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,7 +35,6 @@ public class CompendiumEntryImpl implements CompendiumEntry
     @Column(name = "description", nullable = true, unique = false)
     private String description;
 
-    @Enumerated(value = EnumType.STRING)
     @Column(name = "entry_type", nullable = false, unique = false)
     private EntryType entryType;
 
@@ -45,5 +42,5 @@ public class CompendiumEntryImpl implements CompendiumEntry
     @JoinTable(name = "dnd_compendium_entry_tag",
             joinColumns = @JoinColumn(name = "compoendium_entry_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
-    private Set<Tag> tags;
+    private Set<DndTag> tags;
 }

@@ -39,7 +39,7 @@ public class DndItem implements CompendiumEntry
     }
 
     @Override
-    public Set<Tag> getTags()
+    public Set<DndTag> getTags()
     {
         return this.compendiumEntry.getTags();
     }

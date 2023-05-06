@@ -1,10 +1,10 @@
 package io.github.aquerr.futrzakbot.discord.games.dnd;
 
 import io.github.aquerr.futrzakbot.storage.CompendiumEntryStorage;
-import io.github.aquerr.futrzakbot.storage.DndItemStorage;
 import io.github.aquerr.futrzakbot.util.SpringContextHelper;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class DndCompendium
@@ -15,14 +15,13 @@ public class DndCompendium
         this.compendiumEntryStorage = SpringContextHelper.getBean(CompendiumEntryStorage.class);
     }
 
-    public List<CompendiumEntry> findEntries(Set<Tag> tags, String searchPhrase)
+    public List<CompendiumEntry> findEntries(Set<DndTag> tags, String searchPhrase)
     {
         return compendiumEntryStorage.findAllByTagsAndNameLike(tags, searchPhrase);
     }
 
-    public CompendiumEntry getEntry(String name)
+    public Optional<CompendiumEntry> getEntry(String name)
     {
-        CompendiumEntry compendiumEntry = compendiumEntryStorage.findWithDetailsByName(name);
-        return compendiumEntry;
+        return compendiumEntryStorage.findWithDetailsByName(name);
     }
 }
