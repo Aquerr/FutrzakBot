@@ -1,5 +1,6 @@
 package io.github.aquerr.futrzakbot.discord.games.dnd.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -40,7 +41,7 @@ public class CompendiumEntryImpl implements CompendiumEntry
     @Column(name = "entry_type", nullable = false, unique = false)
     private EntryType entryType;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST})
     @JoinTable(name = "dnd_compendium_entry_tag",
             joinColumns = @JoinColumn(name = "compoendium_entry_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))

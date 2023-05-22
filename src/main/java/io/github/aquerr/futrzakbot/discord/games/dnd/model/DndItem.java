@@ -1,5 +1,6 @@
 package io.github.aquerr.futrzakbot.discord.games.dnd.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,7 +23,7 @@ public class DndItem implements CompendiumEntry
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "compendium_entry_id", unique = true, nullable = false, updatable = false)
     private CompendiumEntryImpl compendiumEntry;
 
