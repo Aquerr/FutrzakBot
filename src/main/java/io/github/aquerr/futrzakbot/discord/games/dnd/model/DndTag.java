@@ -1,4 +1,4 @@
-package io.github.aquerr.futrzakbot.discord.games.dnd;
+package io.github.aquerr.futrzakbot.discord.games.dnd.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

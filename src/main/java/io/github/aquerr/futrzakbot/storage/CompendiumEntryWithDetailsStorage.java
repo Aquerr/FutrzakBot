@@ -1,8 +1,8 @@
 package io.github.aquerr.futrzakbot.storage;
 
-import io.github.aquerr.futrzakbot.discord.games.dnd.CompendiumEntry;
-import io.github.aquerr.futrzakbot.discord.games.dnd.DndCreature;
-import io.github.aquerr.futrzakbot.discord.games.dnd.DndItem;
+import io.github.aquerr.futrzakbot.discord.games.dnd.model.CompendiumEntry;
+import io.github.aquerr.futrzakbot.discord.games.dnd.model.DndCreature;
+import io.github.aquerr.futrzakbot.discord.games.dnd.model.DndItem;
 
 import java.util.Optional;
 

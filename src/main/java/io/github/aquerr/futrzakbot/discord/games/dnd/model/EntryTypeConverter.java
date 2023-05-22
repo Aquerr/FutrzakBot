@@ -1,5 +1,6 @@
-package io.github.aquerr.futrzakbot.discord.games.dnd;
+package io.github.aquerr.futrzakbot.discord.games.dnd.model;
 
+import io.github.aquerr.futrzakbot.discord.games.dnd.model.CompendiumEntry;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 

@@ -1,4 +1,4 @@
-package io.github.aquerr.futrzakbot.discord.games.dnd;
+package io.github.aquerr.futrzakbot.discord.games.dnd.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,14 +13,15 @@ import lombok.Data;
 import java.util.Set;
 
 @Entity
-@Table(name = "dnd_creature")
+@Table(name = "dnd_item")
 @Data
-public class DndCreature implements CompendiumEntry
+public class DndItem implements CompendiumEntry
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", unique = true, nullable = false)
+    @Column(name = "id", nullable = false, unique = true)
     private Long id;
+
     @OneToOne
     @JoinColumn(name = "compendium_entry_id", unique = true, nullable = false, updatable = false)
     private CompendiumEntryImpl compendiumEntry;
@@ -29,12 +30,6 @@ public class DndCreature implements CompendiumEntry
     public String getName()
     {
         return this.compendiumEntry.getName();
-    }
-
-    @Override
-    public EntryType getEntryType()
-    {
-        return EntryType.CREATURE;
     }
 
     @Override
@@ -47,5 +42,11 @@ public class DndCreature implements CompendiumEntry
     public Set<DndTag> getTags()
     {
         return this.compendiumEntry.getTags();
+    }
+
+    @Override
+    public EntryType getEntryType()
+    {
+        return EntryType.ITEM;
     }
 }

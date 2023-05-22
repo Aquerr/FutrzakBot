@@ -1,6 +1,6 @@
 package io.github.aquerr.futrzakbot.storage;
 
-import io.github.aquerr.futrzakbot.discord.games.dnd.DndItem;
+import io.github.aquerr.futrzakbot.discord.games.dnd.model.DndItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

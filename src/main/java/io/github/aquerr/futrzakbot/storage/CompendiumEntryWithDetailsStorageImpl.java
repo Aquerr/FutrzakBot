@@ -1,9 +1,9 @@
 package io.github.aquerr.futrzakbot.storage;
 
-import io.github.aquerr.futrzakbot.discord.games.dnd.CompendiumEntry;
-import io.github.aquerr.futrzakbot.discord.games.dnd.CompendiumEntryImpl;
-import io.github.aquerr.futrzakbot.discord.games.dnd.DndCreature;
-import io.github.aquerr.futrzakbot.discord.games.dnd.DndItem;
+import io.github.aquerr.futrzakbot.discord.games.dnd.model.CompendiumEntry;
+import io.github.aquerr.futrzakbot.discord.games.dnd.model.CompendiumEntryImpl;
+import io.github.aquerr.futrzakbot.discord.games.dnd.model.DndCreature;
+import io.github.aquerr.futrzakbot.discord.games.dnd.model.DndItem;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;

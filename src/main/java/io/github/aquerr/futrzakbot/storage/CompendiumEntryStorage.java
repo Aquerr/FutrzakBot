@@ -1,8 +1,8 @@
 package io.github.aquerr.futrzakbot.storage;
 
-import io.github.aquerr.futrzakbot.discord.games.dnd.CompendiumEntry;
-import io.github.aquerr.futrzakbot.discord.games.dnd.CompendiumEntryImpl;
-import io.github.aquerr.futrzakbot.discord.games.dnd.DndTag;
+import io.github.aquerr.futrzakbot.discord.games.dnd.model.CompendiumEntry;
+import io.github.aquerr.futrzakbot.discord.games.dnd.model.CompendiumEntryImpl;
+import io.github.aquerr.futrzakbot.discord.games.dnd.model.DndTag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

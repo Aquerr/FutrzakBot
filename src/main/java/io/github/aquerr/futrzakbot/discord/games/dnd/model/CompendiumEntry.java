@@ -1,4 +1,4 @@
-package io.github.aquerr.futrzakbot.discord.games.dnd;
+package io.github.aquerr.futrzakbot.discord.games.dnd.model;
 
 import java.util.Set;
 import java.util.stream.Stream;
