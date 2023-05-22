@@ -42,21 +42,15 @@ public class VolumeCommand implements Command, SlashCommand
     }
 
     @Override
-    public String getUsage()
-    {
-        return CommandManager.COMMAND_PREFIX + " volume <level>";
-    }
-
-    @Override
     public String getName()
     {
-        return ":loud_sound: Zmień głośność odtwarzacza: ";
+        return this.messageSource.getMessage("command.volume.name");
     }
 
     @Override
     public String getDescription()
     {
-        return "Zmień głośność odtwarzacza";
+        return this.messageSource.getMessage("command.volume.description");
     }
 
     @Override
