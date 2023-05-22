@@ -13,7 +13,9 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.ZonedDateTime;
 import java.util.Set;
 
 @Entity
@@ -43,4 +45,8 @@ public class CompendiumEntryImpl implements CompendiumEntry
             joinColumns = @JoinColumn(name = "compoendium_entry_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
     private Set<DndTag> tags;
+
+    @LastModifiedDate
+    @Column(name = "modified_date")
+    private ZonedDateTime modifiedDate;
 }
