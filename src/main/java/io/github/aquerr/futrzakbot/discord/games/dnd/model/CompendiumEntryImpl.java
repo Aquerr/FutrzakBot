@@ -43,7 +43,7 @@ public class CompendiumEntryImpl implements CompendiumEntry
 
     @ManyToMany(cascade = {CascadeType.PERSIST})
     @JoinTable(name = "dnd_compendium_entry_tag",
-            joinColumns = @JoinColumn(name = "compoendium_entry_id", referencedColumnName = "id"),
+            joinColumns = @JoinColumn(name = "compendium_entry_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
     private Set<DndTag> tags;
 
