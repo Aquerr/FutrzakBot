@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>D&D Compendium Editor</title>
+    <link rel="stylesheet" href="../../../css/dnd/compendium-editor.css">
+    <script type="module" src="../../../js/dnd/compendium-editor.js"></script>
+</head>
+<body>
+<div class="flex-container">
+    <div class="flex-container flex-column-direction">
+        <h1>D&D Compendium Editor</h1>
+        <div id="editor-window" class="flex-container flex-column-direction">
+            <ul class="editor-menu" style="list-style: none;">
+                <li><a id="menu-items" href="#">Items</a></li>
+                <li><a id="menu-creatures" href="#">Creatures</a></li>
+            </ul>
+            <div id="editor-content" class="flex-container" style="margin-top: 1rem;">
+                <table id="editor-table">
+                    <thead>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

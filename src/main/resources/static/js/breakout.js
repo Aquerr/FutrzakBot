@@ -141,7 +141,7 @@ function ballLogic() {
             lives--;
             if (!lives) {
                 alert("GAME OVER");
-                document.location.pathname = "/game/thanks-for-playing";
+                document.location.pathname = "../html/game/thanks-for-playing";
             }
             else {
                 ballX = canvas.width / 2;
@@ -177,7 +177,7 @@ function detectBallCollisionWithBricks() {
                             console.log(data);
                         });
                         alert("YOU WIN, CONGRATULATIONS!");
-                        document.location.pathname = "/game/thanks-for-playing";
+                        document.location.pathname = "../html/game/thanks-for-playing";
                     }
                 }
             }
