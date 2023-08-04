@@ -8,7 +8,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -30,6 +32,20 @@ public class MessageListener extends ListenerAdapter
     {
         this.futrzakBot = futrzakBot;
         this.messageEmbedFactory = messageEmbedFactory;
+    }
+
+    @Override
+    public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event)
+    {
+        if (isBot(event.getMember().getIdLong()) && event.getChannelJoined() != null)
+        {
+            updateFutrzakPlayerVoiceChannel(event.getChannelJoined().asVoiceChannel());
+        }
+    }
+
+    private void updateFutrzakPlayerVoiceChannel(VoiceChannel voiceChannel)
+    {
+        this.futrzakBot.getFutrzakAudioPlayerManager().getOrCreateAudioPlayer(voiceChannel.getIdLong()).connectToVoiceChannel(voiceChannel);
     }
 
     @Override
