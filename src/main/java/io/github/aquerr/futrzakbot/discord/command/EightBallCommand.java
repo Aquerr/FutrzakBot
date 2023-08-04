@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.command.parameters.Parameter;
 import io.github.aquerr.futrzakbot.discord.command.parameters.RemainingStringsParameter;
+import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import lombok.Value;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -87,6 +88,7 @@ public class EightBallCommand implements Command, SlashCommand
         final String question = event.getOption("question").getAsString();
 
         event.deferReply().addEmbeds(new EmbedBuilder()
+                .setColor(FutrzakMessageEmbedFactory.DEFAULT_COLOR)
                 .addField(messageSource.getMessage("command.eightball.answer.question"), question, false)
                 .addField(messageSource.getMessage("command.eightball.answer.answer"), getRandomResponse(event.getChannel().asTextChannel(), event.getMember(), question.toLowerCase()), false)
                 .build())

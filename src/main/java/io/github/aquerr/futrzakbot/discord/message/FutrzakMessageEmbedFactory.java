@@ -36,8 +36,8 @@ public class FutrzakMessageEmbedFactory
         public static FutrzakMessageEmbedFactory INSTANCE = null;
     }
 
-    private static final Color DEFAULT_COLOR = Color.GREEN;
-    private static final Color ERROR_COLOR = Color.RED;
+    public static final Color DEFAULT_COLOR = Color.GREEN;
+    public static final Color ERROR_COLOR = Color.RED;
 
     private final MessageSource messageSource;
 
