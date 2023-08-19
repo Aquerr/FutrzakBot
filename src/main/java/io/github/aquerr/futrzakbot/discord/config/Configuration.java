@@ -101,11 +101,11 @@ public class Configuration
                 LOGGER.error("Could not load configuration file.", e);
             }
         }
-        return ConfigFactory.parseFile(configFilePath.toFile());
+        return ConfigFactory.load(ConfigFactory.parseFile(configFilePath.toFile()));
     }
 
     private static Config loadDefaultClasspathConfig()
     {
-        return ConfigFactory.parseResources("config.conf");
+        return ConfigFactory.load(ConfigFactory.parseResources("config.conf"));
     }
 }
