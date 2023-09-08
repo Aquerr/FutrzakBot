@@ -15,6 +15,10 @@ It has many functionalities which can make spending time on discord even funnier
 * Futrzak Game (Currently in development)
 * more to come...
 
+## Thanks
+
+<img width="200" src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png">
+
 ## License
 
 MIT
