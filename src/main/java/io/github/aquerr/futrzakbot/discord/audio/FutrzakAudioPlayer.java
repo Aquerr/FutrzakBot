@@ -285,4 +285,9 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         clear();
         this.audioPlayer.destroy();
     }
+
+    public void stopCurrentTrack()
+    {
+        this.audioPlayer.stopTrack();
+    }
 }

@@ -104,6 +104,7 @@ public final class FutrzakAudioPlayerManager
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
         futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
         futrzakAudioPlayer.pause();
+        futrzakAudioPlayer.stopCurrentTrack();
     }
 
     public void resume(long guildId, TextChannel textChannel, VoiceChannel voiceChannel)
@@ -173,5 +174,12 @@ public final class FutrzakAudioPlayerManager
             futrzakAudioPlayer.disconnectFromVoiceChannel();
             this.futrzakBot.getJda().getGuildById(guildId).getAudioManager().closeAudioConnection();
         }
+    }
+
+    public void pause(long guildId, TextChannel textChannel)
+    {
+        FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
+        futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
+        futrzakAudioPlayer.pause();
     }
 }

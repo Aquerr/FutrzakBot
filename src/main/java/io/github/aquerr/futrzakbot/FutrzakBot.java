@@ -13,6 +13,7 @@ import io.github.aquerr.futrzakbot.discord.command.InfoCommand;
 import io.github.aquerr.futrzakbot.discord.command.LeaveCommand;
 import io.github.aquerr.futrzakbot.discord.command.LoopCommand;
 import io.github.aquerr.futrzakbot.discord.command.LoveCommand;
+import io.github.aquerr.futrzakbot.discord.command.PauseCommand;
 import io.github.aquerr.futrzakbot.discord.command.PlayCommand;
 import io.github.aquerr.futrzakbot.discord.command.QueueCommand;
 import io.github.aquerr.futrzakbot.discord.command.QuoteCommand;
@@ -138,6 +139,7 @@ public class FutrzakBot
         this.commandManager.registerCommand(new FutrzakCommand(this.gameManager.getFutrzakGame()));
         this.commandManager.registerCommand(new PlayCommand(this.futrzakAudioPlayerManager, this.messageSource));
         this.commandManager.registerCommand(new StopCommand(this.futrzakAudioPlayerManager, this.messageSource));
+        this.commandManager.registerCommand(new PauseCommand(this.futrzakAudioPlayerManager, this.messageSource));
         this.commandManager.registerCommand(new ResumeCommand(this.futrzakAudioPlayerManager, this.messageSource));
         this.commandManager.registerCommand(new VolumeCommand(this.futrzakAudioPlayerManager, this.messageSource));
         this.commandManager.registerCommand(new SkipCommand(this.futrzakAudioPlayerManager, this.messageSource));
