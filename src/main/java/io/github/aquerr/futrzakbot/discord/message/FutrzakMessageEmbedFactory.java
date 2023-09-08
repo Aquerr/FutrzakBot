@@ -30,6 +30,14 @@ public class FutrzakMessageEmbedFactory
         InstanceHolder.INSTANCE = new FutrzakMessageEmbedFactory(messageSource);
     }
 
+    public MessageEmbed createNothingIsPlayingMessage()
+    {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setColor(DEFAULT_COLOR);
+        embedBuilder.setTitle(getMessage("embed.player.nothing-is-playing"));
+        return embedBuilder.build();
+    }
+
     private static class InstanceHolder
     {
 

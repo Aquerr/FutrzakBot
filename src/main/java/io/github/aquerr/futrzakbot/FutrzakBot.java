@@ -9,7 +9,7 @@ import io.github.aquerr.futrzakbot.discord.command.FightCommand;
 import io.github.aquerr.futrzakbot.discord.command.FutrzakCommand;
 import io.github.aquerr.futrzakbot.discord.command.GameCommand;
 import io.github.aquerr.futrzakbot.discord.command.HelpCommand;
-import io.github.aquerr.futrzakbot.discord.command.InfoCommand;
+import io.github.aquerr.futrzakbot.discord.command.PlayerCommand;
 import io.github.aquerr.futrzakbot.discord.command.LeaveCommand;
 import io.github.aquerr.futrzakbot.discord.command.LoopCommand;
 import io.github.aquerr.futrzakbot.discord.command.LoveCommand;
@@ -146,7 +146,7 @@ public class FutrzakBot
         this.commandManager.registerCommand(new RemoveComand(this.futrzakAudioPlayerManager));
         this.commandManager.registerCommand(new ClearCommand(this.futrzakAudioPlayerManager, this.messageSource, this.messageEmbedFactory));
         this.commandManager.registerCommand(new QueueCommand(this.futrzakAudioPlayerManager, this.messageSource, this.messageEmbedFactory));
-        this.commandManager.registerCommand(new InfoCommand(this.futrzakAudioPlayerManager, this.messageEmbedFactory));
+        this.commandManager.registerCommand(new PlayerCommand(this.futrzakAudioPlayerManager, this.messageEmbedFactory, this.messageSource));
         this.commandManager.registerCommand(new LoopCommand(this.futrzakAudioPlayerManager, this.messageSource, this.messageEmbedFactory));
         this.commandManager.registerCommand(new FightCommand());
         this.commandManager.registerCommand(new QuoteCommand(QuoteGame.getInstance(), this.messageSource));
