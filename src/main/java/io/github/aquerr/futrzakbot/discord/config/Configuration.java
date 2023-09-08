@@ -28,7 +28,7 @@ public class Configuration
 
     public static Configuration loadConfiguration()
     {
-        Config config = loadConfigFile();
+        Config config = loadConfig();
         return new Configuration(config);
     }
 
@@ -84,7 +84,7 @@ public class Configuration
         return webEnabled;
     }
 
-    private static Config loadConfigFile()
+    private static Config loadConfig()
     {
         Path configFilePath = Paths.get(".").resolve("config.conf");
         if (Files.notExists(configFilePath))
@@ -101,7 +101,7 @@ public class Configuration
                 LOGGER.error("Could not load configuration file.", e);
             }
         }
-        return ConfigFactory.load(ConfigFactory.parseFile(configFilePath.toFile()));
+        return ConfigFactory.load(ConfigFactory.systemEnvironment().withFallback(ConfigFactory.parseFile(configFilePath.toFile())));
     }
 
     private static Config loadDefaultClasspathConfig()
