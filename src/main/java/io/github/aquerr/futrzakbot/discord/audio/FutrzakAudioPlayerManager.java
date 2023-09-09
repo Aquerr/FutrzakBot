@@ -95,7 +95,7 @@ public final class FutrzakAudioPlayerManager
         }
         else
         {
-            textChannel.sendMessageEmbeds(messageEmbedFactory.createOutOfRangeMessage()).queue();
+            textChannel.sendMessageEmbeds(messageEmbedFactory.createWrongTrackPositionMessage()).queue();
         }
     }
 

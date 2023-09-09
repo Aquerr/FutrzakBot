@@ -17,7 +17,7 @@ import io.github.aquerr.futrzakbot.discord.command.PauseCommand;
 import io.github.aquerr.futrzakbot.discord.command.PlayCommand;
 import io.github.aquerr.futrzakbot.discord.command.QueueCommand;
 import io.github.aquerr.futrzakbot.discord.command.QuoteCommand;
-import io.github.aquerr.futrzakbot.discord.command.RemoveComand;
+import io.github.aquerr.futrzakbot.discord.command.RemoveCommand;
 import io.github.aquerr.futrzakbot.discord.command.ResumeCommand;
 import io.github.aquerr.futrzakbot.discord.command.RouletteCommand;
 import io.github.aquerr.futrzakbot.discord.command.SkipCommand;
@@ -143,7 +143,7 @@ public class FutrzakBot
         this.commandManager.registerCommand(new ResumeCommand(this.futrzakAudioPlayerManager, this.messageSource));
         this.commandManager.registerCommand(new VolumeCommand(this.futrzakAudioPlayerManager, this.messageSource));
         this.commandManager.registerCommand(new SkipCommand(this.futrzakAudioPlayerManager, this.messageSource));
-        this.commandManager.registerCommand(new RemoveComand(this.futrzakAudioPlayerManager));
+        this.commandManager.registerCommand(new RemoveCommand(this.futrzakAudioPlayerManager, this.messageSource));
         this.commandManager.registerCommand(new ClearCommand(this.futrzakAudioPlayerManager, this.messageSource, this.messageEmbedFactory));
         this.commandManager.registerCommand(new QueueCommand(this.futrzakAudioPlayerManager, this.messageSource, this.messageEmbedFactory));
         this.commandManager.registerCommand(new PlayerCommand(this.futrzakAudioPlayerManager, this.messageEmbedFactory, this.messageSource));

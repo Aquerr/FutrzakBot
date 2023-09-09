@@ -218,7 +218,7 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
-    public MessageEmbed createOutOfRangeMessage()
+    public MessageEmbed createWrongTrackPositionMessage()
     {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(ERROR_COLOR);
