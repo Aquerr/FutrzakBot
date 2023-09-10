@@ -1,6 +1,6 @@
 FROM eclipse-temurin:17-jre
 
-RUN useradd -u 8877 futrzak
+RUN useradd futrzak
 USER futrzak
 
 WORKDIR /app
