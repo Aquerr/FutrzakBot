@@ -182,4 +182,10 @@ public final class FutrzakAudioPlayerManager
         futrzakAudioPlayer.setLastBotUsageChannel(channel);
         futrzakAudioPlayer.pause();
     }
+
+    public void jumpTo(long guildId, TextChannel textChannel, int time) {
+        FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
+        futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
+        futrzakAudioPlayer.jumpTo((long)time);
+    }
 }
