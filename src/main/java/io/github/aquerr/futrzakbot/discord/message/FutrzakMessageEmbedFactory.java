@@ -38,6 +38,14 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
+    public MessageEmbed createCreatingNewFutrzakMessage()
+    {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setColor(DEFAULT_COLOR);
+        embedBuilder.setTitle(getMessage("command.futrzak.no-furry-creating-new"));
+        return embedBuilder.build();
+    }
+
     private static class InstanceHolder
     {
 

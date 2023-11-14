@@ -135,7 +135,7 @@ public class FutrzakBot
         this.commandManager.registerCommand(new RouletteCommand());
         this.commandManager.registerCommand(new DebilCommand());
         this.commandManager.registerCommand(new LoveCommand(this.messageSource));
-        this.commandManager.registerCommand(new FutrzakCommand(this.gameManager.getFutrzakGame()));
+        this.commandManager.registerCommand(new FutrzakCommand(this.gameManager.getFutrzakGame(), this.messageSource));
         this.commandManager.registerCommand(new PlayCommand(this.futrzakAudioPlayerManager, this.messageSource));
         this.commandManager.registerCommand(new StopCommand(this.futrzakAudioPlayerManager, this.messageSource));
         this.commandManager.registerCommand(new PauseCommand(this.futrzakAudioPlayerManager, this.messageSource));
