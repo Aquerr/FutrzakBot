@@ -1,7 +1,7 @@
 package io.github.aquerr.futrzakbot.discord.role;
 
 import io.github.aquerr.futrzakbot.FutrzakBot;
-import io.github.aquerr.futrzakbot.discord.events.MessageListener;
+import io.github.aquerr.futrzakbot.discord.command.listener.TextCommandListener;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public class RoleMessageReactListener extends ListenerAdapter
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MessageListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TextCommandListener.class);
 
     private final FutrzakBot futrzakBot;
     private final DiscordRoleGiver discordRoleGiver;

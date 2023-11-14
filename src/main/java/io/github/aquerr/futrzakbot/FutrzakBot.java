@@ -25,11 +25,10 @@ import io.github.aquerr.futrzakbot.discord.command.StopCommand;
 import io.github.aquerr.futrzakbot.discord.command.VolumeCommand;
 import io.github.aquerr.futrzakbot.discord.config.Configuration;
 import io.github.aquerr.futrzakbot.discord.config.JsonPathConfiguration;
-import io.github.aquerr.futrzakbot.discord.events.MessageListener;
 import io.github.aquerr.futrzakbot.discord.events.ReadyListener;
-import io.github.aquerr.futrzakbot.discord.events.SlashCommandListener;
 import io.github.aquerr.futrzakbot.discord.games.GameManager;
 import io.github.aquerr.futrzakbot.discord.games.quote.QuoteGame;
+import io.github.aquerr.futrzakbot.discord.listener.DiscordEventListener;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import io.github.aquerr.futrzakbot.discord.role.DiscordRoleGiver;
@@ -63,10 +62,10 @@ public class FutrzakBot
     private FutrzakAudioPlayerManager futrzakAudioPlayerManager;
     private GameManager gameManager;
     private CommandManager commandManager;
-    private Configuration configuration;
+    private final Configuration configuration;
     private JsonPathConfiguration jsonPathConfiguration;
     private DiscordRoleGiver discordRoleGiver;
-    private MessageSource messageSource;
+    private final MessageSource messageSource;
     private FutrzakMessageEmbedFactory messageEmbedFactory;
 
     FutrzakBot(Configuration configuration, MessageSource messageSource)
@@ -97,9 +96,9 @@ public class FutrzakBot
                     .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_VOICE_STATES, GatewayIntent.MESSAGE_CONTENT)
                     .setMemberCachePolicy(MemberCachePolicy.ALL)
                     .setChunkingFilter(ChunkingFilter.ALL)
-                    .addEventListeners(new MessageListener(this, this.messageEmbedFactory))
+                    .addEventListeners(this.commandManager)
                     .addEventListeners(new ReadyListener())
-                    .addEventListeners(new SlashCommandListener(this.commandManager, this.futrzakAudioPlayerManager, this.messageEmbedFactory))
+                    .addEventListeners(new DiscordEventListener(futrzakAudioPlayerManager))
                     .setAutoReconnect(true)
                     .enableCache(CacheFlag.VOICE_STATE)
                     .setActivity(Activity.watching("FutrzakiShow " + CommandManager.COMMAND_PREFIX + " help https://github.com/Aquerr/FutrzakBot"))

@@ -1,19 +1,19 @@
-package io.github.aquerr.futrzakbot.discord.events;
+package io.github.aquerr.futrzakbot.discord.command.listener;
 
-import io.github.aquerr.futrzakbot.FutrzakBot;
+import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.discord.command.CommandManager;
 import io.github.aquerr.futrzakbot.discord.message.EmojiUnicodes;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
+import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
-import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
+import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.hooks.EventListener;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -23,32 +23,21 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Optional;
 
-public class MessageListener extends ListenerAdapter
+public class TextCommandListener implements EventListener
 {
-    private final FutrzakBot futrzakBot;
+    private final CommandManager commandManager;
     private final FutrzakMessageEmbedFactory messageEmbedFactory;
+    private final MessageSource messageSource;
 
-    public MessageListener(FutrzakBot futrzakBot, FutrzakMessageEmbedFactory messageEmbedFactory)
+    public TextCommandListener(CommandManager commandManager,
+                               FutrzakMessageEmbedFactory messageEmbedFactory,
+                               MessageSource messageSource)
     {
-        this.futrzakBot = futrzakBot;
+        this.commandManager = commandManager;
         this.messageEmbedFactory = messageEmbedFactory;
+        this.messageSource = messageSource;
     }
 
-    @Override
-    public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event)
-    {
-        if (isBot(event.getMember().getIdLong()) && event.getChannelJoined() != null)
-        {
-            updateFutrzakPlayerVoiceChannel(event.getChannelJoined().asVoiceChannel());
-        }
-    }
-
-    private void updateFutrzakPlayerVoiceChannel(VoiceChannel voiceChannel)
-    {
-        this.futrzakBot.getFutrzakAudioPlayerManager().getOrCreateAudioPlayer(voiceChannel.getIdLong()).connectToVoiceChannel(voiceChannel);
-    }
-
-    @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
         if (event.isFromGuild())
@@ -63,7 +52,7 @@ public class MessageListener extends ListenerAdapter
 
     private void handleGuildMessageEvent(MessageReceivedEvent event)
     {
-        if (isBot(event.getAuthor().getIdLong()))
+        if (isBot(event, event.getAuthor().getIdLong()))
             return;
 
         TextChannel textChannel = event.getChannel().asTextChannel();
@@ -75,7 +64,7 @@ public class MessageListener extends ListenerAdapter
 
         if (isMessageWithFutrzakPrefix(event.getMessage().getContentDisplay()))
         {
-            this.futrzakBot.getCommandManager().processCommand(member, textChannel, event.getMessage());
+            this.commandManager.processCommand(member, textChannel, event.getMessage());
         }
 
         if(event.getMessage().getContentDisplay().contains("Kocham") || event.getMessage().getContentDisplay().contains("kocham") || event.getMessage().getContentDisplay().contains("lofki")
@@ -102,11 +91,10 @@ public class MessageListener extends ListenerAdapter
     /**
      * Used for pagination in help command
      */
-    @Override
     public void onGenericMessageReaction(@NotNull GenericMessageReactionEvent event)
     {
         // If it is Futrzak who added reaction... don't process further.
-        if (isBot(event.getUserIdLong()))
+        if (isBot(event, event.getUserIdLong()))
             return;
 
         Message message = event.retrieveMessage().complete();
@@ -123,7 +111,7 @@ public class MessageListener extends ListenerAdapter
                 // Get current page and move back
                 int page = getCurrentHelpPage(messageEmbed);
 
-                MessageEmbed newMessage = messageEmbedFactory.createHelpMessage(this.futrzakBot.getCommandManager().getCommands().values(), page - 1);
+                MessageEmbed newMessage = messageEmbedFactory.createHelpMessage(this.commandManager.getCommands().values(), page - 1);
                 message.editMessageEmbeds(newMessage).queue();
             }
             else if (emoji.equals(EmojiUnicodes.ARROW_RIGHT))
@@ -131,7 +119,7 @@ public class MessageListener extends ListenerAdapter
                 // Get current page and move forward
                 int page = getCurrentHelpPage(messageEmbed);
 
-                MessageEmbed newMessage = messageEmbedFactory.createHelpMessage(this.futrzakBot.getCommandManager().getCommands().values(), page + 1);
+                MessageEmbed newMessage = messageEmbedFactory.createHelpMessage(this.commandManager.getCommands().values(), page + 1);
                 message.editMessageEmbeds(newMessage).queue();
             }
         }
@@ -139,7 +127,7 @@ public class MessageListener extends ListenerAdapter
 
     private boolean isMessageWithFutrzakPrefix(String message)
     {
-        if ("!f".equals(message))
+        if (CommandManager.COMMAND_PREFIX.equals(message))
             return true;
 
         String[] words = message.split(" ");
@@ -149,7 +137,7 @@ public class MessageListener extends ListenerAdapter
     private boolean isFutrzakHelpMessageReaction(MessageEmbed messageEmbed)
     {
         return Optional.ofNullable(messageEmbed.getTitle()).orElse("")
-                .equals(futrzakBot.getMessageSource().getMessage("embed.command-list"));
+                .equals(messageSource.getMessage("embed.command-list"));
     }
 
     private int getCurrentHelpPage(MessageEmbed messageEmbed)
@@ -161,9 +149,9 @@ public class MessageListener extends ListenerAdapter
         return Integer.parseInt(footer.split("\\/")[0]);
     }
 
-    private boolean isBot(final long userId)
+    private boolean isBot(final GenericEvent event, final Long userId)
     {
-        return this.futrzakBot.getJda().getSelfUser().getIdLong() == userId;
+        return event.getJDA().getSelfUser().getIdLong() == userId;
     }
 
     private String getPublicIp()
@@ -182,6 +170,19 @@ public class MessageListener extends ListenerAdapter
         catch (IOException | InterruptedException e)
         {
             return "Could not get public ip: " + e.getMessage();
+        }
+    }
+
+    @Override
+    public void onEvent(@NotNull GenericEvent event)
+    {
+        if (event instanceof MessageReceivedEvent newEvent)
+        {
+            onMessageReceived(newEvent);
+        }
+        else if (event instanceof GenericMessageReactionEvent newEvent)
+        {
+            onGenericMessageReaction(newEvent);
         }
     }
 }

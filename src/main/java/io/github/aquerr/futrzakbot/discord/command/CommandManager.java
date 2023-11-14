@@ -4,8 +4,11 @@ import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContextImpl;
 import io.github.aquerr.futrzakbot.discord.command.exception.CommandArgumentsParseException;
 import io.github.aquerr.futrzakbot.discord.command.exception.CommandException;
+import io.github.aquerr.futrzakbot.discord.command.listener.TextCommandListener;
+import io.github.aquerr.futrzakbot.discord.command.listener.SlashCommandListener;
 import io.github.aquerr.futrzakbot.discord.command.parsing.CommandArgumentsParser;
 import io.github.aquerr.futrzakbot.discord.command.parsing.CommandParsingChain;
+import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -13,12 +16,21 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -26,7 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class CommandManager
+public class CommandManager implements EventListener
 {
     public static final String COMMAND_PREFIX = "!f";
 
@@ -41,17 +53,15 @@ public class CommandManager
     private final Map<List<String>, Command> commands = new LinkedHashMap<>();
     private final MessageSource messageSource;
     private final CommandArgumentsParser commandArgumentParser;
+    private final SlashCommandListener slashCommandListener;
+    private final TextCommandListener textCommandListener;
 
     public CommandManager(MessageSource messageSource)
     {
         this.messageSource = messageSource;
         this.commandArgumentParser = CommandArgumentsParser.createDefault();
-    }
-
-    public CommandManager(MessageSource messageSource, CommandArgumentsParser commandArgumentParser)
-    {
-        this.messageSource = messageSource;
-        this.commandArgumentParser = commandArgumentParser;
+        this.slashCommandListener = new SlashCommandListener(this);
+        this.textCommandListener = new TextCommandListener(this, FutrzakMessageEmbedFactory.getInstance(), messageSource);
     }
 
     public void registerCommand(Command command)
@@ -86,8 +96,8 @@ public class CommandManager
         logCommandUsage(member, channel, message);
 
         String messageContentRaw = message.getContentRaw();
-        if ("!f".equals(messageContentRaw))
-            messageContentRaw = "!f help"; //TODO: What if help command alias change? Need to find better solution...
+        if (CommandManager.COMMAND_PREFIX.equals(messageContentRaw))
+            messageContentRaw = CommandManager.COMMAND_PREFIX + getHelpCommandAlias();
 
         String text = messageContentRaw.substring(COMMAND_PREFIX.length() + 1); // Remove "!f "
         String commandAlias = text.split(" ")[0]; // Take command alias
@@ -98,6 +108,16 @@ public class CommandManager
             return;
 
         processCommand(member, channel, command, arguments);
+    }
+
+    private String getHelpCommandAlias()
+    {
+        return getCommands().values().stream()
+                .filter(command -> command instanceof HelpCommand)
+                .map(Command::getAliases)
+                .map(aliases -> aliases.get(0))
+                .findFirst()
+                .orElse("help");
     }
 
     private void processCommand(Member member, TextChannel channel, Command command, String arguments)
@@ -180,6 +200,16 @@ public class CommandManager
         channel.sendMessageEmbeds(messageEmbed).queue();
     }
 
+    private void handleSlashCommandException(InteractionHook interactionHook, SlashCommand command, CommandException exception)
+    {
+        LOGGER.error(messageSource.getMessage(ERROR_COMMAND_EXCEPTION, command.getAliases().get(0), exception.getMessage()));
+        MessageEmbed messageEmbed = new EmbedBuilder()
+                .setColor(Color.RED)
+                .setDescription(messageSource.getMessage(ERROR_COMMAND_EXCEPTION, exception.getMessage()))
+                .build();
+        interactionHook.editOriginalEmbeds(messageEmbed).queue();
+    }
+
     private void handleException(TextChannel channel, Command command, Exception exception)
     {
         LOGGER.error(messageSource.getMessage(ERROR_GENERAL, command.getName(), exception.getMessage()), exception);
@@ -190,15 +220,23 @@ public class CommandManager
         channel.sendMessageEmbeds(messageEmbed).queue();
     }
 
+    private void handleSlashException(InteractionHook interactionHook, SlashCommand command, Exception exception)
+    {
+        LOGGER.error(messageSource.getMessage(ERROR_GENERAL, command.getAliases().get(0), exception.getMessage()), exception);
+        MessageEmbed messageEmbed = new EmbedBuilder()
+                .setColor(Color.RED)
+                .setDescription(messageSource.getMessage(ERROR_GENERAL, exception.getMessage()))
+                .build();
+        interactionHook.editOriginalEmbeds(messageEmbed).queue();
+    }
+
     public void registerSlashCommandsForGuild(Guild guild)
     {
         List<CommandData> slashCommandData = new ArrayList<>();
         for (Command command : getCommands().values())
         {
-            if (!(command instanceof SlashCommand))
+            if (!(command instanceof SlashCommand slashCommand))
                 continue;
-
-            SlashCommand slashCommand = (SlashCommand) command;
 
             slashCommandData.add(slashCommand.getSlashCommandData());
         }
@@ -212,5 +250,92 @@ public class CommandManager
                 .filter(SlashCommand.class::isInstance)
                 .map(SlashCommand.class::cast)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void onEvent(@NotNull GenericEvent event)
+    {
+        if (event instanceof GenericInteractionCreateEvent newEvent)
+        {
+            this.slashCommandListener.onEvent(newEvent);
+        }
+        else
+        {
+            this.textCommandListener.onEvent(event);
+        }
+    }
+
+    public void processSlashCommand(SlashCommand slashCommand, SlashCommandInteractionEvent event)
+    {
+        InteractionHook interactionHook = event.getHook();
+        try
+        {
+            slashCommand.onSlashCommand(event);
+            completeEventIfNotAcknowledged(event);
+        }
+        catch (CommandException exception)
+        {
+            // Normal Command Exception handling here...
+            completeEventIfNotAcknowledged(event);
+            handleSlashCommandException(interactionHook, slashCommand, exception);
+        }
+        catch (Exception exception)
+        {
+            // General error...
+            completeEventIfNotAcknowledged(event);
+            handleSlashException(interactionHook, slashCommand, exception);
+        }
+    }
+
+    public void processSlashButtons(SlashCommand slashCommand, ButtonInteractionEvent event)
+    {
+        InteractionHook interactionHook = event.getHook();
+        try
+        {
+            slashCommand.onButtonClick(event);
+            completeEventIfNotAcknowledged(event);
+        }
+        catch (CommandException exception)
+        {
+            // Normal Command Exception handling here...
+            completeEventIfNotAcknowledged(event);
+            handleSlashCommandException(interactionHook, slashCommand, exception);
+        }
+        catch (Exception exception)
+        {
+            // General error...
+            completeEventIfNotAcknowledged(event);
+            handleSlashException(interactionHook, slashCommand, exception);
+        }
+    }
+
+    private void completeEventIfNotAcknowledged(GenericCommandInteractionEvent event)
+    {
+        try
+        {
+            if (!event.isAcknowledged())
+            {
+                event.deferReply().complete();
+            }
+        }
+        catch (Exception exception)
+        {
+            // ignored.
+        }
+    }
+
+    private void completeEventIfNotAcknowledged(GenericComponentInteractionCreateEvent event)
+    {
+        try
+        {
+            if (!event.isAcknowledged())
+            {
+                event.deferReply().complete();
+            }
+        }
+        catch (Exception exception)
+        {
+            // ignored.
+        }
     }
 }

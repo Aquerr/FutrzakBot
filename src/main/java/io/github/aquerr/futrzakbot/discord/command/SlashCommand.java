@@ -1,5 +1,6 @@
 package io.github.aquerr.futrzakbot.discord.command;
 
+import io.github.aquerr.futrzakbot.discord.command.exception.CommandException;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -31,15 +32,43 @@ public interface SlashCommand
                 .setDefaultPermissions(DefaultMemberPermissions.ENABLED);
     }
 
-    void onSlashCommand(SlashCommandInteractionEvent event);
+    /**
+     * A method responsible for executing command logic.
+     *
+     * @param event the event to handle
+     * @throws CommandException the exception
+     */
+    void onSlashCommand(SlashCommandInteractionEvent event) throws CommandException;
 
-    default void onButtonClick(ButtonInteractionEvent event) {};
+    /**
+     * Interface implementations can implement this method to react to slash command button clicks.
+     *
+     * @param event the event to handle
+     * @throws CommandException the exception
+     */
+    default void onButtonClick(ButtonInteractionEvent event) throws CommandException {}
 
+    /**
+     * Determines if implementation of this interface supports the given event.
+     *
+     * By default, it is determined by checking the slash command alias with {@link SlashCommand#getAliases()}
+     *
+     * @param event the event to handle
+     * @return true if supports, false if not
+     */
     default boolean supports(SlashCommandInteractionEvent event)
     {
         return event.getName().equals(getAliases().get(0));
     }
 
+    /**
+     * Determines if implementation of this interface supports the given button event.
+     *
+     * By default, returns false, as not every slash command uses buttons.
+     *
+     * @param event the event to handle
+     * @return true if supports, false if not
+     */
     default boolean supports(ButtonInteractionEvent event)
     {
         return false;
