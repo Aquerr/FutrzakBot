@@ -4,7 +4,7 @@ import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.Collections;
@@ -26,9 +26,9 @@ public class ClearCommand implements Command, SlashCommand
     @Override
     public boolean execute(CommandContext context)
     {
-        TextChannel textChannel = context.getTextChannel();
-        this.futrzakAudioPlayerManager.clearQueue(textChannel.getGuild().getIdLong(),textChannel);
-        textChannel.sendMessageEmbeds(messageEmbedFactory.createClearMessage()).queue();
+        GuildMessageChannel messageChannel = context.getGuildMessageChannel();
+        this.futrzakAudioPlayerManager.clearQueue(messageChannel.getGuild().getIdLong(),messageChannel);
+        messageChannel.sendMessageEmbeds(messageEmbedFactory.createClearMessage()).queue();
         return true;
     }
 
@@ -53,7 +53,7 @@ public class ClearCommand implements Command, SlashCommand
     @Override
     public void onSlashCommand(SlashCommandInteractionEvent event)
     {
-        this.futrzakAudioPlayerManager.clearQueue(event.getGuild().getIdLong(), event.getChannel().asTextChannel());
+        this.futrzakAudioPlayerManager.clearQueue(event.getGuild().getIdLong(), event.getChannel().asGuildMessageChannel());
         event.replyEmbeds(messageEmbedFactory.createClearMessage()).queue();
     }
 }

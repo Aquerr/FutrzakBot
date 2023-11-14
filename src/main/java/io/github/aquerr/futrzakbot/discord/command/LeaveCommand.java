@@ -19,7 +19,7 @@ public class LeaveCommand implements Command, SlashCommand
     @Override
     public boolean execute(CommandContext commandContext) throws CommandException
     {
-        this.futrzakAudioPlayerManager.disconnect(commandContext.getTextChannel().getGuild().getIdLong());
+        this.futrzakAudioPlayerManager.disconnect(commandContext.getGuildMessageChannel().getGuild().getIdLong());
         return true;
     }
 

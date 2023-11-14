@@ -5,7 +5,7 @@ import io.github.aquerr.futrzakbot.discord.command.parameters.IntegerParameter;
 import io.github.aquerr.futrzakbot.discord.command.parameters.Parameter;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -29,9 +29,9 @@ public class VolumeCommand implements Command, SlashCommand
     @Override
     public boolean execute(CommandContext context)
     {
-        TextChannel textChannel = context.getTextChannel();
-        final long guildId = textChannel.getGuild().getIdLong();
-        setVolume(guildId, textChannel, context.require(VOLUME_PARAM_KEY));
+        GuildMessageChannel channel = context.getGuildMessageChannel();
+        final long guildId = channel.getGuild().getIdLong();
+        setVolume(guildId, channel, context.require(VOLUME_PARAM_KEY));
         return true;
     }
 
@@ -63,7 +63,7 @@ public class VolumeCommand implements Command, SlashCommand
     @Override
     public void onSlashCommand(SlashCommandInteractionEvent event)
     {
-        setVolume(event.getGuild().getIdLong(), event.getChannel().asTextChannel(), event.getOption(VOLUME_PARAM_KEY).getAsInt());
+        setVolume(event.getGuild().getIdLong(), event.getChannel().asGuildMessageChannel(), event.getOption(VOLUME_PARAM_KEY).getAsInt());
         event.reply(this.messageSource.getMessage("command.volume.change")).complete();
 
     }
@@ -74,9 +74,9 @@ public class VolumeCommand implements Command, SlashCommand
         return Collections.singletonList(IntegerParameter.builder().key(VOLUME_PARAM_KEY).build());
     }
 
-    private void setVolume(Long guildId, TextChannel textChannel, int volume)
+    private void setVolume(Long guildId, GuildMessageChannel channel, int volume)
     {
-        this.futrzakAudioPlayerManager.setVolume(guildId, textChannel, volume);
+        this.futrzakAudioPlayerManager.setVolume(guildId, channel, volume);
     }
 
 }

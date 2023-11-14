@@ -7,7 +7,7 @@ import io.github.aquerr.futrzakbot.FutrzakBot;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageReaction;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 import java.util.Map;
 
@@ -47,13 +47,13 @@ public class DiscordRoleGiver
     private void prepareReactions()
     {
         Guild guild = this.futrzakBot.getJda().getGuildById(futrzakBot.getConfiguration().getGuildId());
-        TextChannel textChannel = guild.getTextChannelById(futrzakBot.getConfiguration().getChannelId());
+        MessageChannel channel = guild.getTextChannelById(futrzakBot.getConfiguration().getChannelId());
         long messageId = this.futrzakBot.getConfiguration().getMessageId();
         Map<String, Long> emoteRoleIdsMap = this.futrzakBot.getConfiguration().getEmoteRoleIdsMap();
         for (final Map.Entry<String, Long> emoteRoleEntry : emoteRoleIdsMap.entrySet())
         {
             Emoji emoji = EmojiManager.getForAlias(emoteRoleEntry.getKey());
-            textChannel.addReactionById(messageId, net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode(emoji.getUnicode())).queue();
+            channel.addReactionById(messageId, net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode(emoji.getUnicode())).queue();
         }
     }
 }

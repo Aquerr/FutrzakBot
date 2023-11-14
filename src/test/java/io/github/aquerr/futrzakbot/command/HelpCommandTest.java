@@ -63,7 +63,7 @@ class HelpCommandTest
         TextChannel textChannel = mock(TextChannel.class);
         MessageCreateAction messageAction = mock(MessageCreateAction.class);
         Message message = mock(Message.class);
-        given(context.getTextChannel()).willReturn(textChannel);
+        given(context.getGuildMessageChannel()).willReturn(textChannel);
         given(textChannel.sendMessageEmbeds(any(MessageEmbed.class))).willReturn(messageAction);
         given(messageAction.complete()).willReturn(message);
         given(message.addReaction(any(Emoji.class))).willReturn(mock(RestAction.class));

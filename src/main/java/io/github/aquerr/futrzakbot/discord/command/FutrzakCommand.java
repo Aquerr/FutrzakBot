@@ -3,7 +3,7 @@ package io.github.aquerr.futrzakbot.discord.command;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.games.FutrzakGame;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -21,7 +21,7 @@ public class FutrzakCommand implements Command
     @Override
     public boolean execute(CommandContext context)
     {
-        TextChannel channel = context.getTextChannel();
+        GuildMessageChannel channel = context.getGuildMessageChannel();
         Member member = context.getMember();
         long guildId = channel.getGuild().getIdLong();
         String userId = member.getId();

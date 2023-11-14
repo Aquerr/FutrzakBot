@@ -10,8 +10,8 @@ import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -41,26 +41,26 @@ public class QueueCommand implements Command, SlashCommand
     public boolean execute(CommandContext context)
     {
         String songName = context.<String>get(SONG_PARAM_KEY).orElse(null);
-        TextChannel textChannel = context.getTextChannel();
+        GuildMessageChannel channel = context.getGuildMessageChannel();
 
         if (songName != null)
         {
             Member member = context.getMember();
-            Guild guild = textChannel.getGuild();
+            Guild guild = channel.getGuild();
             GuildVoiceState guildVoiceState = member.getVoiceState();
             VoiceChannel voiceChannel = guildVoiceState.getChannel().asVoiceChannel();
             if (voiceChannel == null)
             {
-                textChannel.sendMessage(this.messageSource.getMessage(MUST_BE_ON_VOICE_CHANNEL)).complete();
+                channel.sendMessage(this.messageSource.getMessage(MUST_BE_ON_VOICE_CHANNEL)).complete();
                 return false;
             }
 
             songName = SongParamHelper.getIdentifierForTrack(songName, AudioSource.UNKNOWN);
-            queueTrack(guild, textChannel, voiceChannel, member, songName);
+            queueTrack(guild, channel, voiceChannel, member, songName);
             return true;
         }
 
-        textChannel.sendMessageEmbeds(messageEmbedFactory.createQueueMessage(this.futrzakAudioPlayerManager.getQueue(textChannel.getGuild().getIdLong()))).queue();
+        channel.sendMessageEmbeds(messageEmbedFactory.createQueueMessage(this.futrzakAudioPlayerManager.getQueue(channel.getGuild().getIdLong()))).queue();
         return true;
     }
 
@@ -106,11 +106,11 @@ public class QueueCommand implements Command, SlashCommand
                 return;
             }
             event.reply(this.messageSource.getMessage("command.play.adding")).complete();
-            queueTrack(event.getGuild(), event.getChannel().asTextChannel(), voiceChannel, event.getMember(), songName);
+            queueTrack(event.getGuild(), event.getChannel().asGuildMessageChannel(), voiceChannel, event.getMember(), songName);
             return;
         }
 
-        event.deferReply().addEmbeds(messageEmbedFactory.createQueueMessage(this.futrzakAudioPlayerManager.getQueue(event.getChannel().asTextChannel().getGuild().getIdLong()))).queue();
+        event.deferReply().addEmbeds(messageEmbedFactory.createQueueMessage(this.futrzakAudioPlayerManager.getQueue(event.getChannel().asGuildMessageChannel().getGuild().getIdLong()))).queue();
     }
 
     @Override
@@ -119,8 +119,8 @@ public class QueueCommand implements Command, SlashCommand
         return Collections.singletonList(StringParameter.builder().key(SONG_PARAM_KEY).optional(true).build());
     }
 
-    private void queueTrack(Guild guild, TextChannel textChannel, VoiceChannel voiceChannel, Member member, String songName)
+    private void queueTrack(Guild guild, GuildMessageChannel channel, VoiceChannel voiceChannel, Member member, String songName)
     {
-        this.futrzakAudioPlayerManager.queue(guild, textChannel, voiceChannel, member, songName, false);
+        this.futrzakAudioPlayerManager.queue(guild, channel, voiceChannel, member, songName, false);
     }
 }

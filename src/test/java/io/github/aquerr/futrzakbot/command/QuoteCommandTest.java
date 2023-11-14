@@ -94,7 +94,7 @@ class QuoteCommandTest
         CommandContext commandContext = mock(CommandContext.class);
         TextChannel textChannel = mock(TextChannel.class);
         given(textChannel.sendMessageEmbeds(any(MessageEmbed.class))).willReturn(mock(MessageCreateAction.class));
-        given(commandContext.getTextChannel()).willReturn(textChannel);
+        given(commandContext.getGuildMessageChannel()).willReturn(textChannel);
         given(commandContext.get(CATEGORY_PARAM_KEY)).willReturn(Optional.of("?"));
         given(quoteGame.getAvailableCategories()).willReturn(prepareQuoteCategories());
 

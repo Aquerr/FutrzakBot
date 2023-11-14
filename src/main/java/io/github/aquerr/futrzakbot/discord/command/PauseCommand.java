@@ -3,7 +3,7 @@ package io.github.aquerr.futrzakbot.discord.command;
 import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.Collections;
@@ -24,7 +24,7 @@ public class PauseCommand implements Command, SlashCommand
     @Override
     public boolean execute(CommandContext context)
     {
-        pauseMusicPlayer(context.getTextChannel());
+        pauseMusicPlayer(context.getGuildMessageChannel());
         return true;
     }
 
@@ -50,11 +50,11 @@ public class PauseCommand implements Command, SlashCommand
     public void onSlashCommand(SlashCommandInteractionEvent event)
     {
         event.reply(messageSource.getMessage("command.pause.pausing-player")).complete();
-        pauseMusicPlayer(event.getChannel().asTextChannel());
+        pauseMusicPlayer(event.getChannel().asGuildMessageChannel());
     }
 
-    private void pauseMusicPlayer(TextChannel textChannel)
+    private void pauseMusicPlayer(GuildMessageChannel messageChannel)
     {
-        this.futrzakAudioPlayerManager.pause(textChannel.getGuild().getIdLong(), textChannel);
+        this.futrzakAudioPlayerManager.pause(messageChannel.getGuild().getIdLong(), messageChannel);
     }
 }

@@ -9,7 +9,7 @@ import io.github.aquerr.futrzakbot.discord.command.parameters.StringParameter;
 import io.github.aquerr.futrzakbot.discord.command.parsing.CommandArgumentsParser;
 import io.github.aquerr.futrzakbot.discord.command.parsing.CommandParsingChain;
 import io.github.aquerr.futrzakbot.discord.command.parsing.parsers.ArgumentParser;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -52,7 +52,7 @@ class CommandArgumentsParserTest
     private CommandArgumentsParser commandArgumentsParser;
 
     @Mock
-    private TextChannel textChannel;
+    private MessageChannelUnion messageChannelUnion;
     @Mock
     private Command command;
     @Mock
@@ -66,7 +66,7 @@ class CommandArgumentsParserTest
         openMocks(this);
         this.parsers = new HashMap<>();
         this.commandArgumentsParser = new CommandArgumentsParser(this.parsers);
-        Mockito.reset(textChannel, command, stringArgumentParser, integerArgumentParser);
+        Mockito.reset(messageChannelUnion, command, stringArgumentParser, integerArgumentParser);
     }
 
     @Test
@@ -84,7 +84,7 @@ class CommandArgumentsParserTest
         given(stringArgumentParser.parse(any())).willReturn(COMMAND_ARG_1, SUB_COMMAND_ARG_1);
 
         // when
-        CommandParsingChain parsingChain = assertDoesNotThrow(() -> commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, args));
+        CommandParsingChain parsingChain = assertDoesNotThrow(() -> commandArgumentsParser.resolveAndParseCommandArgs(messageChannelUnion, command, args));
 
         // then
         assertThat(parsingChain.getCommandChain()).containsExactlyElementsOf(Arrays.asList(command, subcommand1));
@@ -98,7 +98,7 @@ class CommandArgumentsParserTest
         String args = prepareArgsMessage(COMMAND_ARG_1, SUB_COMMAND_ALIAS_1, SUB_COMMAND_ARG_1);
 
         // when
-        CommandParsingChain parsingChain = assertDoesNotThrow(() -> commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, args));
+        CommandParsingChain parsingChain = assertDoesNotThrow(() -> commandArgumentsParser.resolveAndParseCommandArgs(messageChannelUnion, command, args));
 
         // then
         assertThat(parsingChain.getCommandChain()).contains(command);
@@ -120,7 +120,7 @@ class CommandArgumentsParserTest
         given(integerArgumentParser.parse(any())).willReturn(ARGUMENT_2);
 
         // when
-        CommandParsingChain commandParsingChain = commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, prepareArgsMessage(args));
+        CommandParsingChain commandParsingChain = commandArgumentsParser.resolveAndParseCommandArgs(messageChannelUnion, command, prepareArgsMessage(args));
 
         // then
         assertThat(commandParsingChain.getArguments()).containsAllEntriesOf(Map.of(STRING_PARAMETER_KEY, ARGUMENT_1, INTEGER_PARAMETER_KEY, ARGUMENT_2));
@@ -134,7 +134,7 @@ class CommandArgumentsParserTest
 
         // when
         // then
-        assertThrows(CommandArgumentsParseException.class, () -> commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, prepareArgsMessage()));
+        assertThrows(CommandArgumentsParseException.class, () -> commandArgumentsParser.resolveAndParseCommandArgs(messageChannelUnion, command, prepareArgsMessage()));
     }
 
     @Test
@@ -145,7 +145,7 @@ class CommandArgumentsParserTest
         given(command.getParameters()).willReturn(Collections.singletonList(RemainingStringsParameter.builder().key(STRING_PARAMETER_KEY).build()));
 
         // when
-        CommandParsingChain commandParsingChain = commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, prepareArgsMessage(args));
+        CommandParsingChain commandParsingChain = commandArgumentsParser.resolveAndParseCommandArgs(messageChannelUnion, command, prepareArgsMessage(args));
 
         // then
         assertThat(commandParsingChain.getArguments()).containsExactlyEntriesOf(Map.of(STRING_PARAMETER_KEY, ARGUMENT_1 + " " + ARGUMENT_1 + " " + ARGUMENT_2));
@@ -159,7 +159,7 @@ class CommandArgumentsParserTest
         given(command.getParameters()).willReturn(Collections.singletonList(RemainingStringsParameter.builder().key(STRING_PARAMETER_KEY).build()));
 
         // when
-        CommandParsingChain commandParsingChain = commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, prepareArgsMessage(args));
+        CommandParsingChain commandParsingChain = commandArgumentsParser.resolveAndParseCommandArgs(messageChannelUnion, command, prepareArgsMessage(args));
 
         // then
         assertThat(commandParsingChain.getArguments()).containsAllEntriesOf(Map.of(STRING_PARAMETER_KEY, ARGUMENT_1));
@@ -174,7 +174,7 @@ class CommandArgumentsParserTest
         parsers.put(String.class, stringArgumentParser);
 
         // when
-        CommandParsingChain commandParsingChain = commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, prepareArgsMessage(args));
+        CommandParsingChain commandParsingChain = commandArgumentsParser.resolveAndParseCommandArgs(messageChannelUnion, command, prepareArgsMessage(args));
 
         // then
         assertThat(commandParsingChain.getArguments()).containsOnlyKeys(STRING_PARAMETER_KEY);
@@ -189,7 +189,7 @@ class CommandArgumentsParserTest
 
         // when
         // then
-        assertThrows(IllegalStateException.class, () -> commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, prepareArgsMessage(args)));
+        assertThrows(IllegalStateException.class, () -> commandArgumentsParser.resolveAndParseCommandArgs(messageChannelUnion, command, prepareArgsMessage(args)));
     }
 
     @ValueSource(classes = {ArgumentParseException.class, IllegalArgumentException.class, NumberFormatException.class, NullPointerException.class})
@@ -204,7 +204,7 @@ class CommandArgumentsParserTest
 
         // when
         // then
-        assertThrows(CommandArgumentsParseException.class, () -> commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, prepareArgsMessage(args)));
+        assertThrows(CommandArgumentsParseException.class, () -> commandArgumentsParser.resolveAndParseCommandArgs(messageChannelUnion, command, prepareArgsMessage(args)));
     }
 
     @Test
@@ -216,7 +216,7 @@ class CommandArgumentsParserTest
 
         // when
         // then
-        assertDoesNotThrow(() -> commandArgumentsParser.resolveAndParseCommandArgs(textChannel, command, prepareArgsMessage()));
+        assertDoesNotThrow(() -> commandArgumentsParser.resolveAndParseCommandArgs(messageChannelUnion, command, prepareArgsMessage()));
     }
 
     private String prepareArgsMessage(String... args)

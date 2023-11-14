@@ -2,12 +2,12 @@ package io.github.aquerr.futrzakbot.discord.placeholder;
 
 import lombok.Value;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 @Value
 public class PlaceholderContext
 {
     String text;
-    TextChannel textChannel;
+    MessageChannel messageChannel;
     Member member;
 }

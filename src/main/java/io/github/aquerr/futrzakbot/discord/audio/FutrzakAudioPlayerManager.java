@@ -12,8 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 
 import java.util.Iterator;
 import java.util.List;
@@ -39,10 +39,10 @@ public final class FutrzakAudioPlayerManager
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::botKickTaskRun, 1, 5, TimeUnit.MINUTES);
     }
 
-    public void queue(Guild guild, TextChannel textChannel, VoiceChannel voiceChannel, Member member, String trackIdentifier, boolean shouldStartPlaying)
+    public void queue(Guild guild, GuildMessageChannel channel, VoiceChannel voiceChannel, Member member, String trackIdentifier, boolean shouldStartPlaying)
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guild.getIdLong());
-        futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
+        futrzakAudioPlayer.setLastBotUsageChannel(channel);
         futrzakAudioPlayer.connectToVoiceChannel(voiceChannel);
 
         FutrzakAdditionalAudioTrackData futrzakAdditionalAudioTrackData = new FutrzakAdditionalAudioTrackData(member);
@@ -57,68 +57,68 @@ public final class FutrzakAudioPlayerManager
         }
     }
 
-    public void skipAndPlayNextTrack(long guildId, TextChannel textChannel)
+    public void skipAndPlayNextTrack(long guildId, GuildMessageChannel channel)
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
-        futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
+        futrzakAudioPlayer.setLastBotUsageChannel(channel);
         AudioTrack audioTrack = futrzakAudioPlayer.getPlayingTrack();
         if (audioTrack != null)
         {
-            textChannel.sendMessageEmbeds(messageEmbedFactory.createSkipTrackMessage(audioTrack)).queue();
+            channel.sendMessageEmbeds(messageEmbedFactory.createSkipTrackMessage(audioTrack)).queue();
         }
 
         futrzakAudioPlayer.skip();
     }
 
-    public boolean toggleLoop(long guildId,TextChannel textChannel)
+    public boolean toggleLoop(long guildId, GuildMessageChannel channel)
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
-        futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
+        futrzakAudioPlayer.setLastBotUsageChannel(channel);
         return futrzakAudioPlayer.toggleLoop();
     }
 
-    public void clearQueue(long guildId, TextChannel textChannel)
+    public void clearQueue(long guildId, GuildMessageChannel channel)
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
-        futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
+        futrzakAudioPlayer.setLastBotUsageChannel(channel);
         futrzakAudioPlayer.clear();
     }
 
-    public void removeElement(int element, long guildId,TextChannel textChannel)
+    public void removeElement(int element, long guildId, GuildMessageChannel channel)
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
-        futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
+        futrzakAudioPlayer.setLastBotUsageChannel(channel);
         if (0 < element && element <= futrzakAudioPlayer.getQueue().size())
         {
             AudioTrack audioTrack = futrzakAudioPlayer.remove(element);
-            textChannel.sendMessageEmbeds(messageEmbedFactory.createRemoveMessage(element, audioTrack)).queue();
+            channel.sendMessageEmbeds(messageEmbedFactory.createRemoveMessage(element, audioTrack)).queue();
         }
         else
         {
-            textChannel.sendMessageEmbeds(messageEmbedFactory.createWrongTrackPositionMessage()).queue();
+            channel.sendMessageEmbeds(messageEmbedFactory.createWrongTrackPositionMessage()).queue();
         }
     }
 
-    public void stop(long guildId, TextChannel textChannel)
+    public void stop(long guildId, GuildMessageChannel channel)
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
-        futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
+        futrzakAudioPlayer.setLastBotUsageChannel(channel);
         futrzakAudioPlayer.pause();
         futrzakAudioPlayer.stopCurrentTrack();
     }
 
-    public void resume(long guildId, TextChannel textChannel, VoiceChannel voiceChannel)
+    public void resume(long guildId, GuildMessageChannel channel, VoiceChannel voiceChannel)
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
-        futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
+        futrzakAudioPlayer.setLastBotUsageChannel(channel);
         futrzakAudioPlayer.connectToVoiceChannel(voiceChannel);
         futrzakAudioPlayer.resume();
     }
 
-    public void setVolume(long guildId, TextChannel textChannel, int volume)
+    public void setVolume(long guildId, GuildMessageChannel channel, int volume)
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
-        futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
+        futrzakAudioPlayer.setLastBotUsageChannel(channel);
         futrzakAudioPlayer.setVolume(volume);
     }
 
@@ -176,10 +176,10 @@ public final class FutrzakAudioPlayerManager
         }
     }
 
-    public void pause(long guildId, TextChannel textChannel)
+    public void pause(long guildId, GuildMessageChannel channel)
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
-        futrzakAudioPlayer.setLastBotUsageChannel(textChannel);
+        futrzakAudioPlayer.setLastBotUsageChannel(channel);
         futrzakAudioPlayer.pause();
     }
 }

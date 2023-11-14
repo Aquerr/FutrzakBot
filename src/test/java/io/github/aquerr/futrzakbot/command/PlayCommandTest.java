@@ -82,7 +82,7 @@ class PlayCommandTest
         given(slashCommandEvent.getOption(SONG_PARAM_KEY)).willReturn(optionMapping);
         given(slashCommandEvent.getGuild()).willReturn(guild);
         given(slashCommandEvent.getMember()).willReturn(member);
-        given(messageChannelUnion.asTextChannel()).willReturn(textChannel);
+        given(messageChannelUnion.asGuildMessageChannel()).willReturn(textChannel);
         given(slashCommandEvent.getChannel()).willReturn(messageChannelUnion);
         given(member.getVoiceState()).willReturn(guildVoiceState);
         given(guildVoiceState.getChannel()).willReturn(audioChannelUnion);

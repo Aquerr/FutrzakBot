@@ -1,7 +1,7 @@
 package io.github.aquerr.futrzakbot.discord.command.parsing;
 
 import io.github.aquerr.futrzakbot.discord.command.parsing.parsers.ArgumentParser;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 /**
  * Represents a context in which an argument is being parsed.
@@ -10,10 +10,10 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 public interface ParsingContext
 {
     /**
-     * The text channel in which parsing occurs
+     * The messsage channel in which parsing occurs
      * @return the associated text channel.
      */
-    TextChannel getTextChannel();
+    MessageChannelUnion getMessageChannel();
 
     /**
      * The argument that is being parsed.

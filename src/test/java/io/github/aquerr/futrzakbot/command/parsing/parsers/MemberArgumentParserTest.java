@@ -5,7 +5,9 @@ import io.github.aquerr.futrzakbot.discord.command.parsing.ParsingContext;
 import io.github.aquerr.futrzakbot.discord.command.parsing.parsers.MemberArgumentParser;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -42,7 +44,7 @@ class MemberArgumentParserTest
     {
         // given
         ParsingContext parsingContext = prepareParsingContext(MEMBER_AS_MENTION);
-        given(parsingContext.getTextChannel().getGuild().getMemberById(anyString())).willReturn(mock(Member.class));
+        given(parsingContext.getMessageChannel().asGuildMessageChannel().getGuild().getMemberById(anyString())).willReturn(mock(Member.class));
 
         // when
         Member member = assertDoesNotThrow(() -> memberArgumentParser.parse(parsingContext));
@@ -56,7 +58,7 @@ class MemberArgumentParserTest
     {
         // given
         ParsingContext parsingContext = prepareParsingContext(MEMBER_AS_NICKNAME);
-        given(parsingContext.getTextChannel().getGuild().getMembersByName(anyString(), anyBoolean())).willReturn(Collections.singletonList(mock(Member.class)));
+        given(parsingContext.getMessageChannel().asGuildMessageChannel().getGuild().getMembersByName(anyString(), anyBoolean())).willReturn(Collections.singletonList(mock(Member.class)));
 
         // when
         Member member = assertDoesNotThrow(() -> memberArgumentParser.parse(parsingContext));
@@ -74,7 +76,7 @@ class MemberArgumentParserTest
         given(member1.getNickname()).willReturn(MEMBER_AS_NICKNAME_2);
         Member member2 = mock(Member.class);
         given(member2.getNickname()).willReturn(MEMBER_AS_NICKNAME);
-        given(parsingContext.getTextChannel().getGuild().getMembersByName(anyString(), anyBoolean())).willReturn(Arrays.asList(member1, member2));
+        given(parsingContext.getMessageChannel().asGuildMessageChannel().getGuild().getMembersByName(anyString(), anyBoolean())).willReturn(Arrays.asList(member1, member2));
 
         // when
         Member member = assertDoesNotThrow(() -> memberArgumentParser.parse(parsingContext));
@@ -111,8 +113,11 @@ class MemberArgumentParserTest
         ParsingContext parsingContext = mock(ParsingContext.class);
         given(parsingContext.getArgument()).willReturn(argument);
 
+        MessageChannelUnion messageChannelUnion = mock(MessageChannelUnion.class);
         TextChannel textChannel = mock(TextChannel.class);
-        given(parsingContext.getTextChannel()).willReturn(textChannel);
+        given(messageChannelUnion.getType()).willReturn(ChannelType.TEXT);
+        given(parsingContext.getMessageChannel()).willReturn(messageChannelUnion);
+        given(parsingContext.getMessageChannel().asGuildMessageChannel()).willReturn(textChannel);
 
         Guild guild = mock(Guild.class);
         given(textChannel.getGuild()).willReturn(guild);

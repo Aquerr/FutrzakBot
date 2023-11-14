@@ -7,7 +7,7 @@ import io.github.aquerr.futrzakbot.discord.placeholder.PlaceholderService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 import java.awt.*;
 import java.io.IOException;
@@ -33,7 +33,7 @@ public class QuoteGame
         return INSTANCE;
     }
 
-    public MessageEmbed getRandomQuoteFromCategory(TextChannel textChannel, Member member, String categoryAlias) throws IOException, QuoteCategoryNotFound, QuotesNotFoundException
+    public MessageEmbed getRandomQuoteFromCategory(MessageChannel messageChannel, Member member, String categoryAlias) throws IOException, QuoteCategoryNotFound, QuotesNotFoundException
     {
         QuoteCategory category = getAvailableCategories().stream()
                 .filter(quoteCategory -> quoteCategory.getAliases().contains(categoryAlias))
@@ -44,22 +44,22 @@ public class QuoteGame
             throw new QuotesNotFoundException("Quotes not found for category: " + categoryAlias);
 
         String randomQuote = getRandomQuote(quotes);
-        return prepareQuoteMessage(randomQuote, textChannel, member, category);
+        return prepareQuoteMessage(randomQuote, messageChannel, member, category);
     }
 
-    public MessageEmbed getRandomQuote(TextChannel textChannel, Member member) throws QuotesNotFoundException, IOException
+    public MessageEmbed getRandomQuote(MessageChannel messageChannel, Member member) throws QuotesNotFoundException, IOException
     {
         QuoteCategory randomCategory = getRandomCategory();
         List<String> quotes = randomCategory.getQuotes();
         if (quotes.isEmpty())
             throw new QuotesNotFoundException("Quotes not found!");
         String quote = getRandomQuote(quotes);
-        return prepareQuoteMessage(quote, textChannel, member, randomCategory);
+        return prepareQuoteMessage(quote, messageChannel, member, randomCategory);
     }
 
-    private MessageEmbed prepareQuoteMessage(String quote, TextChannel textChannel, Member member, QuoteCategory category)
+    private MessageEmbed prepareQuoteMessage(String quote, MessageChannel messageChannel, Member member, QuoteCategory category)
     {
-        String processedRandomQuote = processPlaceholders(quote, textChannel, member);
+        String processedRandomQuote = processPlaceholders(quote, messageChannel, member);
         return new EmbedBuilder()
                 .setTitle(category.getName())
                 .setDescription(processedRandomQuote)
@@ -89,9 +89,9 @@ public class QuoteGame
         }
     }
 
-    private String processPlaceholders(String randomQuote, TextChannel textChannel, Member member)
+    private String processPlaceholders(String randomQuote, MessageChannel messageChannel, Member member)
     {
-        return placeholderService.processPlaceholders(new PlaceholderContext(randomQuote, textChannel, member));
+        return placeholderService.processPlaceholders(new PlaceholderContext(randomQuote, messageChannel, member));
     }
 
     private String getRandomQuote(List<String> quotes)

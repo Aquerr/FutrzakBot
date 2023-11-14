@@ -13,7 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -52,20 +53,20 @@ public class QuoteCommand implements Command, SlashCommand
     public boolean execute(CommandContext context) throws CommandException
     {
         String category = context.<String>get(CATEGORY_PARAM_KEY).orElse("");
-        TextChannel textChannel = context.getTextChannel();
+        GuildMessageChannel channel = context.getGuildMessageChannel();
         Member member = context.getMember();
 
         if ("?".equals(category))
         {
             // print help + possible categories
-            textChannel.sendMessageEmbeds(getHelpMessage()).queue();
+            channel.sendMessageEmbeds(getHelpMessage()).queue();
         }
         else if ("".equals(category))
         {
             // print quote from random category
             try
             {
-                textChannel.sendMessageEmbeds(this.quoteGame.getRandomQuote(textChannel, member)).queue();
+                channel.sendMessageEmbeds(this.quoteGame.getRandomQuote(channel, member)).queue();
             }
             catch (QuotesNotFoundException exception)
             {
@@ -83,7 +84,7 @@ public class QuoteCommand implements Command, SlashCommand
             // print quote from selected category
             try
             {
-                textChannel.sendMessageEmbeds(this.quoteGame.getRandomQuoteFromCategory(textChannel, member, category)).queue();
+                channel.sendMessageEmbeds(this.quoteGame.getRandomQuoteFromCategory(channel, member, category)).queue();
             }
             catch (QuoteCategoryNotFound e)
             {
@@ -134,7 +135,7 @@ public class QuoteCommand implements Command, SlashCommand
     @Override
     public void onSlashCommand(SlashCommandInteractionEvent event)
     {
-        TextChannel textChannel = event.getChannel().asTextChannel();
+        MessageChannel messageChannel = event.getChannel().asGuildMessageChannel();
         Member member = event.getMember();
         boolean shouldShowHelp = ofNullable(event.getOption(HELP_PARAM_KEY)).map(OptionMapping::getAsBoolean).orElse(false);
         if (shouldShowHelp)
@@ -149,7 +150,7 @@ public class QuoteCommand implements Command, SlashCommand
             // print quote from random category
             try
             {
-                MessageEmbed messageEmbed = this.quoteGame.getRandomQuote(textChannel, member);
+                MessageEmbed messageEmbed = this.quoteGame.getRandomQuote(messageChannel, member);
                 event.replyEmbeds(messageEmbed).queue();
             }
             catch (QuotesNotFoundException exception)
@@ -175,7 +176,7 @@ public class QuoteCommand implements Command, SlashCommand
         // print quote from random category
         try
         {
-            MessageEmbed messageEmbed = this.quoteGame.getRandomQuoteFromCategory(textChannel, member, category);
+            MessageEmbed messageEmbed = this.quoteGame.getRandomQuoteFromCategory(messageChannel, member, category);
             event.replyEmbeds(messageEmbed).queue();
         }
         catch (QuotesNotFoundException exception)

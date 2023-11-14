@@ -1,6 +1,5 @@
 package io.github.aquerr.futrzakbot.discord.command.listener;
 
-import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.discord.command.CommandManager;
 import io.github.aquerr.futrzakbot.discord.message.EmojiUnicodes;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
@@ -8,7 +7,9 @@ import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -21,10 +22,16 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.EnumSet;
 import java.util.Optional;
 
 public class TextCommandListener implements EventListener
 {
+    private static final EnumSet<ChannelType> SUPPORTED_CHANNEL_TYPES = EnumSet.of(
+            ChannelType.TEXT,
+            ChannelType.GUILD_PUBLIC_THREAD
+    );
+
     private final CommandManager commandManager;
     private final FutrzakMessageEmbedFactory messageEmbedFactory;
     private final MessageSource messageSource;
@@ -55,7 +62,10 @@ public class TextCommandListener implements EventListener
         if (isBot(event, event.getAuthor().getIdLong()))
             return;
 
-        TextChannel textChannel = event.getChannel().asTextChannel();
+        MessageChannelUnion messageChannelUnion = event.getChannel();
+        if (!isSupportedChannelType(messageChannelUnion))
+            return;
+
         Member member = event.getMember();
 
         // Bot cannot be used from webhooks and private channels
@@ -64,7 +74,7 @@ public class TextCommandListener implements EventListener
 
         if (isMessageWithFutrzakPrefix(event.getMessage().getContentDisplay()))
         {
-            this.commandManager.processCommand(member, textChannel, event.getMessage());
+            this.commandManager.processTextCommand(member, messageChannelUnion, event.getMessage());
         }
 
         if(event.getMessage().getContentDisplay().contains("Kocham") || event.getMessage().getContentDisplay().contains("kocham") || event.getMessage().getContentDisplay().contains("lofki")
@@ -72,6 +82,11 @@ public class TextCommandListener implements EventListener
         {
             event.getMessage().addReaction(Emoji.fromUnicode("❤")).queue();
         }
+    }
+
+    private boolean isSupportedChannelType(MessageChannel messageChannel)
+    {
+        return SUPPORTED_CHANNEL_TYPES.contains(messageChannel.getType());
     }
 
     private void handlePrivateMessageEvent(MessageReceivedEvent event)

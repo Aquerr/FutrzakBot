@@ -5,7 +5,7 @@ import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.command.parameters.IntegerParameter;
 import io.github.aquerr.futrzakbot.discord.command.parameters.Parameter;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -29,8 +29,8 @@ public class RemoveCommand implements Command, SlashCommand
     @Override
     public boolean execute(CommandContext context)
     {
-        TextChannel textChannel = context.getTextChannel();
-        futrzakAudioPlayerManager.removeElement(context.require(TRACK_POSITION_PARAM_KEY), context.getTextChannel().getGuild().getIdLong(), textChannel);
+        GuildMessageChannel channel = context.getGuildMessageChannel();
+        futrzakAudioPlayerManager.removeElement(context.require(TRACK_POSITION_PARAM_KEY), context.getGuildMessageChannel().getGuild().getIdLong(), channel);
         return true;
     }
 
@@ -64,7 +64,7 @@ public class RemoveCommand implements Command, SlashCommand
     {
         final int trackPosition = event.getOption(TRACK_POSITION_PARAM_KEY).getAsInt();
 
-        this.futrzakAudioPlayerManager.removeElement(trackPosition, event.getGuild().getIdLong(), event.getChannel().asTextChannel());
+        this.futrzakAudioPlayerManager.removeElement(trackPosition, event.getGuild().getIdLong(), event.getChannel().asGuildMessageChannel());
         event.reply(messageSource.getMessage("command.remove.removed-track", trackPosition)).queue();
     }
 

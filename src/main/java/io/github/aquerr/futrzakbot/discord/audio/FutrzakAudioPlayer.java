@@ -10,8 +10,8 @@ import io.github.aquerr.futrzakbot.discord.audio.handler.AudioPlayerSendHandler;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import jakarta.annotation.Nonnull;
 import net.dv8tion.jda.api.entities.channel.attribute.IMemberContainer;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     private final AudioPlayer audioPlayer;
     private final LinkedList<AudioTrack> tracksQueue = new LinkedList<>();
     private final FutrzakMessageEmbedFactory messageEmbedFactory;
-    private TextChannel lastBotUsageChannel;
+    private GuildMessageChannel lastBotUsageChannel;
     private VoiceChannel voiceChannel;
     private Instant lastActiveTime = Instant.now();
 
@@ -49,7 +49,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         this.messageEmbedFactory = FutrzakMessageEmbedFactory.getInstance();
     }
 
-    public void setLastBotUsageChannel(TextChannel lastBotUsageChannel)
+    public void setLastBotUsageChannel(GuildMessageChannel lastBotUsageChannel)
     {
         this.lastBotUsageChannel = lastBotUsageChannel;
     }
@@ -70,7 +70,7 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         return voiceChannel;
     }
 
-    public TextChannel getLastBotUsageChannel()
+    public GuildMessageChannel getLastBotUsageChannel()
     {
         return lastBotUsageChannel;
     }

@@ -1,7 +1,9 @@
 package io.github.aquerr.futrzakbot.discord.command.context;
 
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 import java.util.Optional;
 
@@ -23,9 +25,21 @@ public interface CommandContext
 
     /**
      * Gets the channel that the command has been invoked in.
-     * @return the {@link TextChannel}
+     * @return the {@link GuildMessageChannel} or null if command was not invoked in guild channel.
      */
-    TextChannel getTextChannel();
+    GuildMessageChannel getGuildMessageChannel();
+
+    /**
+     * Gets the private channel that the command has been invoked in.
+     * @return the {@link PrivateChannel} or null if command was not invoked in private channel.
+     */
+    PrivateChannel getPrivateChannel();
+
+    /**
+     * Gets the channel that the command has been invoked in.
+     * @return the {@link MessageChannelUnion}.
+     */
+    MessageChannelUnion getMessageChannel();
 
     /**
      * Gets guild member that is the invoker of the command.

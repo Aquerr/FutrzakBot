@@ -2,7 +2,7 @@ package io.github.aquerr.futrzakbot.discord.command;
 
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.Collections;
@@ -13,7 +13,7 @@ public class DebilCommand implements Command, SlashCommand
     @Override
     public boolean execute(CommandContext context)
     {
-        TextChannel channel = context.getTextChannel();
+        GuildMessageChannel channel = context.getGuildMessageChannel();
         Member member = context.getMember();
         channel.sendMessage("To Ty " + member.getAsMention() + " :clown:").complete();
         return true;

@@ -35,7 +35,7 @@ public class HelpCommand implements Command, SlashCommand
     @Override
     public boolean execute(CommandContext commandContext)
     {
-        Message message = commandContext.getTextChannel().sendMessageEmbeds(buildHelpMessage()).complete();
+        Message message = commandContext.getGuildMessageChannel().sendMessageEmbeds(buildHelpMessage()).complete();
         message.addReaction(Emoji.fromUnicode(EmojiUnicodes.ARROW_LEFT)).complete();
         message.addReaction(Emoji.fromUnicode(EmojiUnicodes.ARROW_RIGHT)).complete();
         return true;

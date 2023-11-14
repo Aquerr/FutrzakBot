@@ -3,7 +3,7 @@ package io.github.aquerr.futrzakbot.discord.command;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.games.RouletteGame;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.Collections;
@@ -19,13 +19,13 @@ public class RouletteCommand implements Command, SlashCommand
     @Override
     public boolean execute(CommandContext context)
     {
-        TextChannel channel = context.getTextChannel();
+        GuildMessageChannel channel = context.getGuildMessageChannel();
         Member member = context.getMember();
         useRoulette(channel, member);
         return true;
     }
 
-    private void useRoulette(TextChannel channel, Member member)
+    private void useRoulette(GuildMessageChannel channel, Member member)
     {
         long guildId = channel.getGuild().getIdLong();
         if (!RouletteGame.isActive(guildId))
@@ -77,6 +77,6 @@ public class RouletteCommand implements Command, SlashCommand
     public void onSlashCommand(SlashCommandInteractionEvent event)
     {
         event.reply("Zagrajmy więc!").queue();
-        useRoulette(event.getChannel().asTextChannel(), event.getMember());
+        useRoulette(event.getChannel().asGuildMessageChannel(), event.getMember());
     }
 }

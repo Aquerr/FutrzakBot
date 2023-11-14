@@ -6,7 +6,7 @@ import io.github.aquerr.futrzakbot.discord.games.WebGame;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import lombok.AllArgsConstructor;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.Collections;
@@ -23,9 +23,9 @@ public class GameCommand implements Command, SlashCommand
     @Override
     public boolean execute(CommandContext commandContext) throws CommandException
     {
-        TextChannel textChannel = commandContext.getTextChannel();
-        textChannel.sendMessage("Losuję grę...").queue();
-        textChannel.sendMessage(webGame.requestWebGameForUser(commandContext.getMember().getUser())).queue();
+        GuildMessageChannel channel = commandContext.getGuildMessageChannel();
+        channel.sendMessage("Losuję grę...").queue();
+        channel.sendMessage(webGame.requestWebGameForUser(commandContext.getMember().getUser())).queue();
         return false;
     }
 

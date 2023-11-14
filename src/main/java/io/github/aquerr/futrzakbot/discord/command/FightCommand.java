@@ -14,7 +14,7 @@ public class FightCommand implements Command
     @Override
     public boolean execute(CommandContext context)
     {
-        context.getTextChannel().sendMessage("Ta funkcja nie została jeszcze w pełni dodana :/").complete();
+        context.getGuildMessageChannel().sendMessage("Ta funkcja nie została jeszcze w pełni dodana :/").complete();
         return true;
     }
 

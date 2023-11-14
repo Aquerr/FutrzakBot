@@ -11,7 +11,7 @@ import io.github.aquerr.futrzakbot.discord.command.parsing.parsers.MemberArgumen
 import io.github.aquerr.futrzakbot.discord.command.parsing.parsers.StringArgumentParser;
 import io.github.aquerr.futrzakbot.util.StringUtils;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
@@ -49,20 +49,20 @@ public class CommandArgumentsParser
         return parsers;
     }
 
-    public CommandParsingChain resolveAndParseCommandArgs(TextChannel textChannel, Command command, String argsMessage) throws CommandArgumentsParseException
+    public CommandParsingChain resolveAndParseCommandArgs(MessageChannelUnion messageChannelUnion, Command command, String argsMessage) throws CommandArgumentsParseException
     {
         Queue<String> args = new ArrayDeque<>(StringUtils.isBlank(argsMessage) ? Collections.emptyList() : Arrays.asList(argsMessage.split(DEFAULT_ARG_SEPARATOR)));
         CommandParsingChain parsingChain = new CommandParsingChain();
-        return resolveAndParseCommandArgs(parsingChain, textChannel, command, args);
+        return resolveAndParseCommandArgs(parsingChain, messageChannelUnion, command, args);
     }
 
-    private CommandParsingChain resolveAndParseCommandArgs(CommandParsingChain parsingChain, TextChannel textChannel, Command command, Queue<String> args) throws CommandArgumentsParseException
+    private CommandParsingChain resolveAndParseCommandArgs(CommandParsingChain parsingChain, MessageChannelUnion messageChannelUnion, Command command, Queue<String> args) throws CommandArgumentsParseException
     {
         parsingChain.appendCommand(command);
 
         // Parse required command args
         parseCommandArguments(parsingChain,
-                textChannel,
+                messageChannelUnion,
                 command.getParameters().stream().filter(parameter -> !parameter.isOptional()).toList(),
                 args);
 
@@ -70,11 +70,11 @@ public class CommandArgumentsParser
         // It is up to the programmer to ensure correctness of subcommands aliases and optional parameters.
         Command subCommand = findUsedSubcommand(command, args);
         if (subCommand != null)
-            return resolveAndParseCommandArgs(parsingChain, textChannel, subCommand, args);
+            return resolveAndParseCommandArgs(parsingChain, messageChannelUnion, subCommand, args);
 
         // Parse optional command args or subcommand
         parseCommandArguments(parsingChain,
-                textChannel,
+                messageChannelUnion,
                 command.getParameters().stream()
                 .filter(Parameter::isOptional)
                 .toList(),
@@ -99,16 +99,16 @@ public class CommandArgumentsParser
         return null;
     }
 
-    private void parseCommandArguments(CommandParsingChain parsingChain, TextChannel textChannel, List<Parameter<?>> commandParameters, Queue<String> args) throws CommandArgumentsParseException
+    private void parseCommandArguments(CommandParsingChain parsingChain, MessageChannelUnion messageChannelUnion, List<Parameter<?>> commandParameters, Queue<String> args) throws CommandArgumentsParseException
     {
         if (!commandParameters.isEmpty())
         {
-            Map<String, Object> parsedParameters = parseCommandArgs(textChannel, commandParameters, args);
+            Map<String, Object> parsedParameters = parseCommandArgs(messageChannelUnion, commandParameters, args);
             parsedParameters.forEach(parsingChain::putArgument);
         }
     }
 
-    private Map<String, Object> parseCommandArgs(TextChannel textChannel, List<Parameter<?>> parameters, Queue<String> args) throws CommandArgumentsParseException
+    private Map<String, Object> parseCommandArgs(MessageChannelUnion messageChannelUnion, List<Parameter<?>> parameters, Queue<String> args) throws CommandArgumentsParseException
     {
         Map<String, Object> parsedArguments = new HashMap<>();
         Iterator<Parameter<?>> commandParametersIterator = parameters.iterator();
@@ -138,7 +138,7 @@ public class CommandArgumentsParser
             ArgumentParser<?> parser = getParserForParameter(parameter);
             try
             {
-                ParsingContext parsingContext = new ParsingContextImpl(textChannel, arg);
+                ParsingContext parsingContext = new ParsingContextImpl(messageChannelUnion, arg);
                 Object parsedArgument = parser.parse(parsingContext);
                 parsedArguments.put(parameter.getKey(), parsedArgument);
             }

@@ -2,7 +2,10 @@ package io.github.aquerr.futrzakbot.discord.command.context;
 
 import lombok.Builder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +15,7 @@ import java.util.Optional;
 public class CommandContextImpl implements CommandContext
 {
     private final Map<String, Object> parameters;
-    private final TextChannel textChannel;
+    private final MessageChannelUnion messageChannelUnion;
     private final Member member;
 
     @Override
@@ -31,9 +34,21 @@ public class CommandContextImpl implements CommandContext
     }
 
     @Override
-    public TextChannel getTextChannel()
+    public GuildMessageChannel getGuildMessageChannel()
     {
-        return this.textChannel;
+        return messageChannelUnion.getType().isGuild() ? messageChannelUnion.asGuildMessageChannel() : null;
+    }
+
+    @Override
+    public PrivateChannel getPrivateChannel()
+    {
+        return messageChannelUnion.getType() == ChannelType.PRIVATE ? messageChannelUnion.asPrivateChannel() : null;
+    }
+
+    @Override
+    public MessageChannelUnion getMessageChannel()
+    {
+        return this.messageChannelUnion;
     }
 
     @Override

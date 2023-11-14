@@ -5,7 +5,7 @@ import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
@@ -30,15 +30,15 @@ public class PlayerCommand implements Command, SlashCommand
     @Override
     public boolean execute(CommandContext context)
     {
-        TextChannel textChannel = context.getTextChannel();
-        AudioTrack audioTrack = this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(textChannel.getGuild().getIdLong()).getPlayingTrack();
+        GuildMessageChannel channel = context.getGuildMessageChannel();
+        AudioTrack audioTrack = this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(channel.getGuild().getIdLong()).getPlayingTrack();
         if (audioTrack != null)
         {
-            textChannel.sendMessageEmbeds(messageEmbedFactory.createNowPlayingMessage(audioTrack)).queue();
+            channel.sendMessageEmbeds(messageEmbedFactory.createNowPlayingMessage(audioTrack)).queue();
         }
         else
         {
-            textChannel.sendMessageEmbeds(messageEmbedFactory.createNothingIsPlayingMessage()).queue();
+            channel.sendMessageEmbeds(messageEmbedFactory.createNothingIsPlayingMessage()).queue();
         }
         return true;
     }
@@ -71,8 +71,8 @@ public class PlayerCommand implements Command, SlashCommand
     @Override
     public void onSlashCommand(SlashCommandInteractionEvent event)
     {
-        TextChannel textChannel = event.getChannel().asTextChannel();
-        AudioTrack audioTrack = this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(textChannel.getGuild().getIdLong()).getPlayingTrack();
+        GuildMessageChannel channel = event.getChannel().asGuildMessageChannel();
+        AudioTrack audioTrack = this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(channel.getGuild().getIdLong()).getPlayingTrack();
         if (audioTrack != null)
         {
             event.replyEmbeds(this.messageEmbedFactory.createNowPlayingMessage(audioTrack)).queue();

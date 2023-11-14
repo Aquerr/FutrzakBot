@@ -10,7 +10,7 @@ import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import lombok.Value;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -42,7 +42,7 @@ public class EightBallCommand implements Command, SlashCommand
     @Override
     public boolean execute(CommandContext context)
     {
-        TextChannel channel = context.getTextChannel();
+        MessageChannelUnion channel = context.getMessageChannel();
         String question = context.require(QUESTION_PARAM_KEY);
         String randomResponse = getRandomResponse(channel, context.getMember(), question.toLowerCase());
         channel.sendMessage(randomResponse).queue();
@@ -89,12 +89,12 @@ public class EightBallCommand implements Command, SlashCommand
         event.deferReply().addEmbeds(new EmbedBuilder()
                 .setColor(FutrzakMessageEmbedFactory.DEFAULT_COLOR)
                 .addField(messageSource.getMessage("command.eightball.answer.question"), question, false)
-                .addField(messageSource.getMessage("command.eightball.answer.answer"), getRandomResponse(event.getChannel().asTextChannel(), event.getMember(), question.toLowerCase()), false)
+                .addField(messageSource.getMessage("command.eightball.answer.answer"), getRandomResponse(event.getChannel(), event.getMember(), question.toLowerCase()), false)
                 .build())
             .queue();
     }
 
-    private String getRandomResponse(TextChannel channel, Member member, String question)
+    private String getRandomResponse(MessageChannelUnion channel, Member member, String question)
     {
         MemberIdWithQuestion memberIdWithQuestion = new MemberIdWithQuestion(member.getIdLong(), question);
         String answer = EIGHT_BALL_CACHE.getIfPresent(memberIdWithQuestion);
@@ -106,7 +106,7 @@ public class EightBallCommand implements Command, SlashCommand
         return answer;
     }
 
-    private String getRandomResponse(TextChannel channel)
+    private String getRandomResponse(MessageChannelUnion channel)
     {
         int max = 12;
         int min = 1;
@@ -120,9 +120,16 @@ public class EightBallCommand implements Command, SlashCommand
                 return "Zdecydowanie TAK!";
             case 3:
             {
-                List<Member> members = channel.getJDA().getGuildById(channel.getGuild().getId()).getMembers();
-                int memberIndex = RANDOM.nextInt(members.size() + 1);
-                return "Zapytaj " + members.get(memberIndex).getAsMention() + "!" + " Ta osoba zna odpowiedź.";
+                if (channel.getType().isGuild())
+                {
+                    List<Member> members = channel.getJDA().getGuildById(channel.asGuildMessageChannel().getGuild().getId()).getMembers();
+                    int memberIndex = RANDOM.nextInt(members.size() + 1);
+                    return "Zapytaj " + members.get(memberIndex).getAsMention() + "!" + " Ta osoba zna odpowiedź.";
+                }
+                else
+                {
+                    return "Może ktoś inny zna odpowiedź..?";
+                }
             }
             case 4:
                 return "Raczej nie..";
@@ -142,9 +149,16 @@ public class EightBallCommand implements Command, SlashCommand
                 return "Myślę że odpowiedzią jest 42";
             case 12:
             {
-                List<Member> members = channel.getJDA().getGuildById(channel.getGuild().getId()).getMembers();
-                int memberIndex = RANDOM.nextInt(members.size() + 1);
-                return "Czemu nie zapytasz " + members.get(memberIndex).getAsMention() + "? Ta osoba może coś o tym wiedzieć...";
+                if (channel.getType().isGuild())
+                {
+                    List<Member> members = channel.getJDA().getGuildById(channel.asGuildMessageChannel().getGuild().getId()).getMembers();
+                    int memberIndex = RANDOM.nextInt(members.size() + 1);
+                    return "Czemu nie zapytasz " + members.get(memberIndex).getAsMention() + "? Ta osoba może coś o tym wiedzieć...";
+                }
+                else
+                {
+                    return "Może ktoś inny zna odpowiedź..?";
+                }
             }
             default:
                 return "";

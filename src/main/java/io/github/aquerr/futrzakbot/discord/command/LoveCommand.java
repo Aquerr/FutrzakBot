@@ -7,7 +7,7 @@ import io.github.aquerr.futrzakbot.discord.games.LoveMeter;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -28,7 +28,7 @@ public class LoveCommand implements Command, SlashCommand
     public boolean execute(CommandContext context)
     {
         Member member = context.getMember();
-        TextChannel channel = context.getTextChannel();
+        GuildMessageChannel channel = context.getGuildMessageChannel();
         Member selectedMember = context.require(TARGET_PARAM_KEY);
 
         MessageEditData loveMessage = LoveMeter.checkLove(member, selectedMember);

@@ -5,8 +5,8 @@ import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.Collections;
@@ -28,17 +28,17 @@ public class ResumeCommand implements Command, SlashCommand
     @Override
     public boolean execute(CommandContext context)
     {
-        TextChannel textChannel = context.getTextChannel();
+        GuildMessageChannel channel = context.getGuildMessageChannel();
         Member member = context.getMember();
 
         GuildVoiceState guildVoiceState = member.getVoiceState();
         VoiceChannel voiceChannel = guildVoiceState.getChannel().asVoiceChannel();
         if (voiceChannel == null)
         {
-            textChannel.sendMessage(this.messageSource.getMessage(MUST_BE_ON_VOICE_CHANNEL)).complete();
+            channel.sendMessage(this.messageSource.getMessage(MUST_BE_ON_VOICE_CHANNEL)).complete();
             return false;
         }
-        resumePlayer(context.getTextChannel(), voiceChannel);
+        resumePlayer(context.getGuildMessageChannel(), voiceChannel);
         return true;
     }
 
@@ -72,11 +72,11 @@ public class ResumeCommand implements Command, SlashCommand
         }
 
         event.reply(messageSource.getMessage("command.resume.resuming")).complete();
-        resumePlayer(event.getChannel().asTextChannel(), voiceChannel);
+        resumePlayer(event.getChannel().asGuildMessageChannel(), voiceChannel);
     }
 
-    private void resumePlayer(TextChannel textChannel, VoiceChannel voiceChannel)
+    private void resumePlayer(GuildMessageChannel channel, VoiceChannel voiceChannel)
     {
-        this.futrzakAudioPlayerManager.resume(textChannel.getGuild().getIdLong(), textChannel, voiceChannel);
+        this.futrzakAudioPlayerManager.resume(channel.getGuild().getIdLong(), channel, voiceChannel);
     }
 }

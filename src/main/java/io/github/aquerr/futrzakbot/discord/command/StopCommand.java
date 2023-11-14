@@ -3,7 +3,7 @@ package io.github.aquerr.futrzakbot.discord.command;
 import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.Collections;
@@ -23,7 +23,7 @@ public class StopCommand implements Command, SlashCommand
     @Override
     public boolean execute(CommandContext context)
     {
-        stopMusicPlayer(context.getTextChannel());
+        stopMusicPlayer(context.getGuildMessageChannel());
         return true;
     }
 
@@ -49,11 +49,11 @@ public class StopCommand implements Command, SlashCommand
     public void onSlashCommand(SlashCommandInteractionEvent event)
     {
         event.reply(messageSource.getMessage("command.stop.stopping-player")).complete();
-        stopMusicPlayer(event.getChannel().asTextChannel());
+        stopMusicPlayer(event.getChannel().asGuildMessageChannel());
     }
 
-    private void stopMusicPlayer(TextChannel textChannel)
+    private void stopMusicPlayer(GuildMessageChannel channel)
     {
-        this.futrzakAudioPlayerManager.stop(textChannel.getGuild().getIdLong(), textChannel);
+        this.futrzakAudioPlayerManager.stop(channel.getGuild().getIdLong(), channel);
     }
 }

@@ -4,8 +4,8 @@ import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContextImpl;
 import io.github.aquerr.futrzakbot.discord.command.exception.CommandArgumentsParseException;
 import io.github.aquerr.futrzakbot.discord.command.exception.CommandException;
-import io.github.aquerr.futrzakbot.discord.command.listener.TextCommandListener;
 import io.github.aquerr.futrzakbot.discord.command.listener.SlashCommandListener;
+import io.github.aquerr.futrzakbot.discord.command.listener.TextCommandListener;
 import io.github.aquerr.futrzakbot.discord.command.parsing.CommandArgumentsParser;
 import io.github.aquerr.futrzakbot.discord.command.parsing.CommandParsingChain;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
@@ -30,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -90,7 +90,7 @@ public class CommandManager implements EventListener
         return this.commands;
     }
 
-    public void processCommand(Member member, TextChannel channel, Message message)
+    public void processTextCommand(Member member, MessageChannelUnion channel, Message message)
     {
         //Log
         logCommandUsage(member, channel, message);
@@ -107,7 +107,7 @@ public class CommandManager implements EventListener
         if(command == null)
             return;
 
-        processCommand(member, channel, command, arguments);
+        processTextCommand(member, channel, command, arguments);
     }
 
     private String getHelpCommandAlias()
@@ -120,13 +120,13 @@ public class CommandManager implements EventListener
                 .orElse("help");
     }
 
-    private void processCommand(Member member, TextChannel channel, Command command, String arguments)
+    private void processTextCommand(Member member, MessageChannelUnion channel, Command command, String arguments)
     {
         if(!hasPermissions(member, command))
             return;
 
         CommandContextImpl.CommandContextImplBuilder commandContextBuilder = CommandContextImpl.builder()
-                .textChannel(channel)
+                .messageChannelUnion(channel)
                 .member(member);
 
         try
@@ -160,11 +160,12 @@ public class CommandManager implements EventListener
         }
     }
 
-    private void logCommandUsage(Member member, TextChannel channel, Message message)
+    private void logCommandUsage(Member member, MessageChannelUnion channel, Message message)
     {
         if (LOGGER.isInfoEnabled())
         {
-            LOGGER.info(messageSource.getMessage(GENERAL_MESSAGE_LOG, channel.getGuild().getName(),
+            String guildName = channel.getType().isGuild() ? channel.asGuildMessageChannel().getGuild().getName() : null;
+            LOGGER.info(messageSource.getMessage(GENERAL_MESSAGE_LOG, guildName,
                     channel.getName(), member.getEffectiveName(),
                     message.getContentDisplay()));
         }
@@ -180,7 +181,7 @@ public class CommandManager implements EventListener
         return Optional.empty();
     }
 
-    private void handleArgumentsParseException(TextChannel channel, Command command, CommandArgumentsParseException exception)
+    private void handleArgumentsParseException(MessageChannelUnion channel, Command command, CommandArgumentsParseException exception)
     {
         LOGGER.error(messageSource.getMessage(ERROR_PARSING_OF_COMMAND_PARAMETERS, command.getName(), exception.getMessage()));
         MessageEmbed messageEmbed = new EmbedBuilder()
@@ -190,7 +191,7 @@ public class CommandManager implements EventListener
         channel.sendMessageEmbeds(messageEmbed).queue();
     }
 
-    private void handleCommandException(TextChannel channel, Command command, CommandException exception)
+    private void handleCommandException(MessageChannelUnion channel, Command command, CommandException exception)
     {
         LOGGER.error(messageSource.getMessage(ERROR_COMMAND_EXCEPTION, command.getName(), exception.getMessage()));
         MessageEmbed messageEmbed = new EmbedBuilder()
@@ -210,7 +211,7 @@ public class CommandManager implements EventListener
         interactionHook.editOriginalEmbeds(messageEmbed).queue();
     }
 
-    private void handleException(TextChannel channel, Command command, Exception exception)
+    private void handleException(MessageChannelUnion channel, Command command, Exception exception)
     {
         LOGGER.error(messageSource.getMessage(ERROR_GENERAL, command.getName(), exception.getMessage()), exception);
         MessageEmbed messageEmbed = new EmbedBuilder()
@@ -240,6 +241,7 @@ public class CommandManager implements EventListener
 
             slashCommandData.add(slashCommand.getSlashCommandData());
         }
+
         CommandListUpdateAction updateAction = guild.updateCommands();
         updateAction.addCommands(slashCommandData).complete();
     }

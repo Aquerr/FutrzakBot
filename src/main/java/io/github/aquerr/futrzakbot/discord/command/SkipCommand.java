@@ -3,7 +3,7 @@ package io.github.aquerr.futrzakbot.discord.command;
 import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.Collections;
@@ -24,8 +24,8 @@ public class SkipCommand implements Command, SlashCommand
     @Override
     public boolean execute(CommandContext context)
     {
-        TextChannel textChannel = context.getTextChannel();
-        this.futrzakAudioPlayerManager.skipAndPlayNextTrack(textChannel.getGuild().getIdLong(), textChannel);
+        GuildMessageChannel channel = context.getGuildMessageChannel();
+        this.futrzakAudioPlayerManager.skipAndPlayNextTrack(channel.getGuild().getIdLong(), channel);
         return true;
     }
 
@@ -51,7 +51,7 @@ public class SkipCommand implements Command, SlashCommand
     public void onSlashCommand(SlashCommandInteractionEvent event)
     {
         event.reply(this.messageSource.getMessage("command.skip.skipping")).queue();
-        TextChannel textChannel = event.getChannel().asTextChannel();
-        this.futrzakAudioPlayerManager.skipAndPlayNextTrack(textChannel.getGuild().getIdLong(), textChannel);
+        GuildMessageChannel channel = event.getChannel().asGuildMessageChannel();
+        this.futrzakAudioPlayerManager.skipAndPlayNextTrack(channel.getGuild().getIdLong(), channel);
     }
 }
