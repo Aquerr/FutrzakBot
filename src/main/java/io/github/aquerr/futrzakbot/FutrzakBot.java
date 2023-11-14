@@ -147,7 +147,7 @@ public class FutrzakBot
         this.commandManager.registerCommand(new QueueCommand(this.futrzakAudioPlayerManager, this.messageSource, this.messageEmbedFactory));
         this.commandManager.registerCommand(new PlayerCommand(this.futrzakAudioPlayerManager, this.messageEmbedFactory, this.messageSource));
         this.commandManager.registerCommand(new LoopCommand(this.futrzakAudioPlayerManager, this.messageSource, this.messageEmbedFactory));
-        this.commandManager.registerCommand(new FightCommand());
+        this.commandManager.registerCommand(new FightCommand(this.messageSource));
         this.commandManager.registerCommand(new QuoteCommand(QuoteGame.getInstance(), this.messageSource));
         this.commandManager.registerCommand(new GameCommand(this.messageSource, this.messageEmbedFactory, this.gameManager.getWebGame()));
         this.commandManager.registerCommand(new LeaveCommand(this.messageSource, this.futrzakAudioPlayerManager));

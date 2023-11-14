@@ -46,6 +46,14 @@ public class FutrzakMessageEmbedFactory
         return embedBuilder.build();
     }
 
+    public MessageEmbed createFunctionNotImplementedMessage()
+    {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setColor(ERROR_COLOR);
+        embedBuilder.setTitle(getMessage("error.function-not-implemented"));
+        return embedBuilder.build();
+    }
+
     private static class InstanceHolder
     {
 

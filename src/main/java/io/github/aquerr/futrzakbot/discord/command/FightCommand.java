@@ -1,20 +1,33 @@
 package io.github.aquerr.futrzakbot.discord.command;
 
+import io.github.aquerr.futrzakbot.discord.command.exception.CommandException;
 import io.github.aquerr.futrzakbot.discord.command.parameters.Parameter;
 import io.github.aquerr.futrzakbot.discord.command.parameters.RemainingStringsParameter;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
+import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
+import io.github.aquerr.futrzakbot.discord.message.MessageSource;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.Collections;
 import java.util.List;
 
-public class FightCommand implements Command
+public class FightCommand implements Command, SlashCommand
 {
     private static final String ENEMY_PARAM_KEY = "enemy";
+
+    private final MessageSource messageSource;
+
+    public FightCommand(MessageSource messageSource)
+    {
+        this.messageSource = messageSource;
+    }
 
     @Override
     public boolean execute(CommandContext context)
     {
-        context.getGuildMessageChannel().sendMessage("Ta funkcja nie została jeszcze w pełni dodana :/").complete();
+        context.getGuildMessageChannel().sendMessageEmbeds(
+                FutrzakMessageEmbedFactory.getInstance().createFunctionNotImplementedMessage())
+                .queue();
         return true;
     }
 
@@ -25,21 +38,21 @@ public class FightCommand implements Command
     }
 
     @Override
-    public String getUsage()
-    {
-        return CommandManager.COMMAND_PREFIX + " fight <użytkownik>";
-    }
-
-    @Override
     public String getName()
     {
-        return ":crossed_swords: Walcz z futrzakiem innej osoby: ";
+        return this.messageSource.getMessage("command.fight.name");
     }
 
     @Override
     public String getDescription()
     {
-        return "Walcz z innym futrzakiem";
+        return this.messageSource.getMessage("command.fight.description");
+    }
+
+    @Override
+    public void onSlashCommand(SlashCommandInteractionEvent event) throws CommandException
+    {
+        event.replyEmbeds(FutrzakMessageEmbedFactory.getInstance().createFunctionNotImplementedMessage()).queue();
     }
 
     @Override
