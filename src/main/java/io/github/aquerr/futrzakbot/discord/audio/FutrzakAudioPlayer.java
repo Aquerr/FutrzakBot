@@ -107,6 +107,11 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         return isLoop;
     }
 
+    public boolean isLoop()
+    {
+        return isLoop;
+    }
+
     public void clear()
     {
         this.tracksQueue.clear();
@@ -289,5 +294,10 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     public void stopCurrentTrack()
     {
         this.audioPlayer.stopTrack();
+    }
+
+    public boolean isPaused()
+    {
+        return this.audioPlayer.isPaused();
     }
 }

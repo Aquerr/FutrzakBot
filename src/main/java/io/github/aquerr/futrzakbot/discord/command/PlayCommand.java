@@ -45,14 +45,13 @@ public class PlayCommand implements Command, SlashCommand
         Member member = context.getMember();
 
         Guild guild = channel.getGuild();
-        GuildVoiceState guildVoiceState = member.getVoiceState();
-        VoiceChannel voiceChannel = guildVoiceState.getChannel().asVoiceChannel();
-        if (voiceChannel == null)
+        if (member.getVoiceState() == null || member.getVoiceState().getChannel() == null)
         {
             channel.sendMessage(this.messageSource.getMessage(MUST_BE_ON_VOICE_CHANNEL)).complete();
             return false;
         }
 
+        VoiceChannel voiceChannel = member.getVoiceState().getChannel().asVoiceChannel();
         songName = SongParamHelper.getIdentifierForTrack(songName, AudioSource.UNKNOWN);
         queueTrack(guild, channel, voiceChannel, member, songName);
         return true;
