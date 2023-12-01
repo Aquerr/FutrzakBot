@@ -300,4 +300,8 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
     {
         return this.audioPlayer.isPaused();
     }
+
+    public void jumpTo(long positionSeconds) {
+        this.audioPlayer.getPlayingTrack().setPosition(positionSeconds * 1000); //zamiana sekund na milisekundy
+    }
 }
