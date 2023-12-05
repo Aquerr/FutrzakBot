@@ -41,7 +41,12 @@ public class PlayerCommand implements Command, SlashCommand
             BUTTON_PLAY_PAUSE, this::buttonPlayPauseClick,
             BUTTON_NEXT_TRACK, this::buttonNextTrackClick,
             BUTTON_SHOW_TRACK_QUEUE, this::buttonShowQueue,
-            BUTTON_REPEAT, this::buttonRepeatClick
+            BUTTON_REPEAT, this::buttonRepeatClick,
+            BUTTON_REWIND_10_SECONDS, event -> buttonRewindClick(event, false, 10),
+            BUTTON_REWIND_20_SECONDS, event -> buttonRewindClick(event, false, 20),
+            BUTTON_SKIP_10_SECONDS, event -> buttonRewindClick(event, true, 10),
+            BUTTON_SKIP_20_SECONDS, event -> buttonRewindClick(event, true, 20),
+            BUTTON_FROM_BEGINNING, this::fromBeginningButtonClick
     );
 
     public PlayerCommand(FutrzakAudioPlayerManager futrzakAudioPlayerManager,
@@ -181,5 +186,26 @@ public class PlayerCommand implements Command, SlashCommand
         event.getGuildChannel().sendMessageEmbeds(
                 FutrzakMessageEmbedFactory.getInstance().createQueueMessage(
                         this.futrzakAudioPlayerManager.getQueue(event.getGuildChannel().getGuild().getIdLong()))).queue();
+    }
+
+    private void buttonRewindClick(ButtonInteractionEvent event, boolean forward, int seconds)
+    {
+        event.deferEdit().queue();
+        FutrzakAudioPlayer player = this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(event.getGuild().getIdLong());
+        if (player.getPlayingTrack() == null)
+        {
+            return;
+        }
+
+        long currentTrackPosiiton = player.getPlayingTrack().getPosition();
+        long newPosition = forward ? currentTrackPosiiton + seconds : currentTrackPosiiton - seconds;
+        player.jumpTo(newPosition);
+    }
+
+    private void fromBeginningButtonClick(ButtonInteractionEvent event)
+    {
+        event.deferEdit().queue();
+        FutrzakAudioPlayer player = this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(event.getGuild().getIdLong());
+        player.restartCurrentTrack();
     }
 }
