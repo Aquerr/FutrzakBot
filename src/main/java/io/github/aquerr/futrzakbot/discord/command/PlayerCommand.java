@@ -4,7 +4,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayer;
 import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
-import io.github.aquerr.futrzakbot.discord.command.exception.CommandException;
 import io.github.aquerr.futrzakbot.discord.message.EmojiUnicodes;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
@@ -114,16 +113,16 @@ public class PlayerCommand implements Command, SlashCommand
         }
 
         replyCallbackAction
-                .addActionRow(Button.secondary(BUTTON_SHOW_TRACK_QUEUE, "Queue"),
+                .addActionRow(Button.secondary(BUTTON_SHOW_TRACK_QUEUE, messageSource.getMessage("command.player.button.queue.label")),
                         Button.secondary(BUTTON_PLAY_PAUSE, Emoji.fromUnicode(EmojiUnicodes.PLAY_PAUSE_BUTTON)),
                         Button.secondary(BUTTON_NEXT_TRACK, Emoji.fromUnicode(EmojiUnicodes.NEXT_TRACK)),
                         createRepeatButton(channel.getGuild().getIdLong()))
                 .addActionRow(
                         Button.secondary(BUTTON_FROM_BEGINNING, Emoji.fromUnicode(EmojiUnicodes.FROM_BEGINNING)),
-                        Button.secondary(BUTTON_REWIND_20_SECONDS, "Rewind 20 seconds").withEmoji(Emoji.fromUnicode(EmojiUnicodes.REWIND)),
-                        Button.secondary(BUTTON_REWIND_10_SECONDS, "Rewind 10 seconds").withEmoji(Emoji.fromUnicode(EmojiUnicodes.REWIND)),
-                        Button.secondary(BUTTON_SKIP_10_SECONDS, "Skip 10 seconds").withEmoji(Emoji.fromUnicode(EmojiUnicodes.FAST_FORWARD)),
-                        Button.secondary(BUTTON_SKIP_20_SECONDS, "Skip 20 seconds").withEmoji(Emoji.fromUnicode(EmojiUnicodes.FAST_FORWARD)))
+                        Button.secondary(BUTTON_REWIND_20_SECONDS, messageSource.getMessage("command.player.button.rewind.label")).withEmoji(Emoji.fromUnicode(EmojiUnicodes.REWIND)),
+                        Button.secondary(BUTTON_REWIND_10_SECONDS, messageSource.getMessage("command.player.button.rewind.label")).withEmoji(Emoji.fromUnicode(EmojiUnicodes.REWIND)),
+                        Button.secondary(BUTTON_SKIP_10_SECONDS, messageSource.getMessage("command.player.button.skip.label")).withEmoji(Emoji.fromUnicode(EmojiUnicodes.FAST_FORWARD)),
+                        Button.secondary(BUTTON_SKIP_20_SECONDS, messageSource.getMessage("command.player.button.skip.label")).withEmoji(Emoji.fromUnicode(EmojiUnicodes.FAST_FORWARD)))
                 .queue();
     }
 
@@ -134,7 +133,7 @@ public class PlayerCommand implements Command, SlashCommand
     }
 
     @Override
-    public void onButtonClick(ButtonInteractionEvent event) throws CommandException
+    public void onButtonClick(ButtonInteractionEvent event)
     {
         BUTTON_HANDLES.get(event.getComponentId()).accept(event);
     }
@@ -197,8 +196,8 @@ public class PlayerCommand implements Command, SlashCommand
             return;
         }
 
-        long currentTrackPosiiton = player.getPlayingTrack().getPosition();
-        long newPosition = forward ? currentTrackPosiiton + seconds : currentTrackPosiiton - seconds;
+        long currentTrackPosition = player.getPlayingTrack().getPosition();
+        long newPosition = forward ? currentTrackPosition + seconds : currentTrackPosition - seconds;
         player.jumpTo(newPosition);
     }
 
