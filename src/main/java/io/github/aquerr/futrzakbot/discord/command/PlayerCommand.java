@@ -119,10 +119,10 @@ public class PlayerCommand implements Command, SlashCommand
                         createRepeatButton(channel.getGuild().getIdLong()))
                 .addActionRow(
                         Button.secondary(BUTTON_FROM_BEGINNING, Emoji.fromUnicode(EmojiUnicodes.FROM_BEGINNING)),
-                        Button.secondary(BUTTON_REWIND_20_SECONDS, messageSource.getMessage("command.player.button.rewind.label")).withEmoji(Emoji.fromUnicode(EmojiUnicodes.REWIND)),
-                        Button.secondary(BUTTON_REWIND_10_SECONDS, messageSource.getMessage("command.player.button.rewind.label")).withEmoji(Emoji.fromUnicode(EmojiUnicodes.REWIND)),
-                        Button.secondary(BUTTON_SKIP_10_SECONDS, messageSource.getMessage("command.player.button.skip.label")).withEmoji(Emoji.fromUnicode(EmojiUnicodes.FAST_FORWARD)),
-                        Button.secondary(BUTTON_SKIP_20_SECONDS, messageSource.getMessage("command.player.button.skip.label")).withEmoji(Emoji.fromUnicode(EmojiUnicodes.FAST_FORWARD)))
+                        Button.secondary(BUTTON_REWIND_20_SECONDS, messageSource.getMessage("command.player.button.rewind.label", 20)).withEmoji(Emoji.fromUnicode(EmojiUnicodes.REWIND)),
+                        Button.secondary(BUTTON_REWIND_10_SECONDS, messageSource.getMessage("command.player.button.rewind.label", 10)).withEmoji(Emoji.fromUnicode(EmojiUnicodes.REWIND)),
+                        Button.secondary(BUTTON_SKIP_10_SECONDS, messageSource.getMessage("command.player.button.skip.label", 10)).withEmoji(Emoji.fromUnicode(EmojiUnicodes.FAST_FORWARD)),
+                        Button.secondary(BUTTON_SKIP_20_SECONDS, messageSource.getMessage("command.player.button.skip.label", 20)).withEmoji(Emoji.fromUnicode(EmojiUnicodes.FAST_FORWARD)))
                 .queue();
     }
 
@@ -196,7 +196,7 @@ public class PlayerCommand implements Command, SlashCommand
             return;
         }
 
-        long currentTrackPosition = player.getPlayingTrack().getPosition();
+        long currentTrackPosition = player.getPlayingTrack().getPosition() / 1000;
         long newPosition = forward ? currentTrackPosition + seconds : currentTrackPosition - seconds;
         player.jumpTo(newPosition);
     }
