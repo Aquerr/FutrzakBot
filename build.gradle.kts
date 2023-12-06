@@ -67,15 +67,13 @@ dependencies {
     // Database (H2)
     implementation("com.h2database:h2")
 
-    // ORM
-    implementation("org.hibernate:hibernate-core")
-
     // Test (JUnit 5)
+    testImplementation("org.mockito:mockito-bom:5.8.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testImplementation("org.mockito:mockito-core")
-    testImplementation("org.mockito:mockito-inline")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
     testImplementation("org.mockito:mockito-junit-jupiter")
     testImplementation("org.assertj:assertj-core")
 }
