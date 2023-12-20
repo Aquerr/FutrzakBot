@@ -1,18 +1,21 @@
 package io.github.aquerr.futrzakbot.discord.role;
 
-import com.vdurmont.emoji.Emoji;
-import com.vdurmont.emoji.EmojiManager;
-import com.vdurmont.emoji.EmojiParser;
 import io.github.aquerr.futrzakbot.FutrzakBot;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageReaction;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
 public class DiscordRoleGiver
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DiscordRoleGiver.class);
+
     private final FutrzakBot futrzakBot;
 
     public DiscordRoleGiver(FutrzakBot futrzakBot)
@@ -24,19 +27,42 @@ public class DiscordRoleGiver
     public void giveRole(Member member, MessageReaction reaction)
     {
         Guild guild = member.getGuild();
-        Emoji emoji = EmojiManager.getByUnicode(reaction.getEmoji().getFormatted());
         Map<String, Long> emoteRoleIdsMap = this.futrzakBot.getConfiguration().getEmoteRoleIdsMap();
-        Long roleId = emoteRoleIdsMap.get(EmojiParser.parseToAliases(emoji.getUnicode()));
-        guild.addRoleToMember(member, guild.getRoleById(roleId)).queue();
+        Long roleId = emoteRoleIdsMap.get(reaction.getEmoji().getFormatted());
+        if (roleId == null)
+        {
+            LOGGER.warn("Role id not configured for given emoji: {}", reaction.getEmoji().getFormatted());
+            return;
+        }
+
+        Role role = guild.getRoleById(roleId);
+        if (role == null)
+        {
+            LOGGER.warn("Role not found for given role id: {}", roleId);
+            return;
+        }
+        guild.addRoleToMember(member, role).queue();
     }
 
     public void removeRole(Member member, MessageReaction reaction)
     {
         Guild guild = member.getGuild();
-        Emoji emoji = EmojiManager.getByUnicode(reaction.getEmoji().getFormatted());
         Map<String, Long> emoteRoleIdsMap = this.futrzakBot.getConfiguration().getEmoteRoleIdsMap();
-        Long roleId = emoteRoleIdsMap.get(EmojiParser.parseToAliases(emoji.getUnicode()));
-        guild.removeRoleFromMember(member, guild.getRoleById(roleId)).queue();
+        Long roleId = emoteRoleIdsMap.get(reaction.getEmoji().getFormatted());
+        if (roleId == null)
+        {
+            LOGGER.warn("Role id not configured for given emoji: {}", reaction.getEmoji().getFormatted());
+            return;
+        }
+
+        Role role = guild.getRoleById(roleId);
+        if (role == null)
+        {
+            LOGGER.warn("Role not found for given role id: {}", roleId);
+            return;
+        }
+
+        guild.removeRoleFromMember(member, role).queue();
     }
 
     public void init()
@@ -49,11 +75,13 @@ public class DiscordRoleGiver
         Guild guild = this.futrzakBot.getJda().getGuildById(futrzakBot.getConfiguration().getGuildId());
         MessageChannel channel = guild.getTextChannelById(futrzakBot.getConfiguration().getChannelId());
         long messageId = this.futrzakBot.getConfiguration().getMessageId();
+        LOGGER.info("Adding role reactions to message in guild {}, channel {}, message {}", guild.getId(), channel.getId(), messageId);
+
         Map<String, Long> emoteRoleIdsMap = this.futrzakBot.getConfiguration().getEmoteRoleIdsMap();
         for (final Map.Entry<String, Long> emoteRoleEntry : emoteRoleIdsMap.entrySet())
         {
-            Emoji emoji = EmojiManager.getForAlias(emoteRoleEntry.getKey());
-            channel.addReactionById(messageId, net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode(emoji.getUnicode())).queue();
+            Emoji emoji = Emoji.fromUnicode(emoteRoleEntry.getKey());
+            channel.addReactionById(messageId, emoji).queue();
         }
     }
 }

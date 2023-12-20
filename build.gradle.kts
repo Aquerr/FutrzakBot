@@ -37,7 +37,6 @@ dependencies {
     implementation("net.dv8tion:JDA:5.0.0-beta.18") {
         exclude("opus-java")
     }
-    implementation("com.vdurmont:emoji-java:5.1.1")
 
     implementation("org.json:json:20230227")
     implementation("com.typesafe:config:1.4.3")
