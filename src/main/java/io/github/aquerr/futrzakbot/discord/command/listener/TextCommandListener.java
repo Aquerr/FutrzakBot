@@ -4,6 +4,7 @@ import io.github.aquerr.futrzakbot.discord.command.CommandManager;
 import io.github.aquerr.futrzakbot.discord.message.EmojiUnicodes;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -12,10 +13,12 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
-import net.dv8tion.jda.api.hooks.EventListener;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -25,8 +28,12 @@ import java.net.http.HttpResponse;
 import java.util.EnumSet;
 import java.util.Optional;
 
-public class TextCommandListener implements EventListener
+import static io.github.aquerr.futrzakbot.FutrzakBot.COULD_NOT_REGISTER_SLASH_COMMANDS;
+
+public class TextCommandListener
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TextCommandListener.class);
+
     private static final EnumSet<ChannelType> SUPPORTED_CHANNEL_TYPES = EnumSet.of(
             ChannelType.TEXT,
             ChannelType.GUILD_PUBLIC_THREAD
@@ -43,6 +50,22 @@ public class TextCommandListener implements EventListener
         this.commandManager = commandManager;
         this.messageEmbedFactory = messageEmbedFactory;
         this.messageSource = messageSource;
+    }
+
+    public void onEvent(@NotNull GenericEvent event)
+    {
+        if (event instanceof MessageReceivedEvent newEvent)
+        {
+            onMessageReceived(newEvent);
+        }
+        else if (event instanceof GenericMessageReactionEvent newEvent)
+        {
+            onGenericMessageReaction(newEvent);
+        }
+        else if (event instanceof GuildJoinEvent newEvent)
+        {
+            onGuildJoin(newEvent);
+        }
     }
 
     public void onMessageReceived(MessageReceivedEvent event)
@@ -188,16 +211,20 @@ public class TextCommandListener implements EventListener
         }
     }
 
-    @Override
-    public void onEvent(@NotNull GenericEvent event)
+    private void onGuildJoin(GuildJoinEvent event)
     {
-        if (event instanceof MessageReceivedEvent newEvent)
+        tryToRegisterPlayerGuildSlashCommands(event.getGuild());
+    }
+
+    private void tryToRegisterPlayerGuildSlashCommands(Guild guild)
+    {
+        try
         {
-            onMessageReceived(newEvent);
+            this.commandManager.registerSlashCommandsForGuild(guild);
         }
-        else if (event instanceof GenericMessageReactionEvent newEvent)
+        catch (Exception exception)
         {
-            onGenericMessageReaction(newEvent);
+            LOGGER.warn(messageSource.getMessage(COULD_NOT_REGISTER_SLASH_COMMANDS, guild.getName(), exception.getMessage()));
         }
     }
 }

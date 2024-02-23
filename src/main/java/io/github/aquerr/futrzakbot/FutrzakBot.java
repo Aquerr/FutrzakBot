@@ -55,7 +55,7 @@ public class FutrzakBot
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(FutrzakBot.class);
     private static final String ERROR_MISSING_BOT_TOKEN = "error.missing-bot-token";
-    private static final String COULD_NOT_REGISTER_SLASH_COMMANDS = "error.command.slash.could-not-register";
+    public static final String COULD_NOT_REGISTER_SLASH_COMMANDS = "error.command.slash.could-not-register";
 
     private final Path botDirectory = Paths.get(".").toAbsolutePath();
 
