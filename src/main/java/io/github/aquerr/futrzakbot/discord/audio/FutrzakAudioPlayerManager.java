@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import io.github.aquerr.futrzakbot.FutrzakBot;
 import io.github.aquerr.futrzakbot.discord.audio.handler.FutrzakAudioLoadHandler;
 import io.github.aquerr.futrzakbot.discord.audio.handler.FutrzakQueueAndDontPlayLoadHandler;
@@ -84,19 +85,51 @@ public final class FutrzakAudioPlayerManager
         futrzakAudioPlayer.clear();
     }
 
-    public void removeElement(int element, long guildId, GuildMessageChannel channel)
+    public void removeElement(int trackPosition, long guildId, GuildMessageChannel channel)
     {
         FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
         futrzakAudioPlayer.setLastBotUsageChannel(channel);
-        if (0 < element && element <= futrzakAudioPlayer.getQueue().size())
+        if (0 < trackPosition && trackPosition <= futrzakAudioPlayer.getQueue().size())
         {
-            AudioTrack audioTrack = futrzakAudioPlayer.remove(element);
-            channel.sendMessageEmbeds(messageEmbedFactory.createRemoveMessage(element, audioTrack)).queue();
+            AudioTrack audioTrack = futrzakAudioPlayer.remove(trackPosition);
+            channel.sendMessageEmbeds(messageEmbedFactory.createRemoveMessage(trackPosition, audioTrack)).queue();
         }
         else
         {
             channel.sendMessageEmbeds(messageEmbedFactory.createWrongTrackPositionMessage()).queue();
         }
+    }
+
+    public void removeElement(String trackName, long guildId, GuildMessageChannel channel)
+    {
+        FutrzakAudioPlayer futrzakAudioPlayer = getOrCreateAudioPlayer(guildId);
+        futrzakAudioPlayer.setLastBotUsageChannel(channel);
+
+        List<AudioTrack> tracks = getQueue(guildId);
+        int index = 0;
+        for (; index < tracks.size() - 1; index++)
+        {
+            AudioTrack audioTrack = tracks.get(index);
+            if (matchesName(audioTrack, trackName))
+                break;
+        }
+
+        int trackPosition = index + 1;
+        AudioTrack removedTrack = futrzakAudioPlayer.remove(trackPosition);
+
+        if (removedTrack != null)
+        {
+            channel.sendMessageEmbeds(messageEmbedFactory.createRemoveMessage(trackPosition, removedTrack)).queue();
+        }
+    }
+
+    private boolean matchesName(AudioTrack track, String name)
+    {
+        name = name.toLowerCase();
+        AudioTrackInfo info = track.getInfo();
+        String trackName = info.title.toLowerCase() + " - " + info.author.toLowerCase();
+        return trackName.startsWith(name)
+                || trackName.contains(name);
     }
 
     public void stop(long guildId, GuildMessageChannel channel)

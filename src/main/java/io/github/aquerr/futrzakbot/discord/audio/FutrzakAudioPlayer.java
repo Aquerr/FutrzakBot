@@ -118,9 +118,9 @@ public class FutrzakAudioPlayer extends AudioEventAdapter
         LOGGER.info("cleared the queue");
     }
 
-    public AudioTrack remove(int element)
+    public AudioTrack remove(int trackPosition)
     {
-        return this.tracksQueue.remove(element-1);
+        return this.tracksQueue.remove(trackPosition-1);
     }
 
     @Override

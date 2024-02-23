@@ -35,7 +35,7 @@ public class DiscordEventListener implements EventListener
 
     private void updateFutrzakPlayerVoiceChannel(VoiceChannel voiceChannel)
     {
-        this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(voiceChannel.getIdLong()).connectToVoiceChannel(voiceChannel);
+        this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(voiceChannel.getGuild().getIdLong()).connectToVoiceChannel(voiceChannel);
     }
 
     private boolean isBot(final GenericEvent event, final Long userId)

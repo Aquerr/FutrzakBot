@@ -233,6 +233,8 @@ public class CommandManager implements EventListener
 
     public void registerSlashCommandsForGuild(Guild guild)
     {
+        LOGGER.info("Registering slash commands for Guild [id = {}, name = {}]", guild.getId(), guild.getName());
+
         List<CommandData> slashCommandData = new ArrayList<>();
         for (Command command : getCommands().values())
         {
@@ -251,7 +253,7 @@ public class CommandManager implements EventListener
         return this.commands.values().stream()
                 .filter(SlashCommand.class::isInstance)
                 .map(SlashCommand.class::cast)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

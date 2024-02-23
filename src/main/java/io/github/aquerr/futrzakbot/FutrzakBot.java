@@ -121,11 +121,18 @@ public class FutrzakBot
 
     private void initRoleGiver()
     {
-        if (this.configuration.isRoleGiverEnabled())
+        try
         {
-            this.discordRoleGiver = new DiscordRoleGiver(this);
-            this.jda.addEventListener(new RoleMessageReactListener(this, this.discordRoleGiver));
-            this.discordRoleGiver.init();
+            if (this.configuration.isRoleGiverEnabled())
+            {
+                this.discordRoleGiver = new DiscordRoleGiver(this);
+                this.jda.addEventListener(new RoleMessageReactListener(this, this.discordRoleGiver));
+                this.discordRoleGiver.init();
+            }
+        }
+        catch (Exception exception)
+        {
+            LOGGER.warn("Could not initialize role giver!", exception);
         }
     }
 
