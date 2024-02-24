@@ -55,13 +55,15 @@ public class CommandManager implements EventListener
     private final CommandArgumentsParser commandArgumentParser;
     private final SlashCommandListener slashCommandListener;
     private final TextCommandListener textCommandListener;
+    private final FutrzakMessageEmbedFactory messageEmbedFactory;
 
     public CommandManager(MessageSource messageSource)
     {
+        this.messageEmbedFactory = FutrzakMessageEmbedFactory.getInstance();
         this.messageSource = messageSource;
         this.commandArgumentParser = CommandArgumentsParser.createDefault();
         this.slashCommandListener = new SlashCommandListener(this);
-        this.textCommandListener = new TextCommandListener(this, FutrzakMessageEmbedFactory.getInstance(), messageSource);
+        this.textCommandListener = new TextCommandListener(this, this.messageEmbedFactory, messageSource);
     }
 
     public void registerCommand(Command command)
@@ -73,16 +75,6 @@ public class CommandManager implements EventListener
             throw new IllegalArgumentException("CommandManager already contains a command with given alias: " + command.getAliases());
 
         this.commands.put(command.getAliases(), command);
-    }
-
-    public boolean hasPermissions(Member member, Command command)
-    {
-//        if(!command.getClass().isAnnotationPresent(BotCommand.class))
-//            return true;
-
-        //TODO: Add config for specifying the role that
-
-        return true;
     }
 
     public Map<List<String>, Command> getCommands()
@@ -122,9 +114,6 @@ public class CommandManager implements EventListener
 
     private void processTextCommand(Member member, MessageChannelUnion channel, Command command, String arguments)
     {
-        if(!hasPermissions(member, command))
-            return;
-
         CommandContextImpl.CommandContextImplBuilder commandContextBuilder = CommandContextImpl.builder()
                 .messageChannelUnion(channel)
                 .member(member);

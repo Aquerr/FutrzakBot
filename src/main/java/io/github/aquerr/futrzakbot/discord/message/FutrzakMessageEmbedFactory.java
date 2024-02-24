@@ -10,7 +10,7 @@ import io.github.aquerr.futrzakbot.discord.command.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,26 +32,17 @@ public class FutrzakMessageEmbedFactory
 
     public MessageEmbed createNothingIsPlayingMessage()
     {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle(getMessage("embed.player.nothing-is-playing"));
-        return embedBuilder.build();
+        return success(resolveMessage("embed.player.nothing-is-playing"));
     }
 
     public MessageEmbed createCreatingNewFutrzakMessage()
     {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle(getMessage("command.futrzak.no-furry-creating-new"));
-        return embedBuilder.build();
+        return success(resolveMessage("command.futrzak.no-furry-creating-new"));
     }
 
     public MessageEmbed createFunctionNotImplementedMessage()
     {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(ERROR_COLOR);
-        embedBuilder.setTitle(getMessage("error.function-not-implemented"));
-        return embedBuilder.build();
+        return error(resolveMessage("error.function-not-implemented"));
     }
 
     private static class InstanceHolder
@@ -72,19 +63,17 @@ public class FutrzakMessageEmbedFactory
 
     public MessageEmbed createSongAddedToQueueMessage(String artist, String title)
     {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle(getMessage("embed.player.song-added-to-queue"));
-        embedBuilder.addField(new MessageEmbed.Field(getMessage("embed.player.artist"), artist, false));
-        embedBuilder.addField(new MessageEmbed.Field(getMessage("embed.player.title"), title, false));
+        EmbedBuilder embedBuilder = prepareSuccess();
+        embedBuilder.setTitle(resolveMessage("embed.player.song-added-to-queue"));
+        embedBuilder.addField(new MessageEmbed.Field(resolveMessage("embed.player.artist"), artist, false));
+        embedBuilder.addField(new MessageEmbed.Field(resolveMessage("embed.player.title"), title, false));
         return embedBuilder.build();
     }
 
     public MessageEmbed createPlaylistAddedToQueueMessage(AudioPlaylist playlist)
     {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle(messageSource.getMessage("embed.player.playlist-added-to-queue", playlist.getName()));
+        EmbedBuilder embedBuilder = prepareSuccess();
+        embedBuilder.setTitle(resolveMessage("embed.player.playlist-added-to-queue", playlist.getName()));
         int count = Math.min(playlist.getTracks().size(), 10);
         for (int i = 0; i < count; i++)
         {
@@ -93,7 +82,7 @@ public class FutrzakMessageEmbedFactory
         }
         if (playlist.getTracks().size() > 10)
         {
-            embedBuilder.appendDescription(messageSource.getMessage("embed.player.more-tracks", playlist.getTracks().size() - count));
+            embedBuilder.appendDescription(resolveMessage("embed.player.more-tracks", playlist.getTracks().size() - count));
         }
         return embedBuilder.build();
     }
@@ -122,11 +111,10 @@ public class FutrzakMessageEmbedFactory
             }
         }
 
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle(messageSource.getMessage("embed.player.currently-player"));
-        embedBuilder.addField(new MessageEmbed.Field(messageSource.getMessage("embed.player.artist"), audioTrack.getInfo().author, false));
-        embedBuilder.addField(new MessageEmbed.Field(messageSource.getMessage("embed.player.title"), audioTrack.getInfo().title, false));
+        EmbedBuilder embedBuilder = prepareSuccess();
+        embedBuilder.setTitle(resolveMessage("embed.player.currently-player"));
+        embedBuilder.addField(new MessageEmbed.Field(resolveMessage("embed.player.artist"), audioTrack.getInfo().author, false));
+        embedBuilder.addField(new MessageEmbed.Field(resolveMessage("embed.player.title"), audioTrack.getInfo().title, false));
         embedBuilder.addField(new MessageEmbed.Field("", String.format("%02d", currentMinutes) + ":" + String.format("%02d", currentSeconds)
                 + " " + String.join("", progressBar) + " "
                 + String.format("%02d", totalMinutes) + ":" + String.format("%02d", totalSeconds), false));
@@ -135,25 +123,13 @@ public class FutrzakMessageEmbedFactory
 
     public MessageEmbed createSongNotFoundMessage()
     {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(ERROR_COLOR);
-        embedBuilder.setTitle(messageSource.getMessage("embed.player.track-could-not-be-found"));
-        return embedBuilder.build();
-    }
-
-    public MessageEmbed createSongLoadFailedMessage(String localizedMessage)
-    {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(ERROR_COLOR);
-        embedBuilder.setTitle(localizedMessage);
-        return embedBuilder.build();
+        return error(resolveMessage("embed.player.track-could-not-be-found"));
     }
 
     public MessageEmbed createQueueMessage(List<AudioTrack> queue)
     {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle(messageSource.getMessage("embed.player.track-queue"));
-        embedBuilder.setColor(DEFAULT_COLOR);
+        EmbedBuilder embedBuilder = prepareSuccess();
+        embedBuilder.setTitle(resolveMessage("embed.player.track-queue"));
 
         int maxTrackCount = 20;
         int count = Math.min(queue.size(), maxTrackCount);
@@ -176,7 +152,7 @@ public class FutrzakMessageEmbedFactory
 
         if (queue.size() > maxTrackCount)
         {
-            embedBuilder.appendDescription(messageSource.getMessage("embed.player.more-tracks", queue.size() - count));
+            embedBuilder.appendDescription(resolveMessage("embed.player.more-tracks", queue.size() - count));
         }
 
         return embedBuilder.build();
@@ -184,94 +160,66 @@ public class FutrzakMessageEmbedFactory
 
     public MessageEmbed createPlayerStoppedMessage()
     {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle(messageSource.getMessage("embed.player.paused-player"));
-        return embedBuilder.build();
+        return success(resolveMessage("embed.player.paused-player"));
     }
 
     public MessageEmbed createPlayerResumedMessage()
     {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle(messageSource.getMessage("embed.player.resumed-player"));
-        return embedBuilder.build();
+        return success(resolveMessage("embed.player.resumed-player"));
     }
 
     public MessageEmbed createPlayerVolumeChangedMessage(int volume)
     {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle(messageSource.getMessage("embed.player.volume-changed", volume));
-        return embedBuilder.build();
+        return success(resolveMessage("embed.player.volume-changed", volume));
     }
 
     public MessageEmbed createSkipTrackMessage(AudioTrack audioTrack)
     {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle(messageSource.getMessage("embed.player.skipping-track"));
-        embedBuilder.addField(new MessageEmbed.Field(messageSource.getMessage("embed.player.artist"), audioTrack.getInfo().author, false));
-        embedBuilder.addField(new MessageEmbed.Field(messageSource.getMessage("embed.player.title"), audioTrack.getInfo().title, false));
+        EmbedBuilder embedBuilder = prepareSuccess();
+        embedBuilder.setTitle(resolveMessage("embed.player.skipping-track"));
+        embedBuilder.addField(new MessageEmbed.Field(resolveMessage("embed.player.artist"), audioTrack.getInfo().author, false));
+        embedBuilder.addField(new MessageEmbed.Field(resolveMessage("embed.player.title"), audioTrack.getInfo().title, false));
         return embedBuilder.build();
     }
 
     public MessageEmbed createClearMessage()
     {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle(messageSource.getMessage("embed.player.cleared-queue"));
-        return embedBuilder.build();
+        return success(resolveMessage("embed.player.cleared-queue"));
     }
 
     public MessageEmbed createRemoveMessage(int element, AudioTrack audioTrack)
     {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(DEFAULT_COLOR);
-        embedBuilder.setTitle(messageSource.getMessage("embed.player.skipped-track-number", element));
-        embedBuilder.addField(new MessageEmbed.Field(messageSource.getMessage("embed.player.artist"), audioTrack.getInfo().author, false));
-        embedBuilder.addField(new MessageEmbed.Field(messageSource.getMessage("embed.player.title"), audioTrack.getInfo().title, false));
+        EmbedBuilder embedBuilder = prepareSuccess();
+        embedBuilder.setTitle(resolveMessage("embed.player.skipped-track-number", element));
+        embedBuilder.addField(new MessageEmbed.Field(resolveMessage("embed.player.artist"), audioTrack.getInfo().author, false));
+        embedBuilder.addField(new MessageEmbed.Field(resolveMessage("embed.player.title"), audioTrack.getInfo().title, false));
         return embedBuilder.build();
     }
 
     public MessageEmbed createWrongTrackPositionMessage()
     {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(ERROR_COLOR);
-        embedBuilder.setTitle(messageSource.getMessage("embed.player.wrong-track-position"));
-        return embedBuilder.build();
+        return error(resolveMessage("embed.player.wrong-track-position"));
     }
 
     public MessageEmbed createLoopMessage(boolean loop)
     {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(DEFAULT_COLOR);
-        if (loop)
-        {
-            embedBuilder.setTitle(messageSource.getMessage("embed.player.activated-loop"));
-        }
-        else
-        {
-            embedBuilder.setTitle(messageSource.getMessage("embed.player.deactivated-loop"));
-        }
-        return embedBuilder.build();
+        String messageKey = loop ? "embed.player.activated-loop" : "embed.player.deactivated-loop";
+        return success(resolveMessage(messageKey));
     }
 
     public MessageEmbed createSongErrorMessage(AudioTrack track)
     {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(ERROR_COLOR);
-        embedBuilder.setTitle(messageSource.getMessage("embed.player.error-has-occurred"));
-        embedBuilder.addField(messageSource.getMessage("embed.player.track"), track.getInfo().author + " " + track.getInfo().title, false);
+        EmbedBuilder embedBuilder = prepareError();
+        embedBuilder.setTitle(resolveMessage("embed.player.error-has-occurred"));
+        embedBuilder.addField(resolveMessage("embed.player.track"), track.getInfo().author + " " + track.getInfo().title, false);
         return embedBuilder.build();
     }
 
     public MessageEmbed createSongErrorMessage(AudioTrack track, FriendlyException exception)
     {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setColor(ERROR_COLOR);
-        embedBuilder.setTitle(messageSource.getMessage("embed.player.error-has-occurred"));
-        embedBuilder.addField(messageSource.getMessage("embed.player.track"), track.getInfo().author + " " + track.getInfo().title, false);
+        EmbedBuilder embedBuilder = prepareError();
+        embedBuilder.setTitle(resolveMessage("embed.player.error-has-occurred"));
+        embedBuilder.addField(resolveMessage("embed.player.track"), track.getInfo().author + " " + track.getInfo().title, false);
         embedBuilder.setDescription(exception.getLocalizedMessage());
         return embedBuilder.build();
     }
@@ -279,7 +227,7 @@ public class FutrzakMessageEmbedFactory
     public MessageEmbed createHelpMessage(Collection<Command> commands, int page)
     {
         PaginatedMessageEmbed paginatedMessageEmbed = PaginatedMessageEmbed.ofFields(commands)
-                .title(getMessage(COMMAND_LIST_MESSAGE_KEY), "https://github.com/Aquerr/FutrzakBot")
+                .title(resolveMessage(COMMAND_LIST_MESSAGE_KEY), "https://github.com/Aquerr/FutrzakBot")
                 .color(Color.GREEN)
                 .fieldNamePopulator(Command::getName)
                 .fieldValuePopulator(Command::getUsage)
@@ -289,8 +237,32 @@ public class FutrzakMessageEmbedFactory
         return paginatedMessageEmbed.getPage(page);
     }
 
-    private String getMessage(String messageKey)
+    public MessageEmbed error(String message)
     {
-        return messageSource.getMessage(messageKey);
+        return prepareError()
+                .setTitle(message)
+                .build();
+    }
+
+    public MessageEmbed success(String message)
+    {
+        return prepareSuccess()
+                .setTitle(message)
+                .build();
+    }
+
+    public EmbedBuilder prepareError()
+    {
+        return new EmbedBuilder().setColor(ERROR_COLOR);
+    }
+
+    public EmbedBuilder prepareSuccess()
+    {
+        return new EmbedBuilder().setColor(DEFAULT_COLOR);
+    }
+
+    private String resolveMessage(String messageKey, Object... args)
+    {
+        return messageSource.getMessage(messageKey, args);
     }
 }

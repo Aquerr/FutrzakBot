@@ -64,6 +64,6 @@ public class FutrzakAudioLoadHandler implements AudioLoadResultHandler
     @Override
     public void loadFailed(FriendlyException exception)
     {
-        this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(messageEmbedFactory.createSongLoadFailedMessage(exception.getLocalizedMessage())).complete();
+        this.futrzakAudioPlayer.getLastBotUsageChannel().sendMessageEmbeds(messageEmbedFactory.error(exception.getLocalizedMessage())).complete();
     }
 }
