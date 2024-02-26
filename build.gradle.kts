@@ -39,6 +39,7 @@ val mockitoBomVersion = findProperty("mockitoBomVersion") as String
 val mockitoInlineVersion = findProperty("mockitoInlineVersion") as String
 val jdaVersion = findProperty("jdaVersion") as String
 val lavaPlayerVersion = findProperty("lavaPlayerVersion") as String
+val guavaVersion = findProperty("guavaVersion") as String
 
 dependencies {
     // Spring
@@ -63,6 +64,7 @@ dependencies {
     implementation("org.json:json:${jsonVersion}")
     implementation("com.typesafe:config:${typeSafeConfigVersion}")
     implementation("com.jayway.jsonpath:json-path:${jsonPathVersion}")
+    implementation("com.google.guava:guava:${guavaVersion}")
 
     // Logging (Log4j2)
     implementation("org.springframework.boot:spring-boot-starter-log4j2")
