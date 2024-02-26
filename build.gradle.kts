@@ -1,6 +1,6 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.2.0"
+    id("org.springframework.boot") version "3.2.3"
     id("io.spring.dependency-management") version "1.1.4"
 }
 
@@ -18,8 +18,8 @@ configurations {
 }
 
 configure<JavaPluginExtension> {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 repositories {
@@ -32,19 +32,15 @@ repositories {
     }
 }
 
+val jsonVersion = findProperty("jsonVersion") as String
+val typeSafeConfigVersion = findProperty("typeSafeConfigVersion") as String
+val jsonPathVersion = findProperty("jsonPathVersion") as String
+val mockitoBomVersion = findProperty("mockitoBomVersion") as String
+val mockitoInlineVersion = findProperty("mockitoInlineVersion") as String
+val jdaVersion = findProperty("jdaVersion") as String
+val lavaPlayerVersion = findProperty("lavaPlayerVersion") as String
+
 dependencies {
-    implementation("dev.arbjerg:lavaplayer:2.0.4")
-    implementation("net.dv8tion:JDA:5.0.0-beta.18") {
-        exclude("opus-java")
-    }
-
-    implementation("org.json:json:20230227")
-    implementation("com.typesafe:config:1.4.3")
-    implementation("com.jayway.jsonpath:json-path:2.8.0")
-    implementation("com.google.guava:guava:32.1.3-jre")
-    compileOnly("org.projectlombok:lombok")
-    annotationProcessor("org.projectlombok:lombok")
-
     // Spring
     implementation("org.springframework.boot:spring-boot-starter-data-jpa") {
         exclude("org.springframework.boot", "spring-boot-starter-logging")
@@ -58,7 +54,15 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-test") {
         exclude("org.springframework.boot", "spring-boot-starter-logging")
     }
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
+    implementation("dev.arbjerg:lavaplayer:${lavaPlayerVersion}")
+    implementation("net.dv8tion:JDA:${jdaVersion}") {
+        exclude("opus-java")
+    }
+
+    implementation("org.json:json:${jsonVersion}")
+    implementation("com.typesafe:config:${typeSafeConfigVersion}")
+    implementation("com.jayway.jsonpath:json-path:${jsonPathVersion}")
 
     // Logging (Log4j2)
     implementation("org.springframework.boot:spring-boot-starter-log4j2")
@@ -66,15 +70,20 @@ dependencies {
     // Database (H2)
     implementation("com.h2database:h2")
 
+    compileOnly("org.projectlombok:lombok")
+
+    annotationProcessor("org.projectlombok:lombok")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
     // Test (JUnit 5)
-    testImplementation("org.mockito:mockito-bom:5.8.0")
+    testImplementation("org.mockito:mockito-bom:${mockitoBomVersion}")
     testImplementation("org.junit.jupiter:junit-jupiter-api")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testImplementation("org.mockito:mockito-core")
-    testImplementation("org.mockito:mockito-inline:5.2.0")
+    testImplementation("org.mockito:mockito-inline:${mockitoInlineVersion}")
     testImplementation("org.mockito:mockito-junit-jupiter")
     testImplementation("org.assertj:assertj-core")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
 tasks.withType<Test> {

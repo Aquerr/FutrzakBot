@@ -5,7 +5,7 @@ It has many functionalities which can make spending time on discord even funnier
 
 ## Features
 
-* Music Player (thanks to [lavaplayer](https://github.com/Walkyst/lavaplayer-fork)
+* Music Player (thanks to [lavaplayer](https://github.com/Walkyst/lavaplayer-fork))
 * 8ball
 * Love Meter
 * Russian Roulette
