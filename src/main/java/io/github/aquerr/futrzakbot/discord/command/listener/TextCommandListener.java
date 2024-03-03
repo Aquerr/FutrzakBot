@@ -89,7 +89,7 @@ public class TextCommandListener
         if (!isSupportedChannelType(messageChannelUnion))
             return;
 
-        Member member = event.getMember();
+        Member member = event.getMember(); //TODO: does not exist in private channel
 
         // Bot cannot be used from webhooks and private channels
         if (member == null)

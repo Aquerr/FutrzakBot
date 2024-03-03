@@ -99,4 +99,9 @@ public interface Command
     {
         return Collections.emptyList();
     }
+
+    default List<ChannelType> getSupportedChannelTypes()
+    {
+        return List.of(ChannelType.GUILD_TEXT, ChannelType.GUILD_PUBLIC_THREAD);
+    }
 }

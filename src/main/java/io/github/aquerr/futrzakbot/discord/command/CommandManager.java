@@ -36,7 +36,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class CommandManager implements EventListener
 {
@@ -114,6 +113,9 @@ public class CommandManager implements EventListener
 
     private void processTextCommand(Member member, MessageChannelUnion channel, Command command, String arguments)
     {
+        if (!command.getSupportedChannelTypes().contains(ChannelTypeMapper.map(channel.getType())))
+            return;
+
         CommandContextImpl.CommandContextImplBuilder commandContextBuilder = CommandContextImpl.builder()
                 .messageChannelUnion(channel)
                 .member(member);
@@ -132,6 +134,11 @@ public class CommandManager implements EventListener
 
         CommandContext commandContext = commandContextBuilder.build();
 
+        invokeCommand(command, commandContext);
+    }
+
+    private void invokeCommand(Command command, CommandContext commandContext)
+    {
         //Execute
         try
         {
@@ -140,12 +147,12 @@ public class CommandManager implements EventListener
         catch (CommandException exception)
         {
             // Normal Command Exception handling here...
-            handleCommandException(channel, command, exception);
+            handleCommandException(commandContext.getMessageChannel(), command, exception);
         }
         catch (Exception exception)
         {
             // General error...
-            handleException(channel, command, exception);
+            handleException(commandContext.getMessageChannel(), command, exception);
         }
     }
 
