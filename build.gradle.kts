@@ -30,6 +30,12 @@ repositories {
     maven {
         url = uri("https://m2.dv8tion.net/releases")
     }
+    maven {
+        url = uri("https://maven.lavalink.dev/snapshots")
+    }
+    maven {
+        url = uri("https://jitpack.io")
+    }
 }
 
 val jsonVersion = findProperty("jsonVersion") as String
@@ -60,6 +66,7 @@ dependencies {
     implementation("net.dv8tion:JDA:${jdaVersion}") {
         exclude("opus-java")
     }
+    implementation("com.github.lavalink-devs.youtube-source:common:1.0.6")
 
     implementation("org.json:json:${jsonVersion}")
     implementation("com.typesafe:config:${typeSafeConfigVersion}")

@@ -2,9 +2,10 @@ package io.github.aquerr.futrzakbot.discord.audio;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
+import dev.lavalink.youtube.YoutubeAudioSourceManager;
 import io.github.aquerr.futrzakbot.FutrzakBot;
 import io.github.aquerr.futrzakbot.discord.audio.handler.FutrzakAudioLoadHandler;
 import io.github.aquerr.futrzakbot.discord.audio.handler.FutrzakQueueAndDontPlayLoadHandler;
@@ -35,7 +36,8 @@ public final class FutrzakAudioPlayerManager
     {
         this.futrzakBot = futrzakBot;
         this.audioPlayerManager = new DefaultAudioPlayerManager();
-        AudioSourceManagers.registerRemoteSources(audioPlayerManager);
+        audioPlayerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
+        audioPlayerManager.registerSourceManager(new YoutubeAudioSourceManager());
         this.messageEmbedFactory = messageEmbedFactory;
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::botKickTaskRun, 1, 5, TimeUnit.MINUTES);
     }
