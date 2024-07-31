@@ -31,10 +31,7 @@ repositories {
         url = uri("https://m2.dv8tion.net/releases")
     }
     maven {
-        url = uri("https://maven.lavalink.dev/snapshots")
-    }
-    maven {
-        url = uri("https://jitpack.io")
+        url = uri("https://maven.lavalink.dev/releases")
     }
 }
 
@@ -66,7 +63,7 @@ dependencies {
     implementation("net.dv8tion:JDA:${jdaVersion}") {
         exclude("opus-java")
     }
-    implementation("com.github.lavalink-devs.youtube-source:common:1.0.6")
+    implementation("dev.lavalink.youtube:common:1.5.0")
 
     implementation("org.json:json:${jsonVersion}")
     implementation("com.typesafe:config:${typeSafeConfigVersion}")
