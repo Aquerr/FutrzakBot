@@ -50,7 +50,7 @@ public class RouletteCommand implements Command, SlashCommand
         else
         {
             channel.sendMessage(member.getAsMention() + " pociąga za spust!").complete();
-            channel.sendMessage("Z pistoletu słychać tylko odgłos kliknięcia!").complete();
+            channel.sendMessage("Z rewolweru słychać tylko odgłos kliknięcia!").complete();
             channel.sendMessage(member.getAsMention() + " udało się przeżyć ruletkę. :sunglasses: ").complete();
         }
     }
