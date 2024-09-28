@@ -43,6 +43,7 @@ val mockitoInlineVersion = findProperty("mockitoInlineVersion") as String
 val jdaVersion = findProperty("jdaVersion") as String
 val lavaPlayerVersion = findProperty("lavaPlayerVersion") as String
 val guavaVersion = findProperty("guavaVersion") as String
+val youtubeSourceVersion = findProperty("youtubeSourceVersion") as String
 
 dependencies {
     // Spring
@@ -63,7 +64,7 @@ dependencies {
     implementation("net.dv8tion:JDA:${jdaVersion}") {
         exclude("opus-java")
     }
-    implementation("dev.lavalink.youtube:common:1.5.0")
+    implementation("dev.lavalink.youtube:common:${youtubeSourceVersion}")
 
     implementation("org.json:json:${jsonVersion}")
     implementation("com.typesafe:config:${typeSafeConfigVersion}")
