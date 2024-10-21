@@ -37,7 +37,10 @@ public final class FutrzakAudioPlayerManager
         this.futrzakBot = futrzakBot;
         this.audioPlayerManager = new DefaultAudioPlayerManager();
         audioPlayerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
-        audioPlayerManager.registerSourceManager(new YoutubeAudioSourceManager());
+
+        YoutubeAudioSourceManager youtubeAudioSourceManager = new YoutubeAudioSourceManager(true);
+        youtubeAudioSourceManager.useOauth2(null, false);
+        audioPlayerManager.registerSourceManager(youtubeAudioSourceManager);
         this.messageEmbedFactory = messageEmbedFactory;
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::botKickTaskRun, 1, 5, TimeUnit.MINUTES);
     }
