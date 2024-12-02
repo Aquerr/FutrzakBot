@@ -10,6 +10,7 @@ import io.github.aquerr.futrzakbot.FutrzakBot;
 import io.github.aquerr.futrzakbot.discord.audio.handler.FutrzakAudioLoadHandler;
 import io.github.aquerr.futrzakbot.discord.audio.handler.FutrzakQueueAndDontPlayLoadHandler;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
+import io.github.aquerr.futrzakbot.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
@@ -39,7 +40,16 @@ public final class FutrzakAudioPlayerManager
         audioPlayerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());
 
         YoutubeAudioSourceManager youtubeAudioSourceManager = new YoutubeAudioSourceManager(true);
-        youtubeAudioSourceManager.useOauth2(null, false);
+        String refreshToken = futrzakBot.getConfiguration().getYoutubeOauthRefreshToken();
+        if (StringUtils.isBlank(refreshToken))
+        {
+            youtubeAudioSourceManager.useOauth2(null, false);
+        }
+        else
+        {
+            youtubeAudioSourceManager.useOauth2(refreshToken, true);
+        }
+
         audioPlayerManager.registerSourceManager(youtubeAudioSourceManager);
         this.messageEmbedFactory = messageEmbedFactory;
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::botKickTaskRun, 1, 5, TimeUnit.MINUTES);

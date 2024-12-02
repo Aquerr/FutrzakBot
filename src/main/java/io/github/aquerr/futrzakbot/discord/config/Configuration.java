@@ -18,6 +18,7 @@ public class Configuration
     private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
 
     private final String botToken;
+    private final String youtubeOauthRefreshToken;
     private final String languageTag;
     private final boolean webEnabled;
     private final boolean roleGiverEnabled;
@@ -35,6 +36,7 @@ public class Configuration
     public Configuration(Config config)
     {
         this.botToken = config.getString("bot-token");
+        this.youtubeOauthRefreshToken = config.getConfig("music-player").getConfig("youtube").getConfig("oauth").getString("refresh-token");
         this.webEnabled = config.getBoolean("web-enabled");
         this.emoteRoleIdsMap = (Map)config.getConfig("role-giver").getAnyRef("roles");
         this.roleGiverEnabled = config.getConfig("role-giver").getBoolean("enabled");
@@ -47,6 +49,11 @@ public class Configuration
     public String getBotToken()
     {
         return botToken;
+    }
+
+    public String getYoutubeOauthRefreshToken()
+    {
+        return youtubeOauthRefreshToken;
     }
 
     public String getLanguageTag()
