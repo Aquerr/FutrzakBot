@@ -1,7 +1,7 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.2.4"
-    id("io.spring.dependency-management") version "1.1.4"
+    id("org.springframework.boot") version "3.5.3"
+    id("io.spring.dependency-management") version "1.1.7"
 }
 
 group = "io.github.aquerr"
@@ -39,7 +39,6 @@ val jsonVersion = findProperty("jsonVersion") as String
 val typeSafeConfigVersion = findProperty("typeSafeConfigVersion") as String
 val jsonPathVersion = findProperty("jsonPathVersion") as String
 val mockitoBomVersion = findProperty("mockitoBomVersion") as String
-val mockitoInlineVersion = findProperty("mockitoInlineVersion") as String
 val jdaVersion = findProperty("jdaVersion") as String
 val lavaPlayerVersion = findProperty("lavaPlayerVersion") as String
 val guavaVersion = findProperty("guavaVersion") as String
@@ -87,7 +86,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testImplementation("org.mockito:mockito-core")
-    testImplementation("org.mockito:mockito-inline:${mockitoInlineVersion}")
     testImplementation("org.mockito:mockito-junit-jupiter")
     testImplementation("org.assertj:assertj-core")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
