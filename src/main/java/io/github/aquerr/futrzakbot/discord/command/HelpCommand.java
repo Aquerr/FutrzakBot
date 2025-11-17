@@ -4,12 +4,13 @@ import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.message.EmojiUnicodes;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.util.Collections;
 import java.util.List;
@@ -71,8 +72,8 @@ public class HelpCommand implements Command, SlashCommand
         if (event.getName().equals(getAliases().get(0)))
         {
             event.deferReply().addEmbeds(buildHelpMessage())
-                    .addActionRow(Button.primary(BUTTON_HELP_LEFT_ID, Emoji.fromUnicode(EmojiUnicodes.ARROW_LEFT)),
-                                    Button.primary(BUTTON_HELP_RIGHT_ID, Emoji.fromUnicode(EmojiUnicodes.ARROW_RIGHT)))
+                    .addComponents(ActionRow.of(Button.primary(BUTTON_HELP_LEFT_ID, Emoji.fromUnicode(EmojiUnicodes.ARROW_LEFT)),
+                                    Button.primary(BUTTON_HELP_RIGHT_ID, Emoji.fromUnicode(EmojiUnicodes.ARROW_RIGHT))))
                     .queue();
         }
     }

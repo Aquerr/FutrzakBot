@@ -7,12 +7,13 @@ import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.message.EmojiUnicodes;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 
 import java.util.Collections;
@@ -113,16 +114,16 @@ public class PlayerCommand implements Command, SlashCommand
         }
 
         replyCallbackAction
-                .addActionRow(Button.secondary(BUTTON_SHOW_TRACK_QUEUE, messageSource.getMessage("command.player.button.queue.label")),
+                .addComponents(ActionRow.of(Button.secondary(BUTTON_SHOW_TRACK_QUEUE, messageSource.getMessage("command.player.button.queue.label")),
                         Button.secondary(BUTTON_PLAY_PAUSE, Emoji.fromUnicode(EmojiUnicodes.PLAY_PAUSE_BUTTON)),
                         Button.secondary(BUTTON_NEXT_TRACK, Emoji.fromUnicode(EmojiUnicodes.NEXT_TRACK)),
-                        createRepeatButton(channel.getGuild().getIdLong()))
-                .addActionRow(
+                        createRepeatButton(channel.getGuild().getIdLong())))
+                .addComponents(ActionRow.of(
                         Button.secondary(BUTTON_FROM_BEGINNING, Emoji.fromUnicode(EmojiUnicodes.FROM_BEGINNING)),
                         Button.secondary(BUTTON_REWIND_20_SECONDS, messageSource.getMessage("command.player.button.rewind.label", 20)).withEmoji(Emoji.fromUnicode(EmojiUnicodes.REWIND)),
                         Button.secondary(BUTTON_REWIND_10_SECONDS, messageSource.getMessage("command.player.button.rewind.label", 10)).withEmoji(Emoji.fromUnicode(EmojiUnicodes.REWIND)),
                         Button.secondary(BUTTON_SKIP_10_SECONDS, messageSource.getMessage("command.player.button.skip.label", 10)).withEmoji(Emoji.fromUnicode(EmojiUnicodes.FAST_FORWARD)),
-                        Button.secondary(BUTTON_SKIP_20_SECONDS, messageSource.getMessage("command.player.button.skip.label", 20)).withEmoji(Emoji.fromUnicode(EmojiUnicodes.FAST_FORWARD)))
+                        Button.secondary(BUTTON_SKIP_20_SECONDS, messageSource.getMessage("command.player.button.skip.label", 20)).withEmoji(Emoji.fromUnicode(EmojiUnicodes.FAST_FORWARD))))
                 .queue();
     }
 
