@@ -49,9 +49,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-quartz")
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
-    implementation("org.springframework.boot:spring-boot-data-jpa-test")
-    implementation("org.springframework.boot:spring-boot-starter-quartz-test")
-    implementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 
     // DSC Audio START
     implementation("club.minnced:jdave-api:0.1.5")
@@ -82,9 +79,15 @@ dependencies {
     }
 
     // Database (H2)
-    implementation("com.h2database:h2")
+    runtimeOnly("com.h2database:h2")
 
     compileOnly("org.projectlombok:lombok")
+
+    // Tests
+    testImplementation("org.springframework.boot:spring-boot-data-jpa-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-quartz-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

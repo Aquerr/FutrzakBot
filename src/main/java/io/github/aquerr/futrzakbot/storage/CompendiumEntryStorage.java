@@ -13,7 +13,8 @@ import java.util.Set;
 @Repository
 public interface CompendiumEntryStorage extends JpaRepository<CompendiumEntryImpl, Long>, CompendiumEntryWithDetailsStorage
 {
-    @Query("FROM CompendiumEntryImpl compendium_entry " +
+    @Query("SELECT compendium_entry " +
+            "FROM CompendiumEntryImpl compendium_entry " +
             "JOIN compendium_entry.tags tags " +
             "WHERE compendium_entry.name = :name " +
             "AND :tags IN (tags)")
