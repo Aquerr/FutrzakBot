@@ -1,0 +1,11 @@
+services:
+  futrzak:
+    container_name: futrzak-bot
+    restart: unless-stopped
+    image: aquerr/futrzak:latest
+    ports:
+      - "8082:8082"
+    volumes:
+      - ./config:/opt/app/config
+      - ./data:/opt/app/data
+      - ./logs:/opt/app/logs

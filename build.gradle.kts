@@ -1,6 +1,6 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.5.3"
+    id("org.springframework.boot") version "4.0.1"
     id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -17,9 +17,10 @@ configurations {
     }
 }
 
-configure<JavaPluginExtension> {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
 }
 
 repositories {
@@ -38,7 +39,6 @@ repositories {
 val jsonVersion = findProperty("jsonVersion") as String
 val typeSafeConfigVersion = findProperty("typeSafeConfigVersion") as String
 val jsonPathVersion = findProperty("jsonPathVersion") as String
-val mockitoBomVersion = findProperty("mockitoBomVersion") as String
 val jdaVersion = findProperty("jdaVersion") as String
 val lavaPlayerVersion = findProperty("lavaPlayerVersion") as String
 val guavaVersion = findProperty("guavaVersion") as String
@@ -46,18 +46,21 @@ val youtubeSourceVersion = findProperty("youtubeSourceVersion") as String
 
 dependencies {
     // Spring
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa") {
-        exclude("org.springframework.boot", "spring-boot-starter-logging")
-    }
-    implementation("org.springframework.boot:spring-boot-starter-quartz") {
-        exclude("org.springframework.boot", "spring-boot-starter-logging")
-    }
-    implementation("org.springframework.boot:spring-boot-starter-web") {
-        exclude("org.springframework.boot", "spring-boot-starter-logging")
-    }
-    implementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude("org.springframework.boot", "spring-boot-starter-logging")
-    }
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-quartz")
+    implementation("org.springframework.boot:spring-boot-starter-webmvc")
+    implementation("org.springframework.boot:spring-boot-data-jpa-test")
+    implementation("org.springframework.boot:spring-boot-starter-quartz-test")
+    implementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+
+    // DSC Audio START
+    implementation("club.minnced:jdave-api:0.1.5")
+
+    implementation("club.minnced:jdave-native-linux-x86-64:0.1.5")
+    implementation("club.minnced:jdave-native-linux-aarch64:0.1.5")
+    implementation("club.minnced:jdave-native-win-x86-64:0.1.5")
+    implementation("club.minnced:jdave-native-darwin:0.1.5")
+    // DSC Audio END
 
     implementation("dev.arbjerg:lavaplayer:${lavaPlayerVersion}")
     implementation("net.dv8tion:JDA:${jdaVersion}") {
@@ -72,6 +75,11 @@ dependencies {
 
     // Logging (Log4j2)
     implementation("org.springframework.boot:spring-boot-starter-log4j2")
+    modules {
+        module("org.springframework.boot:spring-boot-starter-logging") {
+            replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
+        }
+    }
 
     // Database (H2)
     implementation("com.h2database:h2")
@@ -80,15 +88,6 @@ dependencies {
 
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-
-    // Test (JUnit 5)
-    testImplementation("org.mockito:mockito-bom:${mockitoBomVersion}")
-    testImplementation("org.junit.jupiter:junit-jupiter-api")
-    testImplementation("org.junit.jupiter:junit-jupiter-params")
-    testImplementation("org.mockito:mockito-core")
-    testImplementation("org.mockito:mockito-junit-jupiter")
-    testImplementation("org.assertj:assertj-core")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
 tasks.withType<Test> {

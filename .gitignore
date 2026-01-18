@@ -46,3 +46,6 @@ src/main/java/io/github/aquerr/futrzakbot/secret
 
 # Ignored files
 *.db
+/data
+/config
+/logs

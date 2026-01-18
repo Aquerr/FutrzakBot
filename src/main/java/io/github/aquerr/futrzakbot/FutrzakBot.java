@@ -1,5 +1,6 @@
 package io.github.aquerr.futrzakbot;
 
+import club.minnced.discord.jdave.interop.JDaveSessionFactory;
 import io.github.aquerr.futrzakbot.discord.audio.FutrzakAudioPlayerManager;
 import io.github.aquerr.futrzakbot.discord.command.ClearCommand;
 import io.github.aquerr.futrzakbot.discord.command.CommandManager;
@@ -36,6 +37,7 @@ import io.github.aquerr.futrzakbot.discord.role.DiscordRoleGiver;
 import io.github.aquerr.futrzakbot.discord.role.RoleMessageReactListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.audio.AudioModuleConfig;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -101,6 +103,8 @@ public class FutrzakBot
                     .addEventListeners(new ReadyListener())
                     .addEventListeners(new DiscordEventListener(futrzakAudioPlayerManager))
                     .setAutoReconnect(true)
+                    .setAudioModuleConfig(new AudioModuleConfig()
+                            .withDaveSessionFactory(new JDaveSessionFactory()))
                     .enableCache(CacheFlag.VOICE_STATE)
                     .setActivity(Activity.watching("FutrzakiShow " + CommandManager.COMMAND_PREFIX + " help https://github.com/Aquerr/FutrzakBot"))
                 .build().awaitReady();

@@ -21,7 +21,7 @@ public class FutrzakGame
     public FutrzakGame(FutrzakBot futrzakBot)
     {
         this.futrzakBot = futrzakBot;
-        this.futrzaksDirPath = futrzakBot.getBotDirectory().resolve("futrzaki");
+        this.futrzaksDirPath = futrzakBot.getBotDirectory().resolve("data").resolve("futrzaki");
     }
 
     public void setup()

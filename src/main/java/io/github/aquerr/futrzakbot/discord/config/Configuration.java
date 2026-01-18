@@ -11,11 +11,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class Configuration
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(Configuration.class);
+    private static final String CONFIG_FILE_NAME = "config.conf";
+    private static final Path DEFAULT_CONFIG_PATH = Paths.get(".").resolve("config").resolve(CONFIG_FILE_NAME);
 
     private final String botToken;
     private final String youtubeOauthRefreshToken;
@@ -93,26 +97,48 @@ public class Configuration
 
     private static Config loadConfig()
     {
-        Path configFilePath = Paths.get(".").resolve("config.conf");
-        if (Files.notExists(configFilePath))
+        Path locatedConfig = locateConfigFile().orElse(null);
+
+        LOGGER.info("Configuration file path: {}", locatedConfig);
+
+        if (locatedConfig == null)
         {
             try
             {
-                Files.createFile(configFilePath);
+                LOGGER.info("Creating default configuration file at: {}", DEFAULT_CONFIG_PATH);
+                Files.createFile(DEFAULT_CONFIG_PATH);
                 Config defaultClasspathConfig = loadDefaultClasspathConfig();
                 String configFileString = defaultClasspathConfig.root().render(ConfigRenderOptions.defaults().setJson(false).setOriginComments(false).setFormatted(true));
-                Files.write(configFilePath, configFileString.getBytes(StandardCharsets.UTF_8));
+                Files.write(DEFAULT_CONFIG_PATH, configFileString.getBytes(StandardCharsets.UTF_8));
+                locatedConfig = DEFAULT_CONFIG_PATH;
             }
             catch (IOException e)
             {
-                LOGGER.error("Could not load configuration file.", e);
+                throw new RuntimeException("Could not create configuration file.", e);
             }
         }
-        return ConfigFactory.load(ConfigFactory.systemEnvironment().withFallback(ConfigFactory.parseFile(configFilePath.toFile())));
+
+        LOGGER.info("Loading configuration file: {}", locatedConfig);
+        return ConfigFactory.load(ConfigFactory.systemEnvironment().withFallback(ConfigFactory.parseFile(locatedConfig.toFile())));
+    }
+
+    private static Optional<Path> locateConfigFile()
+    {
+        List<Path> possibleConfigPaths = List.of(
+                DEFAULT_CONFIG_PATH,
+                Paths.get(".").resolve(CONFIG_FILE_NAME)
+        );
+
+        for (Path path : possibleConfigPaths)
+        {
+            if (Files.exists(path))
+                return Optional.of(path);
+        }
+        return Optional.empty();
     }
 
     private static Config loadDefaultClasspathConfig()
     {
-        return ConfigFactory.load(ConfigFactory.parseResources("config.conf"));
+        return ConfigFactory.load(ConfigFactory.parseResources(CONFIG_FILE_NAME));
     }
 }
