@@ -11,10 +11,9 @@ ENV APP_USER=appuser
 ENV APP_GROUP=appgroup
 
 RUN apt-get update \
- && apt-get install -y --no-install-recommends \
-    gosu \
-    ca-certificates \
- && rm -rf /var/lib/apt/lists/*
+ && apt-get install --update -y gosu \
+ && rm -rf /var/lib/apt/lists/* \
+    gosu nobody true
 
 RUN mkdir -p /opt/app/config  \
     && mkdir -p /opt/app/data  \
