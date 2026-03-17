@@ -7,6 +7,7 @@ import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.message.EmojiUnicodes;
 import io.github.aquerr.futrzakbot.discord.message.FutrzakMessageEmbedFactory;
 import io.github.aquerr.futrzakbot.discord.message.MessageSource;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+@Slf4j
 public class PlayerCommand implements Command, SlashCommand
 {
     private static final String BUTTON_PLAY_PAUSE = "player_play_pause";
@@ -114,6 +116,7 @@ public class PlayerCommand implements Command, SlashCommand
         }
 
         replyCallbackAction
+                .setEphemeral(true)
                 .addComponents(ActionRow.of(Button.secondary(BUTTON_SHOW_TRACK_QUEUE, messageSource.getMessage("command.player.button.queue.label")),
                         Button.secondary(BUTTON_PLAY_PAUSE, Emoji.fromUnicode(EmojiUnicodes.PLAY_PAUSE_BUTTON)),
                         Button.secondary(BUTTON_NEXT_TRACK, Emoji.fromUnicode(EmojiUnicodes.NEXT_TRACK)),
@@ -156,6 +159,7 @@ public class PlayerCommand implements Command, SlashCommand
     {
         event.deferEdit().queue();
         long guildId = event.getGuild().getIdLong();
+        log.info("buttonPlayPauseClick: {}, {}", event.getGuild().getId(), event.getMember().getEffectiveName());
         FutrzakAudioPlayer futrzakAudioPlayer = this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(guildId);
         if (futrzakAudioPlayer.isPaused())
         {
@@ -169,6 +173,7 @@ public class PlayerCommand implements Command, SlashCommand
 
     private void buttonNextTrackClick(ButtonInteractionEvent event)
     {
+        log.info("buttonNextTrackClick: {}, {}", event.getGuild().getId(), event.getMember().getEffectiveName());
         event.deferEdit().queue();
         this.futrzakAudioPlayerManager.skipAndPlayNextTrack(event.getGuild().getIdLong(), event.getGuildChannel());
     }
@@ -176,12 +181,14 @@ public class PlayerCommand implements Command, SlashCommand
     private void buttonRepeatClick(ButtonInteractionEvent event)
     {
         long guildId = event.getGuild().getIdLong();
+        log.info("buttonRepeatClick: {}, {}", guildId, event.getMember().getEffectiveName());
         this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(guildId).toggleLoop();
         event.editButton(createRepeatButton(guildId)).queue();
     }
 
     private void buttonShowQueue(ButtonInteractionEvent event)
     {
+        log.info("buttonShowQueue: {}, {}", event.getGuild().getId(), event.getMember().getEffectiveName());
         event.deferEdit().queue();
         event.getGuildChannel().sendMessageEmbeds(
                 FutrzakMessageEmbedFactory.getInstance().createQueueMessage(
@@ -190,6 +197,7 @@ public class PlayerCommand implements Command, SlashCommand
 
     private void buttonRewindClick(ButtonInteractionEvent event, boolean forward, int seconds)
     {
+        log.info("buttonRewindClick: {}, {}", event.getGuild().getId(), event.getMember().getEffectiveName());
         event.deferEdit().queue();
         FutrzakAudioPlayer player = this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(event.getGuild().getIdLong());
         if (player.getPlayingTrack() == null)
@@ -204,6 +212,7 @@ public class PlayerCommand implements Command, SlashCommand
 
     private void fromBeginningButtonClick(ButtonInteractionEvent event)
     {
+        log.info("fromBeginningButtonClick: {}, {}", event.getGuild().getId(), event.getMember().getEffectiveName());
         event.deferEdit().queue();
         FutrzakAudioPlayer player = this.futrzakAudioPlayerManager.getOrCreateAudioPlayer(event.getGuild().getIdLong());
         player.restartCurrentTrack();
