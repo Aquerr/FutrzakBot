@@ -85,7 +85,7 @@ public class CommandManager implements EventListener
     public void processTextCommand(Member member, MessageChannelUnion channel, Message message)
     {
         //Log
-        logCommandUsage(member, channel, message);
+        logCommandUsage(member, channel, message.getContentDisplay());
 
         String messageContentRaw = message.getContentRaw();
         if (CommandManager.COMMAND_PREFIX.equals(messageContentRaw))
@@ -149,14 +149,14 @@ public class CommandManager implements EventListener
         }
     }
 
-    private void logCommandUsage(Member member, MessageChannelUnion channel, Message message)
+    private void logCommandUsage(Member member, MessageChannelUnion channel, String message)
     {
         if (LOGGER.isInfoEnabled())
         {
             String guildName = channel.getType().isGuild() ? channel.asGuildMessageChannel().getGuild().getName() : null;
             LOGGER.info(messageSource.getMessage(GENERAL_MESSAGE_LOG, guildName,
                     channel.getName(), member.getEffectiveName(),
-                    message.getContentDisplay()));
+                    message));
         }
     }
 
@@ -263,6 +263,7 @@ public class CommandManager implements EventListener
         InteractionHook interactionHook = event.getHook();
         try
         {
+            logCommandUsage(event.getMember(), event.getChannel(), event.getName());
             slashCommand.onSlashCommand(event);
             completeEventIfNotAcknowledged(event);
         }

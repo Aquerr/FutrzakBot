@@ -2,6 +2,7 @@ package io.github.aquerr.futrzakbot.discord.command;
 
 import io.github.aquerr.futrzakbot.discord.command.context.CommandContext;
 import io.github.aquerr.futrzakbot.discord.games.RouletteGame;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -12,6 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class RouletteCommand implements Command, SlashCommand
 {
     private static final ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(10);
@@ -41,11 +43,26 @@ public class RouletteCommand implements Command, SlashCommand
         {
             channel.sendMessage(member.getAsMention() + " pociąga za spust!").complete();
             channel.sendMessage("STRZAŁ! :boom:").complete();
-            channel.sendMessage(member.getAsMention() + " jest już w innym świecie :skull_crossbones: (mute na 30 sek)").complete();
-            channel.getGuild().mute(member, true).reason("Mutuję Cię na 30 sekund z powodu śmierci w ruletce! :)").complete();
-            SCHEDULER.schedule(() -> {
-                channel.getGuild().mute(member, false).reason("Zostałeś wskrzeszony! :)").complete();
-            }, 30, TimeUnit.SECONDS);
+            channel.sendMessage(member.getAsMention() + " pada trupem :skull_crossbones: (mute na 30 sek)").complete();
+            try
+            {
+                channel.getGuild().mute(member, true).reason("Mutuję Cię na 30 sekund z powodu śmierci w ruletce! :)").complete();
+                SCHEDULER.schedule(() -> {
+                    channel.getGuild().mute(member, false).reason("Zostałeś wskrzeszony! :)").complete();
+                }, 30, TimeUnit.SECONDS);
+            }
+            catch (Exception exception)
+            {
+                log.info(exception.getMessage(), exception);
+                if ("Can only mute members who are currently in a voice channel".equals(exception.getMessage()))
+                {
+                    channel.sendMessage(member.getAsMention() + " używa tajemnej mocy aby uniknąć śmierci (spryciarz nie jest na kanale głosowym)").complete();
+                }
+                else
+                {
+                    channel.sendMessage(member.getAsMention() + " używa tajemnej mocy aby uniknąć śmierci.").complete();
+                }
+            }
         }
         else
         {
