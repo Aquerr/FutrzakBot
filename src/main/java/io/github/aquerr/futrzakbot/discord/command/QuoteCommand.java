@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -23,6 +24,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -129,7 +131,19 @@ public class QuoteCommand implements Command, SlashCommand
         return SlashCommand.super.getSlashCommandData()
                 .addOption(OptionType.BOOLEAN, HELP_PARAM_KEY, messageSource.getMessage("command.quote.slash.param.help.desc"), false)
                 .addOption(OptionType.BOOLEAN, RANDOM_PARAM_KEY, messageSource.getMessage("command.quote.slash.param.random.desc"), false)
-                .addOption(OptionType.STRING, CATEGORY_PARAM_KEY, messageSource.getMessage("command.quote.slash.param.category.desc"), false);
+                .addOption(OptionType.STRING, CATEGORY_PARAM_KEY, messageSource.getMessage("command.quote.slash.param.category.desc"), false, true);
+    }
+
+    @Override
+    public void onAutoComplete(CommandAutoCompleteInteractionEvent event)
+    {
+        if (event.getFocusedOption().getName().equalsIgnoreCase(CATEGORY_PARAM_KEY))
+        {
+            event.replyChoices(this.quoteGame.getAvailableCategories().stream().map(QuoteCategory::getAliases)
+                    .flatMap(Collection::stream)
+                    .map(categoryAlias -> new net.dv8tion.jda.api.interactions.commands.Command.Choice(categoryAlias, categoryAlias))
+                    .toList()).queue();
+        }
     }
 
     @Override

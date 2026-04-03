@@ -2,9 +2,11 @@ package io.github.aquerr.futrzakbot.discord.command.listener;
 
 import io.github.aquerr.futrzakbot.discord.command.CommandManager;
 import io.github.aquerr.futrzakbot.discord.command.SlashCommand;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 
 public class SlashCommandListener extends ListenerAdapter
 {
@@ -13,6 +15,19 @@ public class SlashCommandListener extends ListenerAdapter
     public SlashCommandListener(final CommandManager commandManager)
     {
         this.commandManager = commandManager;
+    }
+
+    @Override
+    public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event)
+    {
+        for (final SlashCommand slashCommand : commandManager.getSlashCommands())
+        {
+            if (slashCommand.supports(event))
+            {
+                slashCommand.onAutoComplete(event);
+                break;
+            }
+        }
     }
 
     @Override
