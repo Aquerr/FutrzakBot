@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 class QuoteStorage
@@ -60,6 +61,7 @@ class QuoteStorage
         if (!quotes.exists())
         {
             quotes.createNewFile();
+            Files.writeString(quotes.toPath(), "{}", StandardCharsets.UTF_8, StandardOpenOption.WRITE);
         }
     }
 }
