@@ -1,4 +1,4 @@
-FROM eclipse-temurin:25-jre
+FROM docker.io/eclipse-temurin:25-jre
 
 ARG VERSION=0.0.0
 ARG COMMMIT_ID=HEAD
