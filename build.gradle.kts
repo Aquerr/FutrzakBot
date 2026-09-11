@@ -1,6 +1,6 @@
 plugins {
     java
-    id("org.springframework.boot") version "4.0.1"
+    id("org.springframework.boot") version "4.1.1"
     id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -51,12 +51,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
 
     // DSC Audio START
-    implementation("club.minnced:jdave-api:0.1.5")
+    implementation("club.minnced:jdave-api:0.1.8")
 
-    implementation("club.minnced:jdave-native-linux-x86-64:0.1.5")
-    implementation("club.minnced:jdave-native-linux-aarch64:0.1.5")
-    implementation("club.minnced:jdave-native-win-x86-64:0.1.5")
-    implementation("club.minnced:jdave-native-darwin:0.1.5")
+    implementation("club.minnced:jdave-native-linux-x86-64:0.1.8")
+    implementation("club.minnced:jdave-native-linux-aarch64:0.1.8")
+    implementation("club.minnced:jdave-native-win-x86-64:0.1.8")
+    implementation("club.minnced:jdave-native-darwin:0.1.8")
     // DSC Audio END
 
     implementation("dev.arbjerg:lavaplayer:${lavaPlayerVersion}")
