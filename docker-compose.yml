@@ -6,6 +6,7 @@ services:
     environment:
       PUID: ???
       PGID: ???
+      TZ: Europe/Warsaw
     ports:
       - "8082:8082"
     volumes:
